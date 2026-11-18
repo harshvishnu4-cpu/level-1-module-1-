@@ -2,18 +2,25 @@
 /*
   Generates the word clips that index.html plays (audio/<id>.mp3) with ElevenLabs text-to-speech.
 
-  The API key never goes into the page. It is read here, on your machine, from the
-  ELEVENLABS_API_KEY environment variable or from the project's .env file (git-ignored).
+  The API key is never stored in this project, so it cannot reach GitHub or the page.
+  It is read, in this order, from:
+    1. the ELEVENLABS_API_KEY environment variable
+    2. a key file OUTSIDE the project: ~/.elevenlabs_key (or the path in ELEVENLABS_KEY_FILE)
+    3. a git-ignored .env in the project (supported, but not recommended)
 
   Usage (from the project folder):
     node tools/generate-audio.mjs                 generate any clips that are missing
     node tools/generate-audio.mjs --force         regenerate every clip
     node tools/generate-audio.mjs --list-voices   show the voices on your account
-  Optional .env settings: ELEVENLABS_VOICE_ID, ELEVENLABS_MODEL
+  Optional settings (environment or .env): ELEVENLABS_VOICE_ID, ELEVENLABS_MODEL
 */
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
+import { homedir } from 'node:os';
+
+/* Default voice: Tripti – Warm & Sweet Training Voice (a voice ID is not a secret) */
+const DEFAULT_VOICE_ID = 'X5RWySWhCXiGdP9YIKck';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT_DIR = join(ROOT, 'audio');
@@ -40,9 +47,16 @@ function loadEnv() {
 }
 loadEnv();
 
-const KEY = process.env.ELEVENLABS_API_KEY;
+/* Key from the environment, else from a key file outside the project. Never printed. */
+function readKey() {
+  if (process.env.ELEVENLABS_API_KEY) return process.env.ELEVENLABS_API_KEY.trim();
+  const file = process.env.ELEVENLABS_KEY_FILE || join(homedir(), '.elevenlabs_key');
+  if (existsSync(file)) return readFileSync(file, 'utf8').replace(/^[^=]*=/, '').replace(/["'\s]/g, '');
+  return '';
+}
+const KEY = readKey();
 if (!KEY) {
-  console.error('No API key found. Put ELEVENLABS_API_KEY=... in .env (see .env.example).');
+  console.error('No API key found. Save it in ~/.elevenlabs_key (outside this project) or set ELEVENLABS_API_KEY.');
   process.exit(1);
 }
 const headers = { 'xi-api-key': KEY };
@@ -67,12 +81,8 @@ async function listVoices() {
 }
 
 async function generate() {
-  const voice = process.env.ELEVENLABS_VOICE_ID;
+  const voice = process.env.ELEVENLABS_VOICE_ID || DEFAULT_VOICE_ID;
   const model = process.env.ELEVENLABS_MODEL || 'eleven_multilingual_v2';
-  if (!voice) {
-    console.error('Set ELEVENLABS_VOICE_ID in .env (run with --list-voices to pick one).');
-    process.exit(1);
-  }
   // Use the voice's own tuned settings (the voice owner's defaults sound most natural)
   let voiceSettings = { stability: 0.5, similarity_boost: 0.75, style: 0, use_speaker_boost: true };
   const sres = await fetch(`${API}/voices/${voice}/settings`, { headers });

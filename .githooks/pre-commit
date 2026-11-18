@@ -1,0 +1,17 @@
+#!/bin/sh
+# Blocks any commit that would add an API key or a .env file.
+# Turn it on once per clone:  git config core.hooksPath .githooks
+
+if git diff --cached --name-only | grep -E '(^|/)\.env($|\.)' | grep -v '\.env\.example$' >/dev/null; then
+  echo "Commit blocked: a .env file is staged. Secrets must never be committed."
+  echo "Unstage it with:  git restore --staged <file>"
+  exit 1
+fi
+
+if git diff --cached -U0 | grep -E '^\+' | grep -E 'sk_[A-Za-z0-9]{20,}|xi-api-key[^\n]*sk_' >/dev/null; then
+  echo "Commit blocked: the staged changes contain what looks like an API key (sk_...)."
+  echo "Remove it and keep keys in ~/.elevenlabs_key instead."
+  exit 1
+fi
+
+exit 0

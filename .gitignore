@@ -1,6 +1,13 @@
-# Secrets: the ElevenLabs key lives here and must never be committed
+# Secrets: never commit API keys. The ElevenLabs key lives outside this project (~/.elevenlabs_key).
 .env
 .env.*
 !.env.example
+*.key
+*.pem
+.elevenlabs_key
+secrets/
 
+# OS / editor clutter
 .DS_Store
+Thumbs.db
+.vscode/
