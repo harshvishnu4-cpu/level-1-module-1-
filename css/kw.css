@@ -1,0 +1,993 @@
+/* Communicate · Segment 1 (Key Words, Reading Card, Quick Check): styles shared by index.html, reading.html and quick-check.html.
+   Built on css/base.css (the course look, unchanged). Stage tokens are prefixed --kw-. */
+/* Stage 4 · Key Words, built on the Communicate course look (css/base.css, unchanged).
+   Only game-specific parts live here, and they use the base.css tokens.
+   Colour code for the whole stage: butter = arriving / greetings, sky = leaving / farewells.
+   Stage-only tokens are prefixed so they never override the course tokens. */
+:root{
+  --kw-arrive:var(--butter); --kw-arrive-strong:#E2A53A; --kw-arrive-ink:#7A4B06;
+  --kw-leave:var(--sky);     --kw-leave-strong:#3A8FC4;  --kw-leave-ink:#11577E;
+  --kw-tip-soft:#f4eaf8;
+}
+/* ---------- Fonts ----------
+   Outfit (SIL Open Font License, fonts/outfit/OFL.txt) is the course's text font: base.css already asks for it,
+   and now it is loaded, so every paragraph, label and button uses it.
+   Switzer (Fontshare Free Font License, fonts/switzer/FFL.txt) sets the titles and the big words.
+   Switzer's licence does not allow sharing the font file through a public repository, so that file is git-ignored;
+   when it is missing the browser loads the same font from Fontshare. */
+@font-face{font-family:"Outfit";font-style:normal;font-weight:100 900;font-display:swap;src:url("../fonts/outfit/outfit-latin-wght-normal.woff2") format("woff2");
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"Outfit";font-style:normal;font-weight:100 900;font-display:swap;src:url("../fonts/outfit/outfit-latin-ext-wght-normal.woff2") format("woff2");
+  unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:"Switzer";font-style:normal;font-weight:100 900;font-display:swap;src:url("../fonts/switzer/Switzer-Variable.woff2") format("woff2"),url("https://cdn.fontshare.com/wf/HJHZ26OECMTXRH7JXPFC7EVIHDSLT2RA/LJRNLR7WCPF3PY3SZ7B2LHNUTQMFNCHL/4MCJYGQDIOOXHWSIIB2OYNDBEALJSOGN.woff2") format("woff2")}
+:root{--kw-display:"Switzer",var(--font)}
+h1,h2,.home-title,.launch-title,.question,.wcard-text,.hw-text,.stat b,.lvl,.mword,.fb-title{font-family:var(--kw-display)}
+
+.sun{--c:var(--kw-arrive);--c-strong:var(--kw-arrive-strong);--c-ink:var(--kw-arrive-ink)}
+.sky{--c:var(--kw-leave);--c-strong:var(--kw-leave-strong);--c-ink:var(--kw-leave-ink)}
+
+/* ---------- Shell additions ---------- */
+.screen{display:block}
+/* ---------- Top bar: Back in the top-left corner, Continue in the top-right corner ----------
+   Each screen keeps its own .actionbar (so the game code is unchanged); it is pinned over the black top bar.
+   The top bar stays at the top while the page scrolls, so Back and Continue are always in reach.
+   The status text (e.g. "Matched 2 of 6") shows beside Continue on wide screens only; the page shows the same progress. */
+:root{--kw-top:72px}
+.topbar{position:sticky;top:0;z-index:5;height:var(--kw-top);background:var(--frame);padding-left:max(var(--gutter),env(safe-area-inset-left));padding-right:max(var(--gutter),env(safe-area-inset-right))}
+.topbar .nav{justify-content:center}
+body.kw-scrolled .nav a[aria-current="page"]::after{opacity:0}
+body.kw-scrolled .topbar{box-shadow:0 6px 18px -10px rgba(0,0,0,.5)}
+.actionbar{top:0;bottom:auto;left:0;right:0;width:auto;height:var(--kw-top);transform:none;z-index:6;background:none;border-radius:0;box-shadow:none;pointer-events:none}
+.actionbar-in{height:100%;gap:10px;padding:0 max(var(--gutter),env(safe-area-inset-right)) 0 max(var(--gutter),env(safe-area-inset-left))}
+.actionbar .btn{pointer-events:auto;padding:10px 20px}
+.actionbar .back-btn,.actionbar [data-action="replay"]{order:-1;margin-right:auto}
+.back-btn{padding-left:14px !important}
+.back-btn svg{width:20px;height:20px}
+.actionbar .grow{display:none;flex:0 1 auto;max-width:20vw;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (min-width:75em){.actionbar .grow{display:block}}
+/* phones: the tab would sit under the buttons, and the page title already names the part */
+@media (max-width:37.49em){
+  body:not([data-view="welcome"]):not([data-view="intro"]) .topbar .nav{visibility:hidden}
+  .actionbar .btn{padding:10px 16px}
+}
+@media (max-width:25em){
+  .back-btn{width:44px;padding:0 !important}
+  .back-btn .back-lb{display:none}
+}
+/* short screens (phones on their side): a slimmer top bar */
+@media (max-height:33.75em) and (orientation:landscape){
+  :root{--kw-top:58px}
+  .nav a[aria-current="page"]::after{bottom:-8px}
+  .panel{min-height:calc(100vh - var(--kw-top))}
+}
+/* no bottom bar any more, and keep clear of rounded corners and notches */
+main{padding-bottom:calc(48px + env(safe-area-inset-bottom));padding-left:max(var(--gutter),env(safe-area-inset-left));padding-right:max(var(--gutter),env(safe-area-inset-right))}
+.pagehead{padding-left:max(var(--gutter),env(safe-area-inset-left));padding-right:max(var(--gutter),env(safe-area-inset-right))}
+.pagehead{flex-wrap:nowrap;align-items:flex-start}
+.pagehead > div:first-child{min-width:0}
+.title-tools{flex:none}
+.steps{flex-wrap:nowrap}
+/* phones and small tablets: only the current step is named (the full row needs about 760px),
+   the dashes flex, and the row never pushes the page wider */
+@media (max-width:47.99em){
+  .steps .lb{display:none}
+  .steps li.on .lb{display:inline}
+  .steps{gap:6px}
+  .steps li{gap:6px;flex:1 1 auto;min-width:0}
+  .steps li:first-child{flex:0 0 auto}
+  .steps li + li::before{width:auto;min-width:6px;flex:1 1 6px}
+  .steps li.on .lb{min-width:0;line-height:1.15}
+}
+/* narrow phones: the page title already names the part, so the steps show numbers only */
+@media (max-width:23.75em){.steps li.on .lb{display:none}}
+.actionbar .grow b{color:#fff}
+.kind{display:inline-flex;align-items:center;gap:6px;padding:4px 12px 4px 9px;border-radius:99px;background:var(--c);color:var(--c-ink);font-size:.8125rem;font-weight:700;line-height:1.4}
+.kind svg{width:17px;height:17px;flex:none}
+.chip-soft{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:99px;background:var(--soft);color:var(--muted);font-size:.8125rem;font-weight:600;white-space:nowrap}
+.chip-soft svg{flex:none}
+.instr{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px}
+.instr p{margin:0}
+.question{margin:4px 0 0;font-size:1.1875rem;line-height:1.5}
+.tipbox{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:var(--r-md);background:var(--kw-tip-soft);color:var(--text)}
+.tipbox p{margin:0}
+.tip-icon{display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:#fff;color:var(--tip);flex:none}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px}
+.btn svg{flex:none}
+
+/* ---------- Key Words start screen (first visit, until Stage 4 is done) ----------
+   One card: the pinboard (Figma sticky notes), the course title, one big Start button, and the 5 parts.
+   The page head is hidden here because the card carries the title. */
+body[data-view="intro"] .pagehead{display:none}
+/* the start card sits in the middle of the screen (it just starts at the top when it is taller than the screen) */
+body[data-view="intro"] main{min-height:calc(100vh - var(--kw-top) - 10px);min-height:calc(100dvh - var(--kw-top) - 10px);align-content:start;align-content:safe center;padding-top:20px;padding-bottom:calc(20px + env(safe-area-inset-bottom))}
+.home{display:grid;gap:22px;padding:12px 12px 20px}
+.home-board{position:relative;display:flex;align-items:center;justify-content:center;gap:clamp(14px,5%,34px);min-height:236px;padding:54px 14px 34px;border-radius:var(--r-lg);
+  background-color:var(--soft-2);background-image:radial-gradient(circle,#d7dbe3 1.3px,transparent 1.7px);background-size:20px 20px;background-position:10px 10px}
+.pinned{width:min(47%,250px)}
+.pinned.left{transform:rotate(-4deg)}
+.pinned.right{transform:translateY(26px) rotate(3deg)}
+.hword{width:100%;border:0;font:inherit;text-align:left;cursor:pointer;box-shadow:var(--shadow),0 18px 34px -20px rgba(16,24,40,.35)}
+.hword .dc-body{display:grid;justify-items:center;gap:8px;padding:16px 10px}
+.hword .ico{width:clamp(48px,8vw,84px);height:clamp(48px,8vw,84px);overflow:visible}
+.hw-text{font-size:clamp(1.0625rem,.8rem + 1vw,1.5rem);font-weight:750;line-height:1.1;letter-spacing:-.02em;text-align:center}
+.hword .dc-foot{justify-content:space-between;flex-wrap:nowrap}
+.hword .dpill{padding:5px 10px}
+.pinned,.hword{min-width:0}
+/* phones: the board cards drop the small speaker (tapping the card plays the word) and tighten up */
+@media (max-width:37.49em){
+  .hword{gap:10px;padding:10px}
+  .hword .dc-head{gap:6px;font-size:.8125rem}
+  .hword .dc-ico{width:26px;height:26px}
+  .hword .dc-body{padding:12px 6px}
+  .hword .dround{display:none}
+  .hword .dpill{padding:4px 9px;font-size:.75rem}
+}
+/* narrow phones: the two cards stack, still tilted */
+@media (max-width:22.5em){
+  .home-board{flex-direction:column;gap:20px;padding-bottom:30px}
+  .pinned{width:80%}
+  .pinned.left{transform:translateX(-7%) rotate(-4deg)}
+  .pinned.right{transform:translateX(7%) rotate(3deg)}
+}
+.home-intro{padding:0 8px}
+.home-crumb{margin:0 0 8px;font-size:.875rem;font-weight:500;color:var(--muted)}
+.home-title{margin:0;font-size:clamp(2.75rem,1.9rem + 3.4vw,4.5rem);font-weight:800;line-height:1;letter-spacing:-.045em;color:var(--text)}
+.home-lede{margin:14px 0 0;max-width:34ch;font-size:clamp(1.0625rem,1rem + .3vw,1.25rem);line-height:1.5;color:#3d4250}
+.home-lede .read-btn{vertical-align:middle;margin-left:4px}
+.home-cta{display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px;margin-top:26px}
+/* the start button: black pill (course action colour) with a white play disc; on Continue the disc carries a progress ring */
+.start-btn{position:relative;display:inline-flex;align-items:center;gap:16px;min-width:min(300px,100%);min-height:72px;padding:10px 34px 10px 10px;border:0;border-radius:99px;background:var(--frame);color:#fff;text-align:left;cursor:pointer;
+  box-shadow:0 16px 32px -16px rgba(0,0,0,.6);transition:transform .2s ease,box-shadow .2s ease}
+.start-btn:hover{transform:translateY(-2px);box-shadow:0 20px 36px -16px rgba(0,0,0,.65)}
+.start-btn:active{transform:translateY(0) scale(.985)}
+.start-btn:focus-visible{outline:3px solid var(--accent);outline-offset:4px}
+.start-go{position:relative;flex:none;width:52px;height:52px;border-radius:50%;background:#fff;color:var(--frame);display:grid;place-items:center}
+.start-go .play{width:22px;height:22px;margin-left:3px;transition:transform .2s ease}
+.start-btn:hover .start-go .play{transform:translateX(2px)}
+.start-pulse{position:absolute;inset:0;border-radius:50%;background:#fff;opacity:0;pointer-events:none}
+.go-ring{position:absolute;left:-6px;top:-6px;width:64px;height:64px;transform:rotate(-90deg);overflow:visible}
+.go-ring circle{fill:none;stroke-width:3.5}
+.go-ring .bg{stroke:#34363d}
+.go-ring .fg{stroke:var(--mint);stroke-linecap:round;transition:stroke-dasharray .6s ease}
+.start-text b{display:block;font-size:1.25rem;font-weight:750;line-height:1.2;letter-spacing:-.01em}
+.start-text small{display:block;margin-top:3px;font-size:.8125rem;font-weight:500;line-height:1.3;color:#b9bcc5}
+/* the five parts, in order: done = mint check, next = black */
+.home-track{list-style:none;margin:0;padding:16px 0 0;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}
+.home-track li{position:relative;display:grid;justify-items:center;align-content:start;gap:6px;padding:0 2px;text-align:center;font-size:.75rem;line-height:1.25;font-weight:600;color:var(--text)}
+.home-track li+li::before{content:"";position:absolute;top:16px;left:calc(-50% + 22px);right:calc(50% + 22px);border-top:2px dashed #cdd2da}
+.home-track li.past::before,.home-track li.on::before{border-top:2px solid var(--path)}
+.ht-n{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#e3e6eb;color:var(--muted);font-size:.8125rem;font-weight:700}
+.ht-n.sun{background:var(--kw-arrive);color:var(--kw-arrive-ink)}
+.ht-n.sky{background:var(--kw-leave);color:var(--kw-leave-ink)}
+.ht-n.both{background:linear-gradient(90deg,var(--kw-arrive) 50%,var(--kw-leave) 50%);color:var(--text)}
+.ht-n svg{width:16px;height:16px}
+.home-track li.past .ht-n{background:var(--mint);color:var(--mint-ink)}
+.home-track li.on .ht-n{background:var(--frame);color:#fff;box-shadow:0 0 0 4px var(--card),0 0 0 6px #d7dbe3}
+.ht-sub{display:none;font-weight:500;color:var(--muted)}
+.home-track li.past .ht-sub{color:var(--mint-ink)}
+@media (min-width:37.5em){
+  .home{padding:16px 16px 24px}
+  .home-board{min-height:300px}
+  .home-track li{font-size:.875rem}
+  .ht-sub{display:block;font-size:.8125rem}
+}
+@media (max-width:37.49em){
+  .start-btn{width:100%}
+  .home-cta .btn{flex:1}
+}
+@media (min-width:40em) and (max-height:33.75em){
+  .home{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"intro board" "track track";gap:18px 24px;padding:12px 12px 18px 26px}
+  .home-board{grid-area:board;min-height:0;padding:46px 12px 30px}
+  .home-intro{grid-area:intro;align-self:center;padding:0}
+  .home-title{font-size:2.5rem}
+  .home-lede{font-size:1rem;margin-top:10px}
+  .home-cta{margin-top:18px}
+  .home-track{grid-area:track}
+}
+@media (min-width:56.25em){
+  .home{grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);grid-template-areas:"intro board" "track track";gap:20px 40px;padding:16px 16px 20px 40px}
+  .home-board{grid-area:board;min-height:340px;padding:44px 24px 34px}
+  .home-intro{grid-area:intro;align-self:center;padding:0}
+  .home-track{grid-area:track;margin-right:26px}
+}
+
+.intro-more{margin:14px 0 0}
+/* wide screens (from 1200px, so browser zoom doesn't switch it off): a bigger start card that also
+   grows with the window's height, so it fills the screen with only a small margin above and below */
+@media (min-width:75em){
+  body[data-view="intro"] main{max-width:1380px;padding-top:16px;padding-bottom:16px}
+  .home{gap:22px 56px;padding:20px 20px 24px 56px}
+  .home-board{min-height:clamp(360px,calc(100vh - 380px),720px);padding:56px 34px 44px}
+  .pinned{width:min(47%,320px)}
+  .hword .ico{width:clamp(88px,9vh,120px);height:clamp(88px,9vh,120px)}
+  .hw-text{font-size:1.875rem}
+  .hword .dc-head{font-size:1rem}
+  .hword .dpill{font-size:.9375rem}
+  .home-crumb{font-size:1rem}
+  .home-title{font-size:clamp(4.75rem,2.6rem + 3vw,6.25rem)}
+  .home-lede{margin-top:18px;font-size:1.4375rem;max-width:32ch}
+  .home-lede .read-btn{width:50px;height:50px}
+  .home-cta{margin-top:34px;gap:12px 14px}
+  .start-btn{min-width:360px;min-height:86px;gap:18px;padding:12px 42px 12px 12px}
+  .start-go{width:62px;height:62px}
+  .start-go .play{width:26px;height:26px}
+  .go-ring{left:-6px;top:-6px;width:74px;height:74px}
+  .start-text b{font-size:1.5rem}
+  .start-text small{font-size:.9375rem}
+  .home-cta .btn.secondary{min-height:54px;padding:12px 24px;font-size:1.0625rem}
+  .intro-more .link-btn{font-size:1.0625rem}
+  .home-track{padding-top:20px}
+  .home-track li{font-size:1rem;gap:8px}
+  .ht-sub{font-size:.875rem}
+  .ht-n{width:42px;height:42px;font-size:.9375rem}
+  .ht-n svg{width:18px;height:18px}
+  .home-track li+li::before{top:20px;left:calc(-50% + 28px);right:calc(50% + 28px)}
+}
+.intro-more .link-btn{padding:0;font-size:.9375rem}
+
+/* ---------- Home: the learning path ----------
+   The segment's stages as stops on a winding path, like Duolingo. Green = done, black = next (with a Start bubble),
+   grey with a lock = not open yet, dashed = coming soon, and a trophy at the end. Tap a stop for its card and Start. */
+body[data-view="welcome"] .pagehead{display:none}
+/* layout: one column on phones (banner, Up next, path, words, numbers); path + side column on wide screens */
+.home-map{display:flex;flex-direction:column;gap:16px;width:100%;max-width:640px;margin:0 auto}
+.map-main,.map-side{display:contents}
+.unit{order:1}.upnext{order:2}.path{order:3}.words-known{order:4}.map-stats{order:5}
+@media (min-width:56.25em){
+  .home-map{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:28px;max-width:none;align-items:start}
+  .map-main{display:grid;gap:8px;min-width:0}
+  .map-side{display:grid;gap:16px;position:sticky;top:calc(var(--kw-top) + 18px)}
+}
+/* Up next: the next stage with its own Start button */
+.upnext{gap:10px}
+.un-done{display:flex;align-items:center;gap:8px;margin:-2px 0 2px;padding:8px 12px;border-radius:14px;background:var(--good-soft);color:var(--good);font-size:.875rem;font-weight:700}
+.un-done svg{width:16px;height:16px;flex:none}
+.un-kicker{margin:0;font-size:.8125rem;font-weight:600;color:var(--muted)}
+.un-title{margin:0;font-family:var(--kw-display);font-size:1.5rem;font-weight:750;letter-spacing:-.02em;line-height:1.15}
+.un-about{margin:0;color:#3d4250;line-height:1.45}
+.un-meta{margin:0;font-size:.875rem;font-weight:600;color:var(--muted)}
+.upnext .btn.wide{margin-top:4px}
+.un-trophy{display:grid;place-items:center;width:56px;height:56px;border-radius:50%;background:#E2A53A;color:#fff;box-shadow:0 5px 0 #a06a12}
+.un-trophy svg{width:28px;height:28px}
+/* the six words, once Key Words is done (tap to hear) */
+.words-known{gap:12px}
+.wk-group{display:grid;gap:8px}
+.wk-label{display:flex;align-items:center;gap:6px;margin:0;font-size:.8125rem;font-weight:700;color:var(--muted)}
+.wk-label svg{width:15px;height:15px}
+.wk-chips{display:flex;flex-wrap:wrap;gap:8px}
+.wk{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:6px 12px;border:0;border-radius:99px;background:var(--c);color:var(--text);font:inherit;font-size:.9375rem;font-weight:650;cursor:pointer;
+  --kw-lift:3px;--kw-edge:var(--c-strong);box-shadow:0 3px 0 var(--kw-edge);transition:transform .08s ease,box-shadow .08s ease}
+.wk svg{width:14px;height:14px;color:var(--c-ink)}
+.wk:active{transform:translateY(3px);box-shadow:0 0 0 var(--kw-edge)}
+.wk.ghost{min-width:96px;background:none;border:2px dashed #d3d7df;box-shadow:none;cursor:default}
+.wk-note{margin:0;color:var(--muted);font-size:.9375rem}
+.map-stats .stat b{font-size:1.5rem}
+/* small illustrations beside the path, on the side away from the label (wide screens only) */
+.decor{position:absolute;top:50%;transform:translateY(-50%);pointer-events:none;display:none}
+.stop:not(.label-left) .decor{right:calc(100% + 26px)}
+.stop.label-left .decor{left:calc(100% + 26px)}
+@media (min-width:48em){.decor{display:block}}
+.decor.ananya{width:96px}
+.decor.ananya svg{display:block;width:100%;height:auto}
+.decor-bubble{position:absolute;top:-6px;left:58%;padding:6px 10px;border-radius:12px;border-bottom-left-radius:4px;background:var(--kw-arrive);color:var(--text);font-size:.8125rem;font-weight:750;white-space:nowrap;box-shadow:0 2px 6px rgba(16,24,40,.12)}
+.decor.handshake{width:150px;color:#9aa0ab}
+.decor.handshake svg{display:block;width:100%;height:auto}
+.decor.times{display:none;gap:4px}
+@media (min-width:48em){.decor.times{display:flex}}
+.decor.times svg{width:40px;height:40px;overflow:visible}
+.unit{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;padding:20px 22px;border-radius:var(--r-xl);background:var(--frame);color:#fff;box-shadow:0 6px 0 #2a2c33}
+.unit-kicker{margin:0 0 4px;font-size:.8125rem;font-weight:600;color:#a3a7b1}
+.unit-title{margin:0;font-size:clamp(1.625rem,1.2rem + 1.6vw,2.125rem);font-weight:750;line-height:1.1;letter-spacing:-.025em;color:#fff}
+.unit-sub{margin:6px 0 0;font-size:.9375rem;color:#c9ccd3}
+.unit-prog{display:flex;align-items:center;gap:12px;font-size:.8125rem;font-weight:600;color:#c9ccd3}
+.unit-bar{flex:1;height:10px;border-radius:99px;background:#34363d;overflow:hidden}
+.unit-bar i{display:block;height:100%;width:0;border-radius:99px;background:var(--mint);transition:width .9s ease}
+.path{position:relative;padding:70px 0 34px;min-width:0}
+.path-line{position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.path-line .base{fill:none;stroke:#d3d7df;stroke-width:7;stroke-linecap:round;stroke-dasharray:.1 17}
+.path-line .prog{fill:none;stroke:var(--path);stroke-width:7;stroke-linecap:round}
+.nodes{position:relative;list-style:none;margin:0;padding:0;display:grid;gap:58px}
+.stop{position:relative;display:flex;justify-content:center;justify-self:center;width:max-content;transform:translateX(calc(var(--x) * var(--kx,1)))}
+@media (max-width:22.5em){.stop{--kx:.72}}
+.node{position:relative;width:80px;height:80px;padding:0;border:0;border-radius:50%;display:grid;place-items:center;background:#1d1f25;color:#fff;cursor:pointer;
+  box-shadow:0 7px 0 #000;transition:transform .08s ease,box-shadow .08s ease}
+.node>svg{width:34px;height:34px}
+.node:active:not(:disabled){transform:translateY(7px);box-shadow:0 0 0 #000}
+.stop.is-done .node{background:var(--good);box-shadow:0 7px 0 #0b4126}
+.stop.is-done .node:active{box-shadow:0 0 0 #0b4126}
+.stop.is-locked .node{background:#e3e6eb;color:#a2a8b3;box-shadow:0 7px 0 #c9cdd5}
+.stop.is-locked .node:active{box-shadow:0 0 0 #c9cdd5}
+.stop.is-soon .node{width:60px;height:60px;background:var(--bg);color:#aab1bd;border:3px dashed #cdd2da;box-shadow:none;cursor:default;font-size:1.25rem;font-weight:800}
+.stop.end .node{width:66px;height:66px;background:#e3e6eb;color:#a2a8b3;box-shadow:0 6px 0 #c9cdd5;cursor:default}
+.stop.end .node>svg{width:30px;height:30px}
+.stop.end.is-done .node{background:#E2A53A;color:#fff;box-shadow:0 6px 0 #a06a12}
+.stop.is-current .node::before{content:"";position:absolute;inset:-11px;border-radius:50%;border:4px solid var(--mint);animation:kwRing 2.2s ease-out infinite}
+@keyframes kwRing{0%{transform:scale(.9);opacity:1}70%{transform:scale(1.14);opacity:0}100%{transform:scale(1.14);opacity:0}}
+.flag{position:absolute;right:-6px;bottom:-4px;width:30px;height:30px;border-radius:50%;display:none;place-items:center;background:#fff;box-shadow:0 0 0 3px var(--bg)}
+.flag svg{width:15px;height:15px}
+.stop.is-done .flag.ok{display:grid;color:var(--good)}
+.stop.is-locked .flag.lock{display:grid;color:#8a909c}
+.stop-label{position:absolute;top:50%;left:calc(50% + 56px);transform:translateY(-50%);display:grid;gap:1px;width:max-content;max-width:min(210px,calc(50vw - 64px));line-height:1.25;text-align:left}
+.stop.label-left .stop-label{left:auto;right:calc(50% + 56px);text-align:right}
+.stop-label span{font-size:.75rem;font-weight:600;color:var(--muted)}
+.stop-label b{font-family:var(--kw-display);font-size:1.0625rem;font-weight:700;color:var(--text)}
+.stop-label small{font-size:.8125rem;color:var(--muted)}
+.stop.is-soon .stop-label b,.stop.is-locked .stop-label b{color:#7b818d;font-weight:600}
+.start-bubble{position:absolute;bottom:calc(100% + 16px);left:50%;transform:translateX(-50%);padding:7px 14px;border-radius:12px;background:#fff;color:var(--text);font-size:.875rem;font-weight:800;white-space:nowrap;
+  box-shadow:0 4px 0 #d3d7df,0 12px 22px -12px rgba(0,0,0,.35);pointer-events:none;animation:kwBob 1.6s ease-in-out infinite;z-index:2}
+.start-bubble::after{content:"";position:absolute;top:100%;left:50%;width:12px;height:12px;margin:-7px 0 0 -6px;background:#fff;transform:rotate(45deg);border-radius:2px;box-shadow:3px 3px 0 #d3d7df}
+@keyframes kwBob{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,-5px)}}
+@media (prefers-reduced-motion:reduce){.start-bubble,.stop.is-current .node::before{animation:none}}
+/* the stage card that opens under a stop */
+.node-pop{position:absolute;z-index:6;width:min(340px,calc(100% - 16px));display:grid;gap:8px;padding:18px 18px 16px;border-radius:22px;background:var(--card);box-shadow:0 22px 44px -18px rgba(16,24,40,.5),0 0 0 1px var(--line)}
+.node-pop::before{content:"";position:absolute;top:-8px;left:var(--arrow,50%);width:16px;height:16px;margin-left:-8px;background:var(--card);transform:rotate(45deg);border-radius:3px;box-shadow:-1px -1px 0 var(--line)}
+.pop-kicker{margin:0;font-size:.8125rem;font-weight:600;color:var(--muted)}
+.pop-title{margin:0;font-family:var(--kw-display);font-size:1.375rem;font-weight:750;letter-spacing:-.02em}
+.pop-about{margin:0;color:#3d4250;line-height:1.45}
+.pop-meta{margin:0;font-size:.875rem;font-weight:600;color:var(--muted)}
+.pop-parts{display:flex;gap:6px;margin-top:2px}
+.pop-parts i{flex:1;height:8px;border-radius:99px;background:#e3e6eb}
+.pop-parts i.done{background:var(--good)}
+.pop-parts i.on{background:var(--frame)}
+.pop-resume{margin:0;font-size:.875rem;font-weight:600}
+.pop-lock{display:flex;gap:10px;align-items:center;margin:2px 0 0;padding:10px 12px;border-radius:14px;background:var(--soft);color:#3d4250;font-size:.9375rem;font-weight:600}
+.pop-lock svg{flex:none;width:18px;height:18px}
+.node-pop .btn.wide{margin-top:6px}
+.node-pop .link-btn{justify-self:center}
+
+/* ---------- Start / Continue transition ----------
+   The black button grows over the screen, names the part, then lifts like a curtain into the black top bar. */
+.launch{position:fixed;inset:0;z-index:70;display:grid;place-items:center;padding:24px;background:var(--frame);color:#fff;text-align:center}
+.launch-in{display:grid;justify-items:center;gap:10px}
+.launch-part{margin:0;font-size:.9375rem;font-weight:600;color:#a3a7b1}
+.launch-title{margin:0;font-size:clamp(2.5rem,1.5rem + 4.5vw,5rem);font-weight:800;line-height:1.02;letter-spacing:-.045em}
+.launch-dots{display:flex;gap:6px;margin-top:12px}
+.launch-dots i{width:8px;height:8px;border-radius:99px;background:#3a3d45}
+.launch-dots i.done{background:var(--mint)}
+.launch-dots i.on{width:28px;background:#fff}
+
+/* ---------- Cards: the learning-plan reference's layout on the course's white card ----------
+   White card (course radius and shadow) with a head row (round tinted icon, label, detail on the right),
+   a tinted picture panel where there is a picture, and a foot with status pills and buttons.
+   Colour is an accent only: butter = arriving, sky = leaving, lilac = a question (never gives the answer
+   away), mint = done / correct, amber = to practise. */
+.dc{position:relative;display:grid;gap:14px;padding:16px;border-radius:var(--r-xl);background:var(--card);box-shadow:var(--shadow);color:var(--text)}
+@media (min-width:37.5em){.dc{padding:18px 20px}}
+.dc.lilac{--c:var(--lilac);--c-ink:var(--tip)}
+.dc.mint{--c:var(--mint);--c-ink:var(--mint-ink)}
+.dc.fix{--c:var(--fix-soft);--c-ink:var(--fix)}
+.dc-head{display:flex;align-items:center;gap:10px;min-width:0;font-size:.875rem;font-weight:650;line-height:1.2}
+.dc-head h2{margin:0;font-size:1rem;font-weight:700;letter-spacing:-.01em}
+.dc-ico{flex:none;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:var(--c,var(--soft));color:var(--c-ink,var(--text))}
+.dc-ico svg{width:16px;height:16px}
+.dc-meta{margin-left:auto;min-width:0;overflow:hidden;text-overflow:ellipsis;font-size:.8125rem;font-weight:600;color:var(--muted);white-space:nowrap}
+.dc-body{display:block;padding:14px 16px;border-radius:20px;background:var(--c,var(--soft-2))}
+/* cards without a picture keep a plain body */
+.qcard .dc-body,#practise .dc-body{padding:0;border-radius:0;background:none}
+.dc-foot{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.dpill{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:99px;background:var(--soft);color:var(--muted);font-size:.8125rem;font-weight:650;line-height:1.3;white-space:nowrap}
+.dpill svg{width:14px;height:14px;flex:none}
+.dpill.done{background:var(--mint);color:var(--mint-ink)}
+.dround{flex:none;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:#fff;color:var(--text)}
+.dround.dark{background:var(--frame);color:#fff}
+.dround svg{width:17px;height:17px}
+.dc .speak-row{border-top-color:rgba(16,24,40,.1)}
+.dc .nudge{margin:0;min-height:0}
+/* stat tiles (Total / Completed / Upcoming in the reference) */
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.stat{position:relative;display:grid;justify-items:center;gap:2px;padding:12px 6px;border-radius:20px;background:var(--sky);text-align:center}
+.stat b{font-size:1.75rem;font-weight:750;line-height:1.1;letter-spacing:-.02em}
+.stat span{font-size:.8125rem;color:#3d4250}
+.stat.mint{background:var(--mint)}
+.stat.dashed{background:none;border:2px dashed #d3d7df}
+.stat .pop{position:absolute;top:-14px;right:-4px;font-size:1.375rem;font-style:normal;transform:rotate(14deg)}
+
+/* ---------- 4a / 4b word cards ----------
+   Head: Arriving / Leaving and the time of day. Panel: the picture, then the word once heard.
+   Foot: New / Heard and Say it. A mint tick sits on the corner once the word is heard. */
+.word-cards{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+@media (min-width:48em){.word-cards{grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}}
+.wword{align-content:start;transition:box-shadow .2s ease}
+.wword.is-active{box-shadow:var(--shadow),0 0 0 3px var(--c-strong)}
+.wword .dc-head{padding-right:40px}
+.wcard{display:grid;gap:12px;width:100%;padding:0;border:0;border-radius:16px;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.wcard:focus-visible{outline:3px solid var(--accent);outline-offset:4px}
+.wcard-body{position:relative;display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:14px;min-height:96px}
+.wword .ico{width:64px;height:64px;overflow:visible}
+.wcard-word{display:grid}
+.wcard-word>*{grid-area:1/1}
+.wcard-hint{font-size:1rem;font-weight:600;color:var(--muted)}
+.wcard-text{visibility:hidden;font-size:1.5rem;font-weight:750;line-height:1.1;letter-spacing:-.02em;color:var(--text)}
+.wcard-speak{position:absolute;top:10px;right:10px;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--frame);color:#fff}
+.wcard-speak svg{width:16px;height:16px}
+.wd{display:inline-block;white-space:nowrap}
+.ch{display:inline-block}
+.wcard-check{position:absolute;top:14px;right:14px;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:var(--mint);color:var(--mint-ink);transform:scale(0)}
+.wcard-check svg{width:18px;height:18px}
+@media (min-width:37.5em){.wcard-check{top:16px;right:18px}}
+.wword .dc-foot{justify-content:space-between}
+.wword .speak-msg{flex:1 1 100%;margin:0;font-size:.8125rem}
+.wword .speak-msg:empty{display:none}
+.wword .dc-foot.is-said .mic-pill:not(.recording):not(:disabled){background:var(--good)}
+@media (min-width:48em){
+  .wcard-body{grid-template-columns:minmax(0,1fr);justify-items:center;text-align:center;gap:10px;padding:26px 12px 18px;min-height:206px}
+  .wword .ico{width:96px;height:96px}
+  .wcard-text{font-size:1.5rem}
+}
+
+/* ---------- 4c arriving or leaving ---------- */
+.story{display:grid;gap:18px}
+@media (min-width:48em){.story{grid-template-columns:1.25fr 1fr;align-items:start}}
+/* phones on their side: picture and question side by side, so the picture does not fill the screen */
+@media (min-width:33em) and (max-height:33.75em) and (orientation:landscape){.story,.sprint{grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);align-items:start}}
+.stage{margin:0}
+.stage-art,.scene-art{position:relative;overflow:hidden;border-radius:var(--r-lg);border:6px solid var(--c);background:#3E3A8E;box-shadow:var(--shadow);transition:border-color .45s ease}
+.stage-art{aspect-ratio:440/340}
+.scene-art{width:100%;aspect-ratio:300/340}
+.stage-art>svg,.scene-art>svg{display:block;width:100%;height:100%}
+.stage-art .kind,.scene-art .kind{position:absolute;top:10px;left:10px;z-index:2;box-shadow:0 2px 8px rgba(0,0,0,.18);transition:background-color .45s,color .45s}
+.stage-step{position:absolute;bottom:10px;right:10px;z-index:2;padding:3px 10px;border-radius:99px;background:rgba(255,255,255,.92);font-size:.75rem;font-weight:700}
+.say-bubble{position:absolute;left:0;bottom:0;z-index:3;padding:8px 14px 7px;border-radius:14px;font-size:clamp(.9375rem,.8rem + .6vw,1.125rem);font-weight:750;line-height:1.15;letter-spacing:-.01em;white-space:nowrap;visibility:hidden;color:var(--text);box-shadow:0 4px 14px rgba(0,0,0,.25);--tail:50%}
+.say-bubble::after{content:"";position:absolute;top:calc(100% - 1px);left:var(--tail);width:14px;height:9px;margin-left:-7px;background:inherit;clip-path:polygon(0 0,100% 0,50% 100%)}
+.say-bubble.sun{background:var(--kw-arrive)}
+.say-bubble.sky{background:var(--kw-leave)}
+.say-bubble.plain{background:#fff}
+.qcard .dc-body .eyebrow{margin:0 0 4px}
+.qcard{scroll-margin-bottom:16px}
+.stage{scroll-margin-top:calc(var(--kw-top) + 12px)}
+.nudge{min-height:1.4em;margin:8px 0 10px;color:var(--fix);font-size:.875rem;font-weight:600}
+.compare{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(10px,2.6vw,22px);width:100%;max-width:640px;margin:0 auto}
+.scene{margin:0;display:grid;gap:12px}
+.says{display:grid;gap:8px}
+.say{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;min-height:44px;padding:10px 8px;border:0;border-radius:99px;background:var(--c);color:var(--c-ink);font-weight:700;font-size:clamp(.875rem,.8rem + .4vw,1rem);cursor:pointer}
+.say:hover{box-shadow:inset 0 0 0 2px var(--c-strong)}
+.recap-top{display:flex;justify-content:center}
+#recap{display:grid;gap:18px}
+#recap[hidden]{display:none}
+.recap-actions{display:flex;justify-content:center}
+
+/* ---------- Answer options (quiz rows, as in the course) ---------- */
+.options{display:grid;gap:10px}
+.opt{display:flex;align-items:center;gap:12px;width:100%;min-height:52px;padding:12px 14px;border:1px solid var(--line);border-radius:var(--r-md);background:var(--card);font-size:1rem;font-weight:600;text-align:left;cursor:pointer;transition:border-color .15s,background-color .15s}
+.opt::before{content:"";flex:none;width:20px;height:20px;border-radius:50%;box-shadow:inset 0 0 0 2px #c4c9d4;background:#fff;display:grid;place-items:center;font-size:14px;line-height:1;font-weight:800;color:#fff}
+.opt:hover:not(:disabled){border-color:#c4c9d4}
+.opt:disabled{cursor:default}
+.opt.is-right{border-color:var(--good);background:var(--good-soft);color:var(--good)}
+.opt.is-right::before{display:none}
+.opt .ok{flex:none;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;background:var(--good);color:#fff}
+.opt .ok svg{width:13px;height:13px}
+.opt.is-wrong{border-color:var(--fix);background:var(--fix-soft);color:var(--fix)}
+.opt.is-wrong::before{content:"×";background:var(--fix);box-shadow:none}
+
+/* ---------- Games shared ---------- */
+.game-row{display:flex;align-items:center;justify-content:space-between;gap:10px 16px;flex-wrap:wrap}
+.score{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.score-label{font-size:.8125rem;color:var(--muted);font-weight:600;white-space:nowrap}
+.pips{display:flex;gap:6px}
+.pip{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:#e3e6eb;color:transparent;transition:background-color .2s,color .2s}
+.pip svg{width:13px;height:13px}
+.pip.is-on{background:var(--mint);color:var(--mint-ink)}
+
+/* Hanging game timer: Figma moodboard node 34:84 (Engineering / Display / Timer, 209 x 115).
+   It hangs from the top edge of the panel; .timer-inner keeps the design's native geometry, scaled by --ts. */
+.timer{--ts:.58;position:relative;flex:none;width:calc(209px * var(--ts));height:calc(115px * var(--ts));margin-top:-26px}
+@media (max-width:22.5em){.timer{--ts:.5;margin-top:-22px}}
+@media (min-width:37.5em){.timer{--ts:.74}}
+.timer-inner{position:absolute;left:0;top:0;width:209px;height:115px;transform:scale(var(--ts));transform-origin:0 0}
+.timer-swing{position:absolute;inset:0}
+.timer-rod{position:absolute;top:0;right:49.28%;bottom:72.17%;left:48.33%;background-image:linear-gradient(90deg,#326FC6 0%,#326FC6 100%),linear-gradient(90deg,#D9D9D9 0%,#D9D9D9 100%);box-shadow:inset 0 2px 4px 0 #67B9F9}
+.timer-mount{position:absolute;top:26.09%;right:46.41%;bottom:68.7%;left:46.41%;border-radius:4px;background-image:linear-gradient(90deg,#326FC6 0%,#326FC6 100%),linear-gradient(90deg,#D9D9D9 0%,#D9D9D9 100%);box-shadow:inset 0 2px 4px 0 #67B9F9}
+.timer-body{position:absolute;left:0;top:29.57%;display:block;max-width:none}
+.timer-time{position:absolute;top:36.52%;right:16.27%;bottom:6.96%;left:15.31%;display:flex;flex-direction:column;justify-content:center;font:700 50px/normal "Chakra Petch",ui-monospace,monospace;font-variant-numeric:tabular-nums;color:#154879;text-align:center;white-space:nowrap;transition:color .3s}
+.timer.is-low .timer-time,.timer.is-up .timer-time{color:#C2272F}
+.timer.is-done .timer-time{color:#0B7A3E}
+
+/* ---------- 4d Word Match ---------- */
+.mgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;width:100%;max-width:600px;margin:0 auto}
+@media (min-width:37.5em){.mgrid{grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}}
+/* short, wide screens (phones on their side): 6 x 2 so the whole board fits without scrolling */
+@media (min-width:40em) and (max-height:33.75em){
+  .mgrid{grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;max-width:640px}
+  .pagehead{padding-top:16px}
+  main{padding-top:14px}
+}
+.mcard{display:block;aspect-ratio:1/1;padding:0;border:0;background:none;cursor:pointer;perspective:900px;border-radius:var(--r-lg)}
+.mcard-inner{position:relative;display:block;width:100%;height:100%;transform-style:preserve-3d}
+.mcard-face{position:absolute;inset:0;display:grid;place-items:center;border-radius:var(--r-lg);-webkit-backface-visibility:hidden;backface-visibility:hidden}
+.mcard-back{background-color:var(--text);background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.045) 0 6px,transparent 6px 12px);box-shadow:var(--shadow);transition:background-color .2s}
+.mcard:not(.is-up):hover .mcard-back{background-color:#2a2d35}
+.mcard-back svg{width:36%;height:auto}
+.mcard-front{transform:rotateY(180deg);background:var(--card);box-shadow:var(--shadow),inset 0 0 0 3px var(--c-strong)}
+.mcard-front svg.ico{width:72%;height:72%;overflow:visible}
+.mword{padding:6px;font-size:clamp(.875rem,.75rem + .6vw,1.125rem);font-weight:700;line-height:1.2;text-align:center}
+.mcard.is-matched{cursor:default}
+.mcard.is-matched .mcard-front{background:var(--c)}
+.mcard-check{position:absolute;top:8px;right:8px;width:22px;height:22px;border-radius:50%;background:var(--mint);color:var(--mint-ink);display:grid;place-items:center;transform:scale(0)}
+
+/* ---------- 4e Scenario Sprint ---------- */
+.sprint{display:grid;gap:18px}
+@media (min-width:48em){.sprint{grid-template-columns:1.15fr 1fr;align-items:start}}
+.sprint-art{position:relative;border-radius:var(--r-lg);overflow:hidden;aspect-ratio:320/200;box-shadow:var(--shadow)}
+.sprint-art svg{display:block;width:100%;height:100%}
+.sprint-count{position:absolute;top:10px;left:10px;padding:3px 10px;border-radius:99px;background:rgba(255,255,255,.92);font-size:.75rem;font-weight:700}
+.fb{scroll-margin-bottom:16px;scroll-margin-top:calc(var(--kw-top) + 12px)}
+.result-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.result-top h2{margin:0}
+.ok-dot{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--good-soft);color:var(--good)}
+.result p{margin:10px 0 0}
+.result .fb-note{color:var(--muted);font-size:.875rem;margin-top:4px}
+.result .tipbox{margin-top:0;background:#fff}
+.result .dc-body p{margin:0}
+.result .dc-body .fb-note{margin-top:6px}
+.result-top .pill{margin-left:auto;background:#fff}
+.result .ok-dot{background:#fff;color:var(--good)}
+.scorecard .stats{grid-column:1/-1;width:100%;margin-top:4px}
+.recap-col ul{margin:0}
+
+@media (max-width:37.49em){.recap-col .dc-meta{display:none}}
+@media (max-width:22.5em){#practise .dc-meta{display:none}}
+
+/* ---------- End ---------- */
+.scorecard{display:grid;grid-template-columns:auto minmax(0,1fr);gap:18px;align-items:center}
+@media (max-width:22.5em){.scorecard{grid-template-columns:minmax(0,1fr);justify-items:center;text-align:center}}
+.lvl{margin:0;font-size:1.375rem;font-weight:750;letter-spacing:-.02em;color:var(--ink)}
+.scorecard p{margin:4px 0 0}
+.scorecard .sub{color:var(--muted);font-size:.9375rem}
+.recap{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+@media (max-width:22.5em){.recap{grid-template-columns:minmax(0,1fr)}}
+.recap-col ul{list-style:none;padding:0;margin:12px 0 0;display:grid;gap:8px}
+.recap-word{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;min-height:44px;padding:10px 14px;border:0;border-radius:var(--r-md);background:var(--c);color:var(--text);font-weight:600;line-height:1.25;text-align:left;cursor:pointer}
+.recap-word svg{flex:none;color:var(--c-ink)}
+
+/* ---------- Dialog ---------- */
+.modal{position:fixed;inset:0;z-index:80;display:grid;place-items:center;padding:16px;background:rgba(15,23,42,.35)}
+.modal-card{width:min(420px,100%);padding:28px 24px 22px;border-radius:var(--r-xl);background:var(--card);text-align:center;box-shadow:0 30px 60px -20px rgba(0,0,0,.35)}
+.modal-icon{width:64px;height:64px;margin:0 auto 14px;border-radius:50%;display:grid;place-items:center;background:var(--soft)}
+.modal-card h2{margin:0;font-size:1.5rem;font-weight:750;letter-spacing:-.02em}
+.modal-card p{margin:8px 0 22px;color:var(--muted)}
+.modal-card .btn{width:100%}
+
+/* ---------- Read aloud, Practice / Test, speaking, hints, results, report ---------- */
+.read-btn{flex:none;display:inline-grid;place-items:center;width:44px;height:44px;border:0;border-radius:50%;background:var(--soft);color:var(--text);cursor:pointer;vertical-align:middle}
+.read-btn:hover{background:#e3e6eb}
+.read-btn.is-playing{background:var(--frame);color:#fff}
+.read-btn svg{width:20px;height:20px}
+.q-row{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.tipbox .read-btn{margin-left:auto;background:#fff}
+/* the course's segmented control */
+.modes{display:inline-flex;padding:3px;border-radius:99px;background:var(--soft)}
+.modes button{min-height:38px;padding:0 14px;border:0;border-radius:99px;background:none;color:var(--muted);font-size:.875rem;font-weight:700;cursor:pointer}
+.modes button[aria-pressed="true"]{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(16,24,40,.14)}
+.ctrls{display:flex;gap:8px;flex-wrap:wrap}
+.game-row p{flex:1 1 220px}
+/* speaking: a black "Say it" pill (rust while listening, halo follows the voice) */
+.speak-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.mic-pill{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 18px 0 14px;border:0;border-radius:99px;color:#fff;font-weight:700;cursor:pointer}
+.mic-pill svg{width:20px;height:20px;flex:none}
+.mic-pill.recording{background:var(--rec);box-shadow:0 0 0 calc(6px + var(--level, 0) * 16px) rgba(180,83,42,.18)}
+.mic-pill:disabled{background:#aab3c3;box-shadow:none;cursor:default}
+.mic-pill:not(.recording):not(:disabled){box-shadow:0 0 0 calc(var(--level, 0) * 14px) rgba(0,0,0,.1)}
+.speak-msg{margin:0;flex:1 1 160px;font-size:.875rem;color:var(--muted)}
+.speak-msg.ok{color:var(--good);font-weight:600}
+.speak-msg.fix{color:var(--fix);font-weight:600}
+/* practice hint */
+.opt.is-hint{border:2px dashed var(--good);background:#f2fbf5}
+/* Word Match, sound cards */
+.sound-face{display:grid;justify-items:center;gap:6px;color:var(--c-ink);font-size:.875rem;font-weight:700}
+.sound-face svg{width:40px;height:40px}
+/* results lists (course style) */
+.list{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.list li{display:grid;grid-template-columns:24px minmax(0,1fr);gap:10px;align-items:start}
+.list .dot{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:.75rem;font-weight:800}
+.list.good .dot{background:var(--good-soft);color:var(--good)}
+.list.fix .dot{background:var(--fix-soft);color:var(--fix)}
+.list p{margin:0}
+.q{padding:0 6px;border-radius:6px;background:var(--fix-soft);color:#8f5508;font-weight:600}
+.b{padding:0 6px;border-radius:6px;background:var(--soft);color:var(--ink);font-weight:600}
+/* session report */
+
+/* ---------- Buttons: chunky and pressable, like Duolingo, in the course colours ----------
+   Every button stands on a solid edge (--kw-edge, --kw-lift high) and sinks onto it when pressed.
+   Sentence case and pill shapes keep the course look; mistakes stay amber, never red. */
+.btn,.mic-pill,.read-btn,.opt,.say,.recap-word{--kw-lift:4px;transition:transform .08s ease,box-shadow .08s ease,background-color .15s ease,border-color .15s ease,color .15s ease}
+.btn{min-height:46px;font-weight:700;letter-spacing:.005em;box-shadow:0 var(--kw-lift) 0 var(--kw-edge,#000)}
+.btn.primary{background:#1d1f25;color:#fff;--kw-edge:#000}
+.btn.primary:hover:not(:disabled){background:#2a2d35}
+.btn.secondary{background:#e9ebef;color:var(--text);--kw-edge:#c9cdd5}
+.btn.secondary:hover:not(:disabled){background:#f1f2f5}
+.btn.go{background:var(--good);color:#fff;--kw-edge:#0b4126}
+.btn.go:hover:not(:disabled){background:#187c48}
+.btn:disabled{opacity:1;background:#e3e6eb;color:#9aa0ab;--kw-edge:#cfd3da}
+/* on the black top bar */
+.actionbar .btn.primary{background:#fff;color:var(--text);--kw-edge:#9da2ad}
+.actionbar .btn.primary:hover:not(:disabled){background:#f1f2f5}
+.actionbar .btn.secondary{background:#30323a;color:#fff;--kw-edge:#15161a}
+.actionbar .btn.secondary:hover:not(:disabled){background:#3a3d46}
+.actionbar .btn:disabled{background:#2a2c33;color:#6e737e;--kw-edge:#15161a}
+/* the big Start / Continue button */
+.start-btn{background:#1d1f25;box-shadow:0 6px 0 #000,0 22px 34px -18px rgba(0,0,0,.55);transition:transform .08s ease,box-shadow .08s ease,background-color .15s ease}
+.start-btn:hover{transform:none;background:#2a2d35;box-shadow:0 6px 0 #000,0 22px 34px -18px rgba(0,0,0,.55)}
+.start-btn:active{transform:translateY(6px);box-shadow:0 0 0 #000,0 10px 18px -14px rgba(0,0,0,.4)}
+/* Say it */
+.mic-pill:not(.recording):not(:disabled){background:#1d1f25;box-shadow:0 4px 0 #000,0 0 0 calc(var(--level,0) * 14px) rgba(0,0,0,.1)}
+.mic-pill:disabled{background:#c9ced8;color:#fff;box-shadow:0 4px 0 #aab1be}
+.mic-pill.recording{box-shadow:0 4px 0 #7d3417,0 0 0 calc(6px + var(--level,0) * 16px) rgba(180,83,42,.18)}
+.wword .dc-foot.is-said .mic-pill:not(.recording):not(:disabled){background:var(--good);box-shadow:0 4px 0 #0b4126}
+/* read aloud */
+.read-btn{--kw-lift:3px;--kw-edge:#d5d9e0;box-shadow:0 3px 0 var(--kw-edge)}
+.read-btn.is-playing{--kw-edge:#000}
+/* answer rows */
+.opt{border:2px solid #e1e4ea;border-radius:16px;--kw-edge:#e1e4ea;box-shadow:0 4px 0 var(--kw-edge)}
+.opt:hover:not(:disabled){border-color:#c4c9d4;--kw-edge:#c4c9d4;background:#fbfbfc}
+.opt.is-right{border-color:var(--good);--kw-edge:var(--good)}
+.opt.is-wrong{border-color:var(--fix);--kw-edge:var(--fix)}
+.opt.is-hint{--kw-edge:#bfe5cc}
+/* pastel word buttons (story recap) and the word list on the result screen */
+.say{--kw-edge:var(--c-strong);box-shadow:0 4px 0 var(--kw-edge)}
+.say:hover{box-shadow:0 4px 0 var(--kw-edge);filter:brightness(1.03)}
+.recap-col .recap-word{--kw-lift:3px;--kw-edge:var(--c-strong);box-shadow:0 3px 0 var(--kw-edge)}
+/* pressed: sink onto the edge */
+.btn:active:not(:disabled),.mic-pill:active:not(:disabled):not(.recording),.read-btn:active,.opt:active:not(:disabled),.say:active,.recap-word:active{transform:translateY(var(--kw-lift));box-shadow:0 0 0 var(--kw-edge,#000)}
+
+/* ---------- Answer feedback ----------
+   Wrong: the option shakes and a short amber note says what to check (never red), then you try again.
+   Right: the option pops with confetti; in Scenario Sprint a green sheet slides up with why and Continue. */
+.fbx{display:grid;grid-template-columns:34px minmax(0,1fr);gap:10px;align-items:center;padding:10px 12px;border-radius:16px;box-shadow:inset 0 0 0 2px var(--fx)}
+.fbx.fix{--fx:#f1cf9a;background:var(--fix-soft)}
+.fbx.good{--fx:#9fdcb6;background:var(--good-soft)}
+.fbx-ico{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;color:#fff}
+.fbx.fix .fbx-ico{background:var(--fix)}
+.fbx.good .fbx-ico{background:var(--good)}
+.fbx-ico svg{width:18px;height:18px}
+.fbx b{display:block;font-size:.9375rem;font-weight:750;line-height:1.25}
+.fbx.fix b{color:var(--fix)}
+.fbx.good b{color:var(--good)}
+.fbx p{margin:2px 0 0;font-size:.875rem;font-weight:500;line-height:1.4;color:var(--text)}
+/* the Scenario Sprint result sheet */
+.fb{position:fixed;left:0;right:0;bottom:0;z-index:55;pointer-events:none}
+.fb-sheet{pointer-events:auto;padding:18px max(var(--gutter),env(safe-area-inset-right)) calc(18px + env(safe-area-inset-bottom)) max(var(--gutter),env(safe-area-inset-left));
+  border-radius:28px 28px 0 0;background:var(--good-soft);box-shadow:0 -1px 0 #9fdcb6,0 -18px 40px -20px rgba(16,24,40,.4)}
+.fb-in{max-width:var(--max);margin:0 auto;display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px 16px;align-items:center}
+.fb-badge{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;background:#fff;color:var(--good);box-shadow:0 4px 0 #9fdcb6}
+.fb-badge svg{width:30px;height:30px}
+.fb-head{display:flex;align-items:center;gap:8px 10px;flex-wrap:wrap}
+.fb-title{margin:0;font-size:1.375rem;font-weight:750;line-height:1.15;letter-spacing:-.02em;color:var(--good)}
+.fb .pill{background:#fff}
+.fb-text p{margin:4px 0 0;font-size:1rem}
+.fb .fb-note{color:#3d4250;font-size:.875rem}
+.fb .tipbox{grid-column:1/-1;background:#fff}
+.fb-next{grid-column:1/-1;width:100%;min-height:52px;font-size:1.0625rem}
+@media (min-width:48em){
+  .fb-in{grid-template-columns:auto minmax(0,1fr) auto}
+  .fb-next{grid-column:3;grid-row:1;width:auto;min-width:200px}
+  .fb .tipbox{grid-column:2/4}
+}
+@media (max-width:56.24em){body.kw-sheet .screen>.work,body.kw-sheet .reading{padding-bottom:calc(var(--kw-sheet,220px) + 24px)}}
+
+/* ================= Stage 5: Reading Card ================= */
+.kind.lilac{--c:var(--lilac);--c-ink:var(--tip)}
+.read-instr>p{flex:1 1 240px;min-width:0}
+.reading{position:relative;display:grid;gap:18px;padding:22px 20px 24px}
+@media (min-width:37.5em){.reading{padding:30px 34px 32px}}
+.reading-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
+.reading-id{display:grid;gap:10px;min-width:0}
+.read-art{display:block;color:var(--text)}
+.read-art svg{display:block;width:clamp(170px,40vw,220px);height:auto}
+.reading .reading-title{margin:0;font-size:clamp(1.5rem,1.1rem + 1.6vw,2.125rem);font-weight:750;line-height:1.15;letter-spacing:-.025em}
+.listen-btn{flex:none}
+.listen-btn.is-playing{background:#1d1f25;color:#fff;--kw-edge:#000}
+.listen-btn svg{width:18px;height:18px}
+@media (max-width:30em){.listen-btn span{display:none}.listen-btn{width:46px;padding:0}}
+/* body text 20px, line spacing 1.6, for beginner readers; paragraph numbers in the margin */
+.passage{max-width:68ch}
+.passage p{position:relative;margin:0 0 1em;padding-left:2.1rem;font-size:20px;line-height:1.6;color:var(--text)}
+.passage p:last-child{margin-bottom:0}
+.pnum{position:absolute;left:0;top:.3em;width:1.45rem;height:1.45rem;border-radius:50%;display:grid;place-items:center;background:var(--soft);color:var(--muted);font-size:.75rem;font-weight:700;line-height:1}
+.passage p.flash{border-radius:12px}
+/* glossary words: dotted underline and a small "i"; tapping opens a bubble right under the word */
+.gloss{display:inline;padding:0 1px;border:0;border-radius:6px;background:none;color:inherit;font:inherit;font-weight:700;cursor:pointer;
+  text-decoration:underline dotted var(--accent);text-decoration-thickness:2px;text-underline-offset:5px}
+.gloss:hover{background:#eef2fd}
+.gloss[aria-expanded="true"]{background:#e0e8fb}
+.gi{display:inline-grid;place-items:center;width:15px;height:15px;margin-left:3px;border-radius:50%;background:var(--accent);color:#fff;font-size:10px;font-weight:800;font-style:normal;line-height:1;vertical-align:.5em;text-decoration:none}
+.gloss-pop{position:absolute;z-index:5;width:min(300px,calc(100% - 16px));padding:12px 14px 13px;border-radius:16px;background:var(--frame);color:#fff;box-shadow:0 14px 30px -12px rgba(0,0,0,.5)}
+.gloss-pop::before{content:"";position:absolute;top:-6px;left:var(--arrow,24px);width:12px;height:12px;margin-left:-6px;background:var(--frame);transform:rotate(45deg);border-radius:2px}
+.gloss-pop b{font-family:var(--kw-display);font-size:1.0625rem}
+.gloss-pop .gp-pos{color:#a3a7b1;font-size:.875rem}
+.gloss-pop p{margin:4px 0 0;font-size:.9375rem;line-height:1.45}
+.source{margin:0;font-size:.8125rem;line-height:1.5;color:var(--muted)}
+.source a{color:var(--accent)}
+.glossary h3{margin:0 0 6px;font-family:var(--kw-display);font-size:1.125rem}
+.glossary dl{margin:0}
+.gl-row{display:grid;grid-template-columns:minmax(130px,190px) minmax(0,1fr) auto;gap:2px 16px;padding:10px 0;border-top:1px solid var(--line);align-items:baseline}
+.gl-row dt span{color:var(--muted);font-size:.875rem}
+.gl-row dd{margin:0}
+.gl-p{color:var(--muted);font-size:.8125rem;white-space:nowrap}
+@media (max-width:37.49em){.gl-row{grid-template-columns:minmax(0,1fr) auto}.gl-row dd:not(.gl-p){grid-column:1/-1;grid-row:2}}
+
+/* ================= Question screens (Stage 5 questions, Stage 8 quiz) ================= */
+.quiz{display:grid;gap:14px;width:100%;max-width:760px;margin:0 auto}
+.qtop{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:46px}
+.qdots{display:flex;gap:8px;align-items:center}
+.qdots i{width:10px;height:10px;border-radius:99px;background:#d3d7df;transition:width .25s ease,background-color .25s ease}
+.qdots i.done{background:var(--frame)}
+.qdots i.on{width:30px;background:var(--frame)}
+.show-text svg{width:18px;height:18px}
+.bigq{gap:16px;padding:20px}
+@media (min-width:37.5em){.bigq{padding:26px 28px}}
+.bigq .question{margin:0;font-size:clamp(1.25rem,1.05rem + .9vw,1.625rem);font-weight:650;line-height:1.35;letter-spacing:-.01em}
+.bigq .options{gap:12px}
+.check-btn{width:100%;min-height:54px;font-size:1.0625rem}
+.btn.wide{width:100%;min-height:54px;font-size:1.0625rem}
+/* answer choices: select first, then Check (pressable like every button) */
+.choice{display:flex;align-items:center;gap:12px;width:100%;min-height:56px;padding:13px 16px;border:2px solid #e1e4ea;border-radius:16px;background:#fff;color:var(--text);
+  font:inherit;font-size:1.0625rem;font-weight:600;line-height:1.35;text-align:left;cursor:pointer;
+  --kw-lift:4px;--kw-edge:#e1e4ea;box-shadow:0 4px 0 var(--kw-edge);transition:transform .08s ease,box-shadow .08s ease,background-color .15s ease,border-color .15s ease}
+.choice.row::before{content:"";flex:none;width:22px;height:22px;border-radius:50%;box-shadow:inset 0 0 0 2px #c4c9d4;transition:box-shadow .15s ease}
+.choice:hover:not(:disabled){border-color:#c4c9d4;--kw-edge:#c4c9d4}
+.choice[aria-pressed="true"]{border-color:var(--accent);--kw-edge:#2c48a8;background:#eef2fd;color:var(--ink)}
+.choice.row[aria-pressed="true"]::before{box-shadow:inset 0 0 0 7px var(--accent)}
+.choice.is-right{border-color:var(--good);--kw-edge:var(--good);background:var(--good-soft);color:var(--good)}
+.choice.is-wrong{border-color:var(--fix);--kw-edge:var(--fix);background:var(--fix-soft);color:var(--fix)}
+.choice.is-answer{border-style:dashed;border-color:var(--good);--kw-edge:#bfe5cc;background:#f2fbf5;color:var(--good)}
+.choice.row.is-right::before,.choice.row.is-answer::before{box-shadow:inset 0 0 0 7px var(--good)}
+.choice.row.is-wrong::before{box-shadow:inset 0 0 0 7px var(--fix)}
+.choice:disabled{cursor:default}
+.choice:active:not(:disabled){transform:translateY(4px);box-shadow:0 0 0 var(--kw-edge)}
+.chips-opts{display:flex;flex-wrap:wrap;gap:12px}
+.choice.chip{width:auto;min-width:92px;min-height:50px;justify-content:center;padding:10px 20px;border-radius:99px;font-size:1.125rem}
+.tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.choice.tile{flex-direction:column;justify-content:center;text-align:center;min-height:128px;padding:14px 8px}
+.choice.tile .ico{width:76px;height:76px;overflow:visible}
+.choice.tile.word{min-height:100px;font-family:var(--kw-display);font-size:clamp(1rem,.9rem + .6vw,1.25rem);font-weight:700}
+@media (max-width:22.5em){.choice.tile .ico{width:56px;height:56px}.choice.tile{min-height:104px}}
+/* Q1: hear the greeting */
+.qc-listen{display:flex;align-items:center;gap:14px;color:var(--muted);font-weight:600}
+.qc-play{display:grid;place-items:center;width:72px;height:72px;border:0;border-radius:50%;background:#1d1f25;color:#fff;cursor:pointer;
+  --kw-lift:5px;--kw-edge:#000;box-shadow:0 5px 0 var(--kw-edge);transition:transform .08s ease,box-shadow .08s ease}
+.qc-play svg{width:30px;height:30px}
+.qc-play:active{transform:translateY(5px);box-shadow:0 0 0 var(--kw-edge)}
+.qc-play.is-playing{background:var(--accent);--kw-edge:#2c48a8}
+/* Q3: drag "am" and "is" into the blanks */
+.sentence{margin:4px 0;font-family:var(--kw-display);font-size:clamp(1.375rem,1.1rem + 1.4vw,1.875rem);font-weight:600;line-height:2.3}
+.slot{display:inline-grid;place-items:center;min-width:92px;height:50px;margin:0 6px;padding:0 16px;border:2px dashed #b4bccb;border-radius:14px;background:var(--soft-2);color:var(--ink);
+  font:inherit;font-weight:700;vertical-align:middle;cursor:pointer;transition:background-color .15s ease,border-color .15s ease}
+.slot.filled{border-style:solid;border-color:var(--accent);background:#eef2fd;box-shadow:0 4px 0 #2c48a8}
+.slot.is-over{border-color:var(--accent);background:#dfe7fb}
+.slot.is-right{border-color:var(--good);background:var(--good-soft);color:var(--good);box-shadow:0 4px 0 var(--good)}
+.slot.is-wrong{border-color:var(--fix);background:var(--fix-soft);color:var(--fix);box-shadow:0 4px 0 var(--fix)}
+.bank{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;padding:16px;border-radius:20px;background:var(--soft-2)}
+.wchip{min-width:92px;min-height:54px;padding:0 22px;border:2px solid #e1e4ea;border-radius:16px;background:#fff;color:var(--text);font:inherit;font-family:var(--kw-display);font-size:1.375rem;font-weight:700;
+  box-shadow:0 4px 0 #e1e4ea;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
+.wchip.is-used{visibility:hidden}
+.wchip.is-lifted{opacity:.3}
+.drag-ghost{position:fixed;left:0;top:0;margin:0;z-index:90;pointer-events:none;cursor:grabbing;box-shadow:0 18px 30px -12px rgba(0,0,0,.35),0 4px 0 #c4c9d4}
+/* Q4: a small shop front */
+.qc-art{overflow:hidden;width:100%;max-width:440px;margin:0 auto;border-radius:20px}
+.qc-art svg{display:block;width:100%;height:auto}
+/* closing screens */
+.done-card{display:grid;justify-items:center;gap:14px;text-align:center;padding:26px 22px 28px}
+.done-title{margin:0;font-size:clamp(1.75rem,1.3rem + 1.8vw,2.5rem);font-weight:750;letter-spacing:-.03em}
+.done-title.big{font-size:clamp(2.25rem,1.6rem + 2.6vw,3.25rem)}
+.done-sub,.done-line{margin:0;max-width:44ch;font-size:1.125rem;line-height:1.5;color:#3d4250}
+.done-line .read-btn{margin-left:6px}
+.done-art{overflow:hidden;width:min(440px,100%);border-radius:var(--r-lg);box-shadow:var(--shadow)}
+.done-art svg{display:block;width:100%;height:auto}
+.review{list-style:none;margin:4px 0;padding:0;width:100%;display:grid;gap:10px;text-align:left}
+.review li{display:grid;grid-template-columns:32px minmax(0,1fr);gap:12px;align-items:start;padding:12px 14px;border-radius:16px;background:var(--soft-2)}
+.rd-mark{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;color:#fff}
+.review li.ok .rd-mark{background:var(--good)}
+.review li.fix .rd-mark{background:var(--fix)}
+.rd-mark svg{width:16px;height:16px}
+.review b{display:block;font-weight:650;line-height:1.35}
+.review p{margin:4px 0 0;color:#3d4250}
+.rd-where{display:inline-block;margin-left:8px;color:var(--muted);font-size:.8125rem}
+/* the result sheet for questions: green when right, amber when not (no negative marking) */
+.qsheet.fix .fb-sheet{background:var(--fix-soft);box-shadow:0 -1px 0 #f1cf9a,0 -18px 40px -20px rgba(16,24,40,.4)}
+.qsheet.fix .fb-title{color:var(--fix)}
+.qsheet.fix .fb-badge{color:var(--fix);box-shadow:0 4px 0 #f1cf9a}
+.qsheet.fix .btn.go{background:var(--fix);--kw-edge:#6e4108}
+.qsheet.fix .btn.go:hover:not(:disabled){background:#b56d12}
+.qsheet .link-btn{margin-left:6px;padding:0;font-size:.875rem}
+/* Show text: the passage opens in a drawer (from the right; from the bottom on phones) */
+.textdrawer{position:fixed;inset:0;z-index:75;display:flex;justify-content:flex-end;background:rgba(15,23,42,.42)}
+.td-panel{display:flex;flex-direction:column;width:min(780px,94vw);height:100%;background:var(--bg);box-shadow:-20px 0 40px -20px rgba(0,0,0,.4)}
+.td-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px max(16px,env(safe-area-inset-right)) 12px 20px;background:var(--frame);color:#fff}
+.td-head .btn{min-height:42px}
+.td-body{flex:1;overflow:auto;padding:16px;overscroll-behavior:contain}
+@media (max-width:37.49em){.textdrawer{align-items:flex-end}.td-panel{width:100%;height:92%;border-radius:24px 24px 0 0;overflow:hidden}.td-body{padding:12px}}
+body.kw-noscroll{overflow:hidden}
+
+/* ---------- Tighter spacing everywhere (less empty space) ---------- */
+main{padding-top:14px;gap:14px}
+.pagehead{padding-top:20px}
+.timer{margin-top:-20px}
+@media (max-width:22.5em){.timer{margin-top:-18px}}
+.work{gap:14px}
+.card{padding:18px}
+@media (min-width:37.5em){.card{padding:18px 22px}}
+.instr{padding:12px 16px}
+.dc{gap:12px;padding:14px}
+@media (min-width:37.5em){.dc{padding:16px 18px}}
+.word-cards{gap:12px}
+@media (min-width:48em){.word-cards{gap:14px}.wcard-body{min-height:180px;padding:20px 12px 16px}}
+.story,.sprint{gap:14px}
+.bigq{gap:14px;padding:18px}
+@media (min-width:37.5em){.bigq{padding:20px 22px}}
+.quiz{gap:12px}
+.qtop{min-height:40px}
+.reading{gap:14px;padding:20px 18px 22px}
+@media (min-width:37.5em){.reading{padding:24px 28px 26px}}
+.done-card{gap:12px;padding:20px 18px 22px}
+.home-map{gap:12px}
+.unit{gap:12px;padding:16px 18px}
+.path{padding:56px 0 24px}
+.nodes{gap:46px}
+@media (min-width:56.25em){.home-map{gap:22px}.map-side{gap:12px}}
+
+
+/* ---------- Less empty space on wide screens (1200px and up): wider content, and parts that grow with the window ---------- */
+@media (min-width:75em){
+  main,.pagehead{max-width:1280px}
+  /* learning path: a wider side column, stops closer together, and a wider swing that uses the column */
+  .home-map{grid-template-columns:minmax(0,1fr) 370px;gap:24px}
+  .path{padding:40px 0 18px}
+  .nodes{gap:46px}
+  .stop{--kx:1.35}
+  .node{width:76px;height:76px}
+  /* Greetings / Farewells: the picture panels grow with the window's height */
+  .wcard-body{min-height:clamp(180px,calc(100vh - 560px),360px)}
+  .wword .ico{width:clamp(96px,12vh,140px);height:clamp(96px,12vh,140px)}
+  .wcard-text,.wcard-hint{font-size:1.75rem}
+  .wcard-hint{font-size:1.25rem}
+  /* Word Match: the 4 x 3 board grows with the window's height */
+  .mgrid{max-width:clamp(560px,calc((100vh - 330px) * 4 / 3),880px)}
+  /* Reading Card: the card is as wide as its text, so there is no blank strip inside it */
+  .read-home,.read-instr{width:100%;max-width:900px;margin-left:auto;margin-right:auto}
+  /* questions: a wider card, bigger text, and tiles that grow with the window's height */
+  .quiz{max-width:900px}
+  .bigq .question{font-size:clamp(1.5rem,1rem + 1vw,1.875rem)}
+  .choice{min-height:60px;font-size:1.125rem}
+  .choice.tile{min-height:clamp(128px,calc(100vh - 640px),220px)}
+  .choice.tile .ico{width:clamp(76px,11vh,120px);height:clamp(76px,11vh,120px)}
+  .choice.tile.word{min-height:clamp(100px,calc(100vh - 700px),170px);font-size:1.375rem}
+  .sentence{font-size:2.125rem}
+}
+/* path labels sit on a patch of the page colour, so the path line passes behind them cleanly */
+.stop-label{padding:4px 8px;border-radius:12px;background:var(--bg);left:calc(50% + 48px)}
+.stop.label-left .stop-label{right:calc(50% + 48px)}
+
+/* ---------- Key Words start screen on desktop: the card fills the space under the top bar (no grey band) ---------- */
+@media (min-width:56.25em){
+  body[data-view="intro"] main{padding-top:14px;padding-bottom:14px}
+  .home{min-height:calc(100vh - var(--kw-top) - 38px);min-height:calc(100dvh - var(--kw-top) - 38px);grid-template-rows:minmax(0,1fr) auto}
+  .home-board{min-height:340px}
+}
+@media (min-width:87.5em){body[data-view="intro"] main{max-width:1600px}}
+/* ...and on wide screens its contents grow with the window's height, so the bigger card doesn't look empty inside */
+@media (min-width:75em){
+  .home-crumb{font-size:clamp(1rem,1.6vh,1.25rem)}
+  .home-title{font-size:clamp(4.75rem,10.5vh,8rem)}
+  .home-lede{font-size:clamp(1.375rem,2.4vh,1.875rem);max-width:30ch}
+  .home-lede .read-btn{width:clamp(50px,5.4vh,64px);height:clamp(50px,5.4vh,64px)}
+  .home-cta{margin-top:clamp(28px,4vh,48px)}
+  .start-btn{min-width:clamp(360px,36vh,480px);min-height:clamp(86px,9.5vh,112px);padding-right:clamp(42px,4.5vh,56px)}
+  .start-go{width:clamp(62px,7vh,84px);height:clamp(62px,7vh,84px)}
+  .start-go .play{width:clamp(26px,3vh,34px);height:clamp(26px,3vh,34px)}
+  .go-ring{width:calc(clamp(62px,7vh,84px) + 12px);height:calc(clamp(62px,7vh,84px) + 12px)}
+  .start-text b{font-size:clamp(1.5rem,2.8vh,2rem)}
+  .start-text small{font-size:clamp(.9375rem,1.5vh,1.125rem)}
+  .home-cta .btn.secondary{min-height:clamp(54px,6vh,68px);font-size:clamp(1.0625rem,1.7vh,1.25rem)}
+  .intro-more .link-btn{font-size:clamp(1.0625rem,1.6vh,1.25rem)}
+  .pinned{width:min(47%,max(320px,36vh),440px)}
+  .hword .ico{width:clamp(88px,13vh,170px);height:clamp(88px,13vh,170px)}
+  .hw-text{font-size:clamp(1.875rem,3.4vh,2.75rem)}
+  .hword .dc-head{font-size:clamp(1rem,1.6vh,1.25rem)}
+  .hword .dc-ico{width:clamp(32px,3.6vh,44px);height:clamp(32px,3.6vh,44px)}
+  .hword .dpill{font-size:clamp(.9375rem,1.5vh,1.125rem)}
+  .hword .dround{width:clamp(36px,4vh,48px);height:clamp(36px,4vh,48px)}
+  .home-track li{font-size:clamp(1rem,1.7vh,1.25rem)}
+  .ht-sub{font-size:clamp(.875rem,1.4vh,1.0625rem)}
+  .ht-n{width:clamp(42px,4.8vh,58px);height:clamp(42px,4.8vh,58px);font-size:clamp(.9375rem,1.6vh,1.25rem)}
+  .home-track li+li::before{top:calc(clamp(42px,4.8vh,58px) / 2 - 1px);left:calc(-50% + clamp(42px,4.8vh,58px) / 2 + 8px);right:calc(50% + clamp(42px,4.8vh,58px) / 2 + 8px)}
+}
+@media (min-width:75em){.hword .dc-body{min-height:clamp(150px,22vh,300px);align-content:center}.pinned{width:min(48%,max(320px,38vh),460px)}}
+
+/* ================= App shell: the page never scrolls; every screen fits the window =================
+   Top bar + page head stay put; the screen's .work box fills what is left. Screens are tuned to fit on
+   laptops (1280 x 720 and up); anything that still can't fit (phones, the Reading Card text) scrolls inside its own box. */
+html,body{height:100%}
+body{overflow:hidden}
+.panel{height:calc(100vh - var(--kw-top));height:calc(100dvh - var(--kw-top));min-height:0;display:flex;flex-direction:column;overflow:hidden}
+@media (min-width:56.25em){.panel{height:calc(100vh - var(--kw-top) - 10px);height:calc(100dvh - var(--kw-top) - 10px)}}
+.pagehead{flex:none;width:100%}
+main{flex:1 1 auto;min-height:0;width:100%;display:flex;flex-direction:column;gap:12px;padding-bottom:calc(10px + env(safe-area-inset-bottom))}
+main>#steps{flex:none}
+main>.screen:not([hidden]){flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
+.screen>.work{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;align-content:start;scrollbar-width:thin;
+  margin:-6px -8px 0;padding:6px 8px 12px}
+/* Key Words start screen: the card fills the box */
+body[data-view="intro"] main{min-height:0;padding-top:12px;padding-bottom:12px}
+.screen[data-screen="intro"]>.work{grid-template-rows:minmax(0,1fr)}
+@media (min-width:56.25em){.home{min-height:0}}
+/* learning path: the side column stays in view while the path scrolls (short screens) */
+@media (min-width:56.25em){.map-side{top:0}}
+/* Reading Card: the white card scrolls (spec: one scrollable card); its title and Listen stay at the top */
+.screen[data-screen="read"]>.work{display:flex;flex-direction:column;overflow:hidden}
+.screen[data-screen="read"] .read-instr{flex:none}
+.read-home{flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
+.read-home>.reading{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;align-content:start}
+.read-home .reading-head{position:sticky;top:-24px;z-index:3;margin:-24px -28px 0;padding:24px 28px 12px;background:var(--card);border-radius:var(--r-xl) var(--r-xl) 0 0}
+@media (max-width:37.49em){.read-home .reading-head{top:-20px;margin:-20px -18px 0;padding:20px 18px 10px}}
+
+/* ---------- Fit tuning: each screen fits the window on laptops (wide screens; "short" = 920px tall or less) ---------- */
+@media (min-width:37.5em){
+  .mgrid{max-width:clamp(340px,calc((100vh - 340px) * 4 / 3),880px);max-width:clamp(340px,calc((100dvh - 340px) * 4 / 3),880px)}
+}
+@media (min-width:56.25em){
+  /* story: the picture is sized from the window's height */
+  .stage-art{width:min(100%,calc((100dvh - 300px) * 440 / 340))}
+  /* recap: the two scenes on the left, the explanation, tip and replay on the right */
+  #recap:not([hidden]){display:grid;grid-template-columns:auto minmax(240px,1fr);grid-template-areas:"compare instr" "compare tip" "compare actions" "compare .";gap:14px 22px;align-items:start}
+  #recap .compare{grid-area:compare;margin:0;width:min(640px,calc((100dvh - 410px) * 600 / 340 + 22px))}
+  #recap>.instr{grid-area:instr}
+  #recap>.tipbox{grid-area:tip}
+  #recap>.recap-actions{grid-area:actions;justify-content:flex-start}
+  /* Scenario Sprint: the scene sized from the height; four answers as 2 x 2 */
+  .sprint-art{width:min(100%,calc((100dvh - 380px) * 320 / 200))}
+  .sprint .options,.bigq .options{grid-template-columns:1fr 1fr}
+  /* end screen: score and what to practise on the left, the two word lists on the right */
+  .screen[data-screen="end"]>.work{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"score recap" "practise recap" ". recap"}
+  #scoreCard{grid-area:score}
+  #practise{grid-area:practise}
+  .screen[data-screen="end"] .recap{grid-area:recap;align-self:start}
+  /* learning path: the path gets the full height on the left; banner, Up next and words on the right */
+  .home-map{grid-template-columns:minmax(0,1fr) 370px;grid-template-areas:"path unit" "path upnext" "path words" "path stats" "path .";grid-template-rows:auto auto auto auto 1fr;gap:12px 24px;align-items:start}
+  .map-main,.map-side{display:contents}
+  .unit{grid-area:unit}.upnext{grid-area:upnext}.words-known{grid-area:words}.map-stats{grid-area:stats}.path{grid-area:path}
+  .unit-title{font-size:clamp(1.375rem,1rem + 1vw,1.75rem)}
+  .path{padding:58px 0 12px}
+  .nodes{gap:clamp(18px,calc((100dvh - 600px) / 5),46px)}
+  .node{width:clamp(56px,8vh,80px);height:clamp(56px,8vh,80px)}
+  .node>svg{width:clamp(26px,3.6vh,34px);height:clamp(26px,3.6vh,34px)}
+  /* Quick Check Q4: the shop beside the three answers */
+  .qc-media{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:14px;align-items:center}
+  .qc-media .qc-art{max-width:none;margin:0}
+  .qc-media .tiles{grid-template-columns:1fr;gap:10px}
+  .qc-media .choice.tile.word{min-height:58px}
+  /* closing pictures sized from the height */
+  .done-art{width:min(440px,calc((100dvh - 560px) * 440 / 340))}
+}
+@media (min-width:56.25em) and (max-height:57.5em){
+  .unit-sub,.un-about,.map-stats{display:none}
+  .unit{padding:14px 16px;gap:10px}
+  .upnext{gap:8px}
+  .wk{min-height:34px;padding:4px 10px;font-size:.875rem}
+  .words-known{gap:8px}
+  .wk-group{gap:6px}
+  .opt{min-height:46px;padding:9px 14px}
+  .options{gap:8px}
+  .dc .speak-row{margin-top:6px;padding-top:8px}
+  .choice{min-height:50px;padding:10px 14px}
+  .bigq{gap:10px;padding:16px 18px}
+  .check-btn{min-height:48px}
+  .done-card .read-art{display:none}
+  .review li{padding:9px 12px}
+  .stat{padding:8px 6px}
+  .stat b{font-size:1.375rem}
+  .scorecard{gap:12px 18px}
+}
+@media (min-width:56.25em) and (max-height:57.5em){
+  .un-done{padding:6px 10px;font-size:.8125rem}
+  .un-title{font-size:1.25rem}
+  .wk-label{display:none}
+  .wk{font-size:.8125rem;padding:4px 9px}
+  .wk svg{width:12px;height:12px}
+  .scorecard .ring{width:72px;height:72px}
+  .lvl{font-size:1.125rem}
+  .scorecard p{margin-top:2px}
+  #practise .list{gap:8px}
+  #practise .list p{font-size:.9375rem;line-height:1.45}
+  .recap-col ul{gap:6px}
+  .recap-word{min-height:40px;padding:8px 12px}
+}

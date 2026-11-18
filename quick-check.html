@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>Quick Check</title>
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/kw.css?v=20261118i">
+<link rel="preload" href="fonts/outfit/outfit-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<!-- Timer digits only (Figma timer); falls back to a monospace font offline -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@700&display=swap" rel="stylesheet">
+<!-- arriving from the learning path: keep the black cover up until the page can lift it -->
+<script>try { if (sessionStorage.getItem('kw-launch')) document.documentElement.classList.add('kw-arriving'); } catch (e) {}</script>
+<style>html.kw-arriving #launch[hidden]{display:grid !important}</style>
+<script src="lib/gsap.min.js"></script>
+<script src="js/motion.js" defer></script>
+</head>
+<body data-kind="speak" data-view="check">
+<!-- Shared SVG paint (kept out of display:none so every scene can use it) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="g-sky-morning" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8CCBFF"/><stop offset=".7" stop-color="#CFE8FF"/><stop offset="1" stop-color="#FFE2C4"/></linearGradient>
+    <linearGradient id="g-sky-afternoon" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#47A6FF"/><stop offset="1" stop-color="#BEE4FF"/></linearGradient>
+    <linearGradient id="g-sky-evening" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3E3A8E"/><stop offset=".55" stop-color="#9A5AA6"/><stop offset="1" stop-color="#FF9D6C"/></linearGradient>
+    <linearGradient id="g-sky-night" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0E1440"/><stop offset="1" stop-color="#2C347A"/></linearGradient>
+    <radialGradient id="g-glow"><stop offset="0" stop-color="#FFE08A" stop-opacity=".75"/><stop offset="1" stop-color="#FFE08A" stop-opacity="0"/></radialGradient>
+  </defs>
+</svg>
+
+<header class="topbar" id="topbar">
+  <nav class="nav" aria-label="Main">
+    <a href="index.html#path" aria-current="page" title="Back to your learning path"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="18" r="2.2"/><circle cx="18" cy="6" r="2.2"/><path d="M8.2 18H15a3 3 0 0 0 0-6H9a3 3 0 0 1 0-6h6.8"/></svg><span class="lbl">Quick Check</span></a>
+  </nav>
+</header>
+
+<div class="panel">
+  <div class="pagehead">
+    <div><p class="crumb">Communication Skills · Stage 8</p><h1 id="page-title">Quick Check</h1></div>
+    <div class="title-tools">
+      <div class="timer" id="check-timer" role="timer" aria-label="Time left" hidden>
+        <div class="timer-inner"><div class="timer-swing">
+          <span class="timer-rod"></span>
+          <span class="timer-mount"></span>
+          <img class="timer-body" src="assets/timer/timer-body.svg" width="209" height="81" alt="">
+          <span class="timer-time">10:00</span>
+        </div></div>
+      </div>
+    </div>
+  </div>
+
+  <main id="main">
+    <!-- Stage 8: Quick Check (a self-check; not graded) -->
+    <section class="screen" data-screen="check" hidden>
+      <div class="work">
+        <div class="quiz">
+          <div class="qtop"><div class="qdots" id="qc-dots" role="img"></div><span class="chip-soft">Not graded</span></div>
+          <section class="dc bigq" id="qc-card"></section>
+        </div>
+      </div>
+      <div class="actionbar"><div class="actionbar-in">
+        <span class="grow" id="qc-status">Question 1 of 4</span>
+        <button type="button" class="btn secondary back-btn" data-go="path" aria-label="Back"><i data-ui="back"></i><span class="back-lb">Back</span></button>
+        <button type="button" class="btn primary" id="qc-next" disabled>Check</button>
+      </div></div>
+    </section>
+
+    <section class="screen" data-screen="checkdone" hidden>
+      <div class="work">
+        <div class="quiz">
+          <section class="card done-card">
+            <div class="done-art" id="qc-done-art"></div>
+            <h2 class="done-title big">Great start!</h2>
+            <p class="done-line">Next, you'll get to use this greeting in five different situations of your own. <button type="button" class="read-btn" data-read="qc-done" data-text="Great start! Next, you'll get to use this greeting in five different situations of your own." aria-label="Read this aloud"><i data-ui="speaker"></i></button></p>
+            <button type="button" class="btn primary wide" data-act="qc-finish">Continue</button>
+          </section>
+        </div>
+      </div>
+      <div class="actionbar"><div class="actionbar-in">
+        <span class="grow">Quick Check done</span>
+        <button type="button" class="btn secondary back-btn" data-go="path" aria-label="Back"><i data-ui="back"></i><span class="back-lb">Back</span></button>
+        <button type="button" class="btn primary" data-act="qc-finish">Continue</button>
+      </div></div>
+    </section>
+
+  </main>
+</div>
+
+<div class="launch" id="launch" hidden aria-hidden="true">
+  <div class="launch-in">
+    <p class="launch-part" id="launch-part">Part 1 of 5</p>
+    <p class="launch-title" id="launch-title">Greetings</p>
+    <div class="launch-dots" id="launch-dots"></div>
+  </div>
+</div>
+
+<div class="modal" id="modal" hidden role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal-card">
+    <div class="modal-icon" id="modal-icon"></div>
+    <h2 id="modal-title"></h2>
+    <p id="modal-text"></p>
+    <button type="button" class="btn primary" id="modal-btn"></button>
+  </div>
+</div>
+
+<div id="live" class="sr-only" aria-live="polite"></div>
+
+<section class="fb qsheet" id="qsheet" hidden aria-live="polite">
+  <div class="fb-sheet">
+    <div class="fb-in">
+      <span class="fb-badge" id="qs-badge" aria-hidden="true"></span>
+      <div class="fb-text">
+        <div class="fb-head"><h2 class="fb-title" id="qs-title"></h2></div>
+        <p id="qs-text"></p>
+        <p class="fb-note" id="qs-note"></p>
+      </div>
+      <button type="button" class="btn go fb-next" id="qs-next">Continue</button>
+    </div>
+  </div>
+</section>
+
+<div class="textdrawer" id="textdrawer" hidden role="dialog" aria-modal="true" aria-labelledby="td-title">
+  <div class="td-panel">
+    <div class="td-head"><b id="td-title">The passage</b><button type="button" class="btn secondary" id="td-close">Close</button></div>
+    <div class="td-body"></div>
+  </div>
+</div>
+
+<script src="js/kw-core.js?v=20261118f"></script>
+<script src="js/stage8.js?v=20261118f"></script>
+</body>
+</html>

@@ -16,14 +16,19 @@ your progress beside it.
 Finishing a stage returns to the path: the stage turns green, the path fills in and the next stage opens.
 Stages 6–7 show as "coming soon" (not built yet) and don't block Stage 8. Progress is saved on the device.
 For content reviewers and testers, open the page with `?review` (for example `http://localhost:8765/?review`)
-to open every stage without playing the earlier ones. Open `index.html` in a browser; it needs an internet
+to open every stage without playing the earlier ones. Open `index.html` in a browser (the stage pages are opened from its learning path); it needs an internet
 connection only for the timer's digit font (GSAP and the rest are local).
 
 ## What ships
 
 | Path | What it is |
 |---|---|
-| `index.html` | The whole lesson (HTML, CSS, JS with GSAP) |
+| `index.html` | Stage 4 Key Words and the learning path (the home page) |
+| `reading.html` | Stage 5 Reading Card (its own page; the path opens it) |
+| `quick-check.html` | Stage 8 Quick Check (its own page; the path opens it) |
+| `css/kw.css` | Styles shared by the three pages (on top of the course's `css/base.css`) |
+| `js/kw-core.js` | Code shared by `reading.html` and `quick-check.html` (sound, timer, dialogs, result sheet, screen changes). `index.html` keeps its own copy of these helpers; change both if you change one |
+| `js/stage5.js`, `js/stage8.js` | The Reading Card and Quick Check stages |
 | `audio/` | Recorded word clips (ElevenLabs, voice: Tripti). The page plays these. |
 | `assets/sticky/` | Sticky-note artwork from Figma. No longer used by the page (the word cards now use the learning-plan card style); kept for reference |
 | `assets/timer/` | Game timer artwork (Figma) |

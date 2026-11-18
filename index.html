@@ -14,772 +14,7 @@
 <script src="lib/gsap.min.js"></script>
 <script src="js/motion.js" defer></script>
 <script src="kit/commkit.js"></script>
-<style>
-/* Stage 4 · Key Words, built on the Communicate course look (css/base.css, unchanged).
-   Only game-specific parts live here, and they use the base.css tokens.
-   Colour code for the whole stage: butter = arriving / greetings, sky = leaving / farewells.
-   Stage-only tokens are prefixed so they never override the course tokens. */
-:root{
-  --kw-arrive:var(--butter); --kw-arrive-strong:#E2A53A; --kw-arrive-ink:#7A4B06;
-  --kw-leave:var(--sky);     --kw-leave-strong:#3A8FC4;  --kw-leave-ink:#11577E;
-  --kw-tip-soft:#f4eaf8;
-}
-/* ---------- Fonts ----------
-   Outfit (SIL Open Font License, fonts/outfit/OFL.txt) is the course's text font: base.css already asks for it,
-   and now it is loaded, so every paragraph, label and button uses it.
-   Switzer (Fontshare Free Font License, fonts/switzer/FFL.txt) sets the titles and the big words.
-   Switzer's licence does not allow sharing the font file through a public repository, so that file is git-ignored;
-   when it is missing the browser loads the same font from Fontshare. */
-@font-face{font-family:"Outfit";font-style:normal;font-weight:100 900;font-display:swap;src:url("fonts/outfit/outfit-latin-wght-normal.woff2") format("woff2");
-  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
-@font-face{font-family:"Outfit";font-style:normal;font-weight:100 900;font-display:swap;src:url("fonts/outfit/outfit-latin-ext-wght-normal.woff2") format("woff2");
-  unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
-@font-face{font-family:"Switzer";font-style:normal;font-weight:100 900;font-display:swap;src:url("fonts/switzer/Switzer-Variable.woff2") format("woff2"),url("https://cdn.fontshare.com/wf/HJHZ26OECMTXRH7JXPFC7EVIHDSLT2RA/LJRNLR7WCPF3PY3SZ7B2LHNUTQMFNCHL/4MCJYGQDIOOXHWSIIB2OYNDBEALJSOGN.woff2") format("woff2")}
-:root{--kw-display:"Switzer",var(--font)}
-h1,h2,.home-title,.launch-title,.question,.wcard-text,.hw-text,.stat b,.lvl,.mword,.fb-title{font-family:var(--kw-display)}
-
-.sun{--c:var(--kw-arrive);--c-strong:var(--kw-arrive-strong);--c-ink:var(--kw-arrive-ink)}
-.sky{--c:var(--kw-leave);--c-strong:var(--kw-leave-strong);--c-ink:var(--kw-leave-ink)}
-
-/* ---------- Shell additions ---------- */
-.screen{display:block}
-/* ---------- Top bar: Back in the top-left corner, Continue in the top-right corner ----------
-   Each screen keeps its own .actionbar (so the game code is unchanged); it is pinned over the black top bar.
-   The top bar stays at the top while the page scrolls, so Back and Continue are always in reach.
-   The status text (e.g. "Matched 2 of 6") shows beside Continue on wide screens only; the page shows the same progress. */
-:root{--kw-top:72px}
-.topbar{position:sticky;top:0;z-index:5;height:var(--kw-top);background:var(--frame);padding-left:max(var(--gutter),env(safe-area-inset-left));padding-right:max(var(--gutter),env(safe-area-inset-right))}
-.topbar .nav{justify-content:center}
-body.kw-scrolled .nav a[aria-current="page"]::after{opacity:0}
-body.kw-scrolled .topbar{box-shadow:0 6px 18px -10px rgba(0,0,0,.5)}
-.actionbar{top:0;bottom:auto;left:0;right:0;width:auto;height:var(--kw-top);transform:none;z-index:6;background:none;border-radius:0;box-shadow:none;pointer-events:none}
-.actionbar-in{height:100%;gap:10px;padding:0 max(var(--gutter),env(safe-area-inset-right)) 0 max(var(--gutter),env(safe-area-inset-left))}
-.actionbar .btn{pointer-events:auto;padding:10px 20px}
-.actionbar .back-btn,.actionbar [data-action="replay"]{order:-1;margin-right:auto}
-.back-btn{padding-left:14px !important}
-.back-btn svg{width:20px;height:20px}
-.actionbar .grow{display:none;flex:0 1 auto;max-width:20vw;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-@media (min-width:75em){.actionbar .grow{display:block}}
-/* phones: the tab would sit under the buttons, and the page title already names the part */
-@media (max-width:37.49em){
-  body:not([data-view="welcome"]):not([data-view="intro"]) .topbar .nav{visibility:hidden}
-  .actionbar .btn{padding:10px 16px}
-}
-@media (max-width:25em){
-  .back-btn{width:44px;padding:0 !important}
-  .back-btn .back-lb{display:none}
-}
-/* short screens (phones on their side): a slimmer top bar */
-@media (max-height:33.75em) and (orientation:landscape){
-  :root{--kw-top:58px}
-  .nav a[aria-current="page"]::after{bottom:-8px}
-  .panel{min-height:calc(100vh - var(--kw-top))}
-}
-/* no bottom bar any more, and keep clear of rounded corners and notches */
-main{padding-bottom:calc(48px + env(safe-area-inset-bottom));padding-left:max(var(--gutter),env(safe-area-inset-left));padding-right:max(var(--gutter),env(safe-area-inset-right))}
-.pagehead{padding-left:max(var(--gutter),env(safe-area-inset-left));padding-right:max(var(--gutter),env(safe-area-inset-right))}
-.pagehead{flex-wrap:nowrap;align-items:flex-start}
-.pagehead > div:first-child{min-width:0}
-.title-tools{flex:none}
-.steps{flex-wrap:nowrap}
-/* phones and small tablets: only the current step is named (the full row needs about 760px),
-   the dashes flex, and the row never pushes the page wider */
-@media (max-width:47.99em){
-  .steps .lb{display:none}
-  .steps li.on .lb{display:inline}
-  .steps{gap:6px}
-  .steps li{gap:6px;flex:1 1 auto;min-width:0}
-  .steps li:first-child{flex:0 0 auto}
-  .steps li + li::before{width:auto;min-width:6px;flex:1 1 6px}
-  .steps li.on .lb{min-width:0;line-height:1.15}
-}
-/* narrow phones: the page title already names the part, so the steps show numbers only */
-@media (max-width:23.75em){.steps li.on .lb{display:none}}
-.actionbar .grow b{color:#fff}
-.kind{display:inline-flex;align-items:center;gap:6px;padding:4px 12px 4px 9px;border-radius:99px;background:var(--c);color:var(--c-ink);font-size:.8125rem;font-weight:700;line-height:1.4}
-.kind svg{width:17px;height:17px;flex:none}
-.chip-soft{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:99px;background:var(--soft);color:var(--muted);font-size:.8125rem;font-weight:600;white-space:nowrap}
-.chip-soft svg{flex:none}
-.instr{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px}
-.instr p{margin:0}
-.question{margin:4px 0 0;font-size:1.1875rem;line-height:1.5}
-.tipbox{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:var(--r-md);background:var(--kw-tip-soft);color:var(--text)}
-.tipbox p{margin:0}
-.tip-icon{display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:#fff;color:var(--tip);flex:none}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px}
-.btn svg{flex:none}
-
-/* ---------- Key Words start screen (first visit, until Stage 4 is done) ----------
-   One card: the pinboard (Figma sticky notes), the course title, one big Start button, and the 5 parts.
-   The page head is hidden here because the card carries the title. */
-body[data-view="intro"] .pagehead{display:none}
-.home{display:grid;gap:22px;padding:12px 12px 20px}
-.home-board{position:relative;display:flex;align-items:center;justify-content:center;gap:clamp(14px,5%,34px);min-height:236px;padding:54px 14px 34px;border-radius:var(--r-lg);
-  background-color:var(--soft-2);background-image:radial-gradient(circle,#d7dbe3 1.3px,transparent 1.7px);background-size:20px 20px;background-position:10px 10px}
-.pinned{width:min(47%,250px)}
-.pinned.left{transform:rotate(-4deg)}
-.pinned.right{transform:translateY(26px) rotate(3deg)}
-.hword{width:100%;border:0;font:inherit;text-align:left;cursor:pointer;box-shadow:var(--shadow),0 18px 34px -20px rgba(16,24,40,.35)}
-.hword .dc-body{display:grid;justify-items:center;gap:8px;padding:16px 10px}
-.hword .ico{width:clamp(48px,8vw,84px);height:clamp(48px,8vw,84px);overflow:visible}
-.hw-text{font-size:clamp(1.0625rem,.8rem + 1vw,1.5rem);font-weight:750;line-height:1.1;letter-spacing:-.02em;text-align:center}
-.hword .dc-foot{justify-content:space-between;flex-wrap:nowrap}
-.hword .dpill{padding:5px 10px}
-.pinned,.hword{min-width:0}
-/* phones: the board cards drop the small speaker (tapping the card plays the word) and tighten up */
-@media (max-width:37.49em){
-  .hword{gap:10px;padding:10px}
-  .hword .dc-head{gap:6px;font-size:.8125rem}
-  .hword .dc-ico{width:26px;height:26px}
-  .hword .dc-body{padding:12px 6px}
-  .hword .dround{display:none}
-  .hword .dpill{padding:4px 9px;font-size:.75rem}
-}
-/* narrow phones: the two cards stack, still tilted */
-@media (max-width:22.5em){
-  .home-board{flex-direction:column;gap:20px;padding-bottom:30px}
-  .pinned{width:80%}
-  .pinned.left{transform:translateX(-7%) rotate(-4deg)}
-  .pinned.right{transform:translateX(7%) rotate(3deg)}
-}
-.home-intro{padding:0 8px}
-.home-crumb{margin:0 0 8px;font-size:.875rem;font-weight:500;color:var(--muted)}
-.home-title{margin:0;font-size:clamp(2.75rem,1.9rem + 3.4vw,4.5rem);font-weight:800;line-height:1;letter-spacing:-.045em;color:var(--text)}
-.home-lede{margin:14px 0 0;max-width:34ch;font-size:clamp(1.0625rem,1rem + .3vw,1.25rem);line-height:1.5;color:#3d4250}
-.home-lede .read-btn{vertical-align:middle;margin-left:4px}
-.home-cta{display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px;margin-top:26px}
-/* the start button: black pill (course action colour) with a white play disc; on Continue the disc carries a progress ring */
-.start-btn{position:relative;display:inline-flex;align-items:center;gap:16px;min-width:min(300px,100%);min-height:72px;padding:10px 34px 10px 10px;border:0;border-radius:99px;background:var(--frame);color:#fff;text-align:left;cursor:pointer;
-  box-shadow:0 16px 32px -16px rgba(0,0,0,.6);transition:transform .2s ease,box-shadow .2s ease}
-.start-btn:hover{transform:translateY(-2px);box-shadow:0 20px 36px -16px rgba(0,0,0,.65)}
-.start-btn:active{transform:translateY(0) scale(.985)}
-.start-btn:focus-visible{outline:3px solid var(--accent);outline-offset:4px}
-.start-go{position:relative;flex:none;width:52px;height:52px;border-radius:50%;background:#fff;color:var(--frame);display:grid;place-items:center}
-.start-go .play{width:22px;height:22px;margin-left:3px;transition:transform .2s ease}
-.start-btn:hover .start-go .play{transform:translateX(2px)}
-.start-pulse{position:absolute;inset:0;border-radius:50%;background:#fff;opacity:0;pointer-events:none}
-.go-ring{position:absolute;left:-6px;top:-6px;width:64px;height:64px;transform:rotate(-90deg);overflow:visible}
-.go-ring circle{fill:none;stroke-width:3.5}
-.go-ring .bg{stroke:#34363d}
-.go-ring .fg{stroke:var(--mint);stroke-linecap:round;transition:stroke-dasharray .6s ease}
-.start-text b{display:block;font-size:1.25rem;font-weight:750;line-height:1.2;letter-spacing:-.01em}
-.start-text small{display:block;margin-top:3px;font-size:.8125rem;font-weight:500;line-height:1.3;color:#b9bcc5}
-/* the five parts, in order: done = mint check, next = black */
-.home-track{list-style:none;margin:0;padding:18px 0 0;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}
-.home-track li{position:relative;display:grid;justify-items:center;align-content:start;gap:6px;padding:0 2px;text-align:center;font-size:.75rem;line-height:1.25;font-weight:600;color:var(--text)}
-.home-track li+li::before{content:"";position:absolute;top:16px;left:calc(-50% + 22px);right:calc(50% + 22px);border-top:2px dashed #cdd2da}
-.home-track li.past::before,.home-track li.on::before{border-top:2px solid var(--path)}
-.ht-n{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#e3e6eb;color:var(--muted);font-size:.8125rem;font-weight:700}
-.ht-n.sun{background:var(--kw-arrive);color:var(--kw-arrive-ink)}
-.ht-n.sky{background:var(--kw-leave);color:var(--kw-leave-ink)}
-.ht-n.both{background:linear-gradient(90deg,var(--kw-arrive) 50%,var(--kw-leave) 50%);color:var(--text)}
-.ht-n svg{width:16px;height:16px}
-.home-track li.past .ht-n{background:var(--mint);color:var(--mint-ink)}
-.home-track li.on .ht-n{background:var(--frame);color:#fff;box-shadow:0 0 0 4px var(--card),0 0 0 6px #d7dbe3}
-.ht-sub{display:none;font-weight:500;color:var(--muted)}
-.home-track li.past .ht-sub{color:var(--mint-ink)}
-@media (min-width:37.5em){
-  .home{padding:16px 16px 24px}
-  .home-board{min-height:300px}
-  .home-track li{font-size:.875rem}
-  .ht-sub{display:block;font-size:.8125rem}
-}
-@media (max-width:37.49em){
-  .start-btn{width:100%}
-  .home-cta .btn{flex:1}
-}
-@media (min-width:40em) and (max-height:33.75em){
-  .home{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"intro board" "track track";gap:18px 24px;padding:12px 12px 18px 26px}
-  .home-board{grid-area:board;min-height:0;padding:46px 12px 30px}
-  .home-intro{grid-area:intro;align-self:center;padding:0}
-  .home-title{font-size:2.5rem}
-  .home-lede{font-size:1rem;margin-top:10px}
-  .home-cta{margin-top:18px}
-  .home-track{grid-area:track}
-}
-@media (min-width:56.25em){
-  .home{grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);grid-template-areas:"intro board" "track track";gap:26px 40px;padding:18px 18px 26px 44px}
-  .home-board{grid-area:board;min-height:440px;padding:70px 28px 50px}
-  .home-intro{grid-area:intro;align-self:center;padding:0}
-  .home-track{grid-area:track;margin-right:26px}
-}
-
-.intro-more{margin:14px 0 0}
-.intro-more .link-btn{padding:0;font-size:.9375rem}
-
-/* ---------- Home: the learning path ----------
-   The segment's stages as stops on a winding path, like Duolingo. Green = done, black = next (with a Start bubble),
-   grey with a lock = not open yet, dashed = coming soon, and a trophy at the end. Tap a stop for its card and Start. */
-body[data-view="welcome"] .pagehead{display:none}
-/* layout: one column on phones (banner, Up next, path, words, numbers); path + side column on wide screens */
-.home-map{display:flex;flex-direction:column;gap:16px;width:100%;max-width:640px;margin:0 auto}
-.map-main,.map-side{display:contents}
-.unit{order:1}.upnext{order:2}.path{order:3}.words-known{order:4}.map-stats{order:5}
-@media (min-width:56.25em){
-  .home-map{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:28px;max-width:none;align-items:start}
-  .map-main{display:grid;gap:8px;min-width:0}
-  .map-side{display:grid;gap:16px;position:sticky;top:calc(var(--kw-top) + 18px)}
-}
-/* Up next: the next stage with its own Start button */
-.upnext{gap:10px}
-.un-done{display:flex;align-items:center;gap:8px;margin:-2px 0 2px;padding:8px 12px;border-radius:14px;background:var(--good-soft);color:var(--good);font-size:.875rem;font-weight:700}
-.un-done svg{width:16px;height:16px;flex:none}
-.un-kicker{margin:0;font-size:.8125rem;font-weight:600;color:var(--muted)}
-.un-title{margin:0;font-family:var(--kw-display);font-size:1.5rem;font-weight:750;letter-spacing:-.02em;line-height:1.15}
-.un-about{margin:0;color:#3d4250;line-height:1.45}
-.un-meta{margin:0;font-size:.875rem;font-weight:600;color:var(--muted)}
-.upnext .btn.wide{margin-top:4px}
-.un-trophy{display:grid;place-items:center;width:56px;height:56px;border-radius:50%;background:#E2A53A;color:#fff;box-shadow:0 5px 0 #a06a12}
-.un-trophy svg{width:28px;height:28px}
-/* the six words, once Key Words is done (tap to hear) */
-.words-known{gap:12px}
-.wk-group{display:grid;gap:8px}
-.wk-label{display:flex;align-items:center;gap:6px;margin:0;font-size:.8125rem;font-weight:700;color:var(--muted)}
-.wk-label svg{width:15px;height:15px}
-.wk-chips{display:flex;flex-wrap:wrap;gap:8px}
-.wk{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:6px 12px;border:0;border-radius:99px;background:var(--c);color:var(--text);font:inherit;font-size:.9375rem;font-weight:650;cursor:pointer;
-  --kw-lift:3px;--kw-edge:var(--c-strong);box-shadow:0 3px 0 var(--kw-edge);transition:transform .08s ease,box-shadow .08s ease}
-.wk svg{width:14px;height:14px;color:var(--c-ink)}
-.wk:active{transform:translateY(3px);box-shadow:0 0 0 var(--kw-edge)}
-.wk.ghost{min-width:96px;background:none;border:2px dashed #d3d7df;box-shadow:none;cursor:default}
-.wk-note{margin:0;color:var(--muted);font-size:.9375rem}
-.map-stats .stat b{font-size:1.5rem}
-/* small illustrations beside the path, on the side away from the label (wide screens only) */
-.decor{position:absolute;top:50%;transform:translateY(-50%);pointer-events:none;display:none}
-.stop:not(.label-left) .decor{right:calc(100% + 26px)}
-.stop.label-left .decor{left:calc(100% + 26px)}
-@media (min-width:48em){.decor{display:block}}
-.decor.ananya{width:96px}
-.decor.ananya svg{display:block;width:100%;height:auto}
-.decor-bubble{position:absolute;top:-6px;left:58%;padding:6px 10px;border-radius:12px;border-bottom-left-radius:4px;background:var(--kw-arrive);color:var(--text);font-size:.8125rem;font-weight:750;white-space:nowrap;box-shadow:0 2px 6px rgba(16,24,40,.12)}
-.decor.handshake{width:150px;color:#9aa0ab}
-.decor.handshake svg{display:block;width:100%;height:auto}
-.decor.times{display:none;gap:4px}
-@media (min-width:48em){.decor.times{display:flex}}
-.decor.times svg{width:40px;height:40px;overflow:visible}
-.unit{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;padding:20px 22px;border-radius:var(--r-xl);background:var(--frame);color:#fff;box-shadow:0 6px 0 #2a2c33}
-.unit-kicker{margin:0 0 4px;font-size:.8125rem;font-weight:600;color:#a3a7b1}
-.unit-title{margin:0;font-size:clamp(1.625rem,1.2rem + 1.6vw,2.125rem);font-weight:750;line-height:1.1;letter-spacing:-.025em;color:#fff}
-.unit-sub{margin:6px 0 0;font-size:.9375rem;color:#c9ccd3}
-.unit-prog{display:flex;align-items:center;gap:12px;font-size:.8125rem;font-weight:600;color:#c9ccd3}
-.unit-bar{flex:1;height:10px;border-radius:99px;background:#34363d;overflow:hidden}
-.unit-bar i{display:block;height:100%;width:0;border-radius:99px;background:var(--mint);transition:width .9s ease}
-.path{position:relative;padding:70px 0 34px;min-width:0}
-.path-line{position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;pointer-events:none}
-.path-line .base{fill:none;stroke:#d3d7df;stroke-width:7;stroke-linecap:round;stroke-dasharray:.1 17}
-.path-line .prog{fill:none;stroke:var(--path);stroke-width:7;stroke-linecap:round}
-.nodes{position:relative;list-style:none;margin:0;padding:0;display:grid;gap:58px}
-.stop{position:relative;display:flex;justify-content:center;justify-self:center;width:max-content;transform:translateX(calc(var(--x) * var(--kx,1)))}
-@media (max-width:22.5em){.stop{--kx:.72}}
-.node{position:relative;width:80px;height:80px;padding:0;border:0;border-radius:50%;display:grid;place-items:center;background:#1d1f25;color:#fff;cursor:pointer;
-  box-shadow:0 7px 0 #000;transition:transform .08s ease,box-shadow .08s ease}
-.node>svg{width:34px;height:34px}
-.node:active:not(:disabled){transform:translateY(7px);box-shadow:0 0 0 #000}
-.stop.is-done .node{background:var(--good);box-shadow:0 7px 0 #0b4126}
-.stop.is-done .node:active{box-shadow:0 0 0 #0b4126}
-.stop.is-locked .node{background:#e3e6eb;color:#a2a8b3;box-shadow:0 7px 0 #c9cdd5}
-.stop.is-locked .node:active{box-shadow:0 0 0 #c9cdd5}
-.stop.is-soon .node{width:60px;height:60px;background:var(--bg);color:#aab1bd;border:3px dashed #cdd2da;box-shadow:none;cursor:default;font-size:1.25rem;font-weight:800}
-.stop.end .node{width:66px;height:66px;background:#e3e6eb;color:#a2a8b3;box-shadow:0 6px 0 #c9cdd5;cursor:default}
-.stop.end .node>svg{width:30px;height:30px}
-.stop.end.is-done .node{background:#E2A53A;color:#fff;box-shadow:0 6px 0 #a06a12}
-.stop.is-current .node::before{content:"";position:absolute;inset:-11px;border-radius:50%;border:4px solid var(--mint);animation:kwRing 2.2s ease-out infinite}
-@keyframes kwRing{0%{transform:scale(.9);opacity:1}70%{transform:scale(1.14);opacity:0}100%{transform:scale(1.14);opacity:0}}
-.flag{position:absolute;right:-6px;bottom:-4px;width:30px;height:30px;border-radius:50%;display:none;place-items:center;background:#fff;box-shadow:0 0 0 3px var(--bg)}
-.flag svg{width:15px;height:15px}
-.stop.is-done .flag.ok{display:grid;color:var(--good)}
-.stop.is-locked .flag.lock{display:grid;color:#8a909c}
-.stop-label{position:absolute;top:50%;left:calc(50% + 56px);transform:translateY(-50%);display:grid;gap:1px;width:max-content;max-width:min(210px,calc(50vw - 64px));line-height:1.25;text-align:left}
-.stop.label-left .stop-label{left:auto;right:calc(50% + 56px);text-align:right}
-.stop-label span{font-size:.75rem;font-weight:600;color:var(--muted)}
-.stop-label b{font-family:var(--kw-display);font-size:1.0625rem;font-weight:700;color:var(--text)}
-.stop-label small{font-size:.8125rem;color:var(--muted)}
-.stop.is-soon .stop-label b,.stop.is-locked .stop-label b{color:#7b818d;font-weight:600}
-.start-bubble{position:absolute;bottom:calc(100% + 16px);left:50%;transform:translateX(-50%);padding:7px 14px;border-radius:12px;background:#fff;color:var(--text);font-size:.875rem;font-weight:800;white-space:nowrap;
-  box-shadow:0 4px 0 #d3d7df,0 12px 22px -12px rgba(0,0,0,.35);pointer-events:none;animation:kwBob 1.6s ease-in-out infinite;z-index:2}
-.start-bubble::after{content:"";position:absolute;top:100%;left:50%;width:12px;height:12px;margin:-7px 0 0 -6px;background:#fff;transform:rotate(45deg);border-radius:2px;box-shadow:3px 3px 0 #d3d7df}
-@keyframes kwBob{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,-5px)}}
-@media (prefers-reduced-motion:reduce){.start-bubble,.stop.is-current .node::before{animation:none}}
-/* the stage card that opens under a stop */
-.node-pop{position:absolute;z-index:6;width:min(340px,calc(100% - 16px));display:grid;gap:8px;padding:18px 18px 16px;border-radius:22px;background:var(--card);box-shadow:0 22px 44px -18px rgba(16,24,40,.5),0 0 0 1px var(--line)}
-.node-pop::before{content:"";position:absolute;top:-8px;left:var(--arrow,50%);width:16px;height:16px;margin-left:-8px;background:var(--card);transform:rotate(45deg);border-radius:3px;box-shadow:-1px -1px 0 var(--line)}
-.pop-kicker{margin:0;font-size:.8125rem;font-weight:600;color:var(--muted)}
-.pop-title{margin:0;font-family:var(--kw-display);font-size:1.375rem;font-weight:750;letter-spacing:-.02em}
-.pop-about{margin:0;color:#3d4250;line-height:1.45}
-.pop-meta{margin:0;font-size:.875rem;font-weight:600;color:var(--muted)}
-.pop-parts{display:flex;gap:6px;margin-top:2px}
-.pop-parts i{flex:1;height:8px;border-radius:99px;background:#e3e6eb}
-.pop-parts i.done{background:var(--good)}
-.pop-parts i.on{background:var(--frame)}
-.pop-resume{margin:0;font-size:.875rem;font-weight:600}
-.pop-lock{display:flex;gap:10px;align-items:center;margin:2px 0 0;padding:10px 12px;border-radius:14px;background:var(--soft);color:#3d4250;font-size:.9375rem;font-weight:600}
-.pop-lock svg{flex:none;width:18px;height:18px}
-.node-pop .btn.wide{margin-top:6px}
-.node-pop .link-btn{justify-self:center}
-
-/* ---------- Start / Continue transition ----------
-   The black button grows over the screen, names the part, then lifts like a curtain into the black top bar. */
-.launch{position:fixed;inset:0;z-index:70;display:grid;place-items:center;padding:24px;background:var(--frame);color:#fff;text-align:center}
-.launch-in{display:grid;justify-items:center;gap:10px}
-.launch-part{margin:0;font-size:.9375rem;font-weight:600;color:#a3a7b1}
-.launch-title{margin:0;font-size:clamp(2.5rem,1.5rem + 4.5vw,5rem);font-weight:800;line-height:1.02;letter-spacing:-.045em}
-.launch-dots{display:flex;gap:6px;margin-top:12px}
-.launch-dots i{width:8px;height:8px;border-radius:99px;background:#3a3d45}
-.launch-dots i.done{background:var(--mint)}
-.launch-dots i.on{width:28px;background:#fff}
-
-/* ---------- Cards: the learning-plan reference's layout on the course's white card ----------
-   White card (course radius and shadow) with a head row (round tinted icon, label, detail on the right),
-   a tinted picture panel where there is a picture, and a foot with status pills and buttons.
-   Colour is an accent only: butter = arriving, sky = leaving, lilac = a question (never gives the answer
-   away), mint = done / correct, amber = to practise. */
-.dc{position:relative;display:grid;gap:14px;padding:16px;border-radius:var(--r-xl);background:var(--card);box-shadow:var(--shadow);color:var(--text)}
-@media (min-width:37.5em){.dc{padding:18px 20px}}
-.dc.lilac{--c:var(--lilac);--c-ink:var(--tip)}
-.dc.mint{--c:var(--mint);--c-ink:var(--mint-ink)}
-.dc.fix{--c:var(--fix-soft);--c-ink:var(--fix)}
-.dc-head{display:flex;align-items:center;gap:10px;min-width:0;font-size:.875rem;font-weight:650;line-height:1.2}
-.dc-head h2{margin:0;font-size:1rem;font-weight:700;letter-spacing:-.01em}
-.dc-ico{flex:none;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:var(--c,var(--soft));color:var(--c-ink,var(--text))}
-.dc-ico svg{width:16px;height:16px}
-.dc-meta{margin-left:auto;min-width:0;overflow:hidden;text-overflow:ellipsis;font-size:.8125rem;font-weight:600;color:var(--muted);white-space:nowrap}
-.dc-body{display:block;padding:14px 16px;border-radius:20px;background:var(--c,var(--soft-2))}
-/* cards without a picture keep a plain body */
-.qcard .dc-body,#practise .dc-body{padding:0;border-radius:0;background:none}
-.dc-foot{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.dpill{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:99px;background:var(--soft);color:var(--muted);font-size:.8125rem;font-weight:650;line-height:1.3;white-space:nowrap}
-.dpill svg{width:14px;height:14px;flex:none}
-.dpill.done{background:var(--mint);color:var(--mint-ink)}
-.dround{flex:none;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:#fff;color:var(--text)}
-.dround.dark{background:var(--frame);color:#fff}
-.dround svg{width:17px;height:17px}
-.dc .speak-row{border-top-color:rgba(16,24,40,.1)}
-.dc .nudge{margin:0;min-height:0}
-/* stat tiles (Total / Completed / Upcoming in the reference) */
-.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-.stat{position:relative;display:grid;justify-items:center;gap:2px;padding:12px 6px;border-radius:20px;background:var(--sky);text-align:center}
-.stat b{font-size:1.75rem;font-weight:750;line-height:1.1;letter-spacing:-.02em}
-.stat span{font-size:.8125rem;color:#3d4250}
-.stat.mint{background:var(--mint)}
-.stat.dashed{background:none;border:2px dashed #d3d7df}
-.stat .pop{position:absolute;top:-14px;right:-4px;font-size:1.375rem;font-style:normal;transform:rotate(14deg)}
-
-/* ---------- 4a / 4b word cards ----------
-   Head: Arriving / Leaving and the time of day. Panel: the picture, then the word once heard.
-   Foot: New / Heard and Say it. A mint tick sits on the corner once the word is heard. */
-.word-cards{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
-@media (min-width:48em){.word-cards{grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}}
-.wword{align-content:start;transition:box-shadow .2s ease}
-.wword.is-active{box-shadow:var(--shadow),0 0 0 3px var(--c-strong)}
-.wword .dc-head{padding-right:40px}
-.wcard{display:grid;gap:12px;width:100%;padding:0;border:0;border-radius:16px;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer}
-.wcard:focus-visible{outline:3px solid var(--accent);outline-offset:4px}
-.wcard-body{position:relative;display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:14px;min-height:96px}
-.wword .ico{width:64px;height:64px;overflow:visible}
-.wcard-word{display:grid}
-.wcard-word>*{grid-area:1/1}
-.wcard-hint{font-size:1rem;font-weight:600;color:var(--muted)}
-.wcard-text{visibility:hidden;font-size:1.5rem;font-weight:750;line-height:1.1;letter-spacing:-.02em;color:var(--text)}
-.wcard-speak{position:absolute;top:10px;right:10px;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--frame);color:#fff}
-.wcard-speak svg{width:16px;height:16px}
-.wd{display:inline-block;white-space:nowrap}
-.ch{display:inline-block}
-.wcard-check{position:absolute;top:14px;right:14px;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:var(--mint);color:var(--mint-ink);transform:scale(0)}
-.wcard-check svg{width:18px;height:18px}
-@media (min-width:37.5em){.wcard-check{top:16px;right:18px}}
-.wword .dc-foot{justify-content:space-between}
-.wword .speak-msg{flex:1 1 100%;margin:0;font-size:.8125rem}
-.wword .speak-msg:empty{display:none}
-.wword .dc-foot.is-said .mic-pill:not(.recording):not(:disabled){background:var(--good)}
-@media (min-width:48em){
-  .wcard-body{grid-template-columns:minmax(0,1fr);justify-items:center;text-align:center;gap:10px;padding:26px 12px 18px;min-height:206px}
-  .wword .ico{width:96px;height:96px}
-  .wcard-text{font-size:1.5rem}
-}
-
-/* ---------- 4c arriving or leaving ---------- */
-.story{display:grid;gap:18px}
-@media (min-width:48em){.story{grid-template-columns:1.25fr 1fr;align-items:start}}
-/* phones on their side: picture and question side by side, so the picture does not fill the screen */
-@media (min-width:33em) and (max-height:33.75em) and (orientation:landscape){.story,.sprint{grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);align-items:start}}
-.stage{margin:0}
-.stage-art,.scene-art{position:relative;overflow:hidden;border-radius:var(--r-lg);border:6px solid var(--c);background:#3E3A8E;box-shadow:var(--shadow);transition:border-color .45s ease}
-.stage-art{aspect-ratio:440/340}
-.scene-art{width:100%;aspect-ratio:300/340}
-.stage-art>svg,.scene-art>svg{display:block;width:100%;height:100%}
-.stage-art .kind,.scene-art .kind{position:absolute;top:10px;left:10px;z-index:2;box-shadow:0 2px 8px rgba(0,0,0,.18);transition:background-color .45s,color .45s}
-.stage-step{position:absolute;bottom:10px;right:10px;z-index:2;padding:3px 10px;border-radius:99px;background:rgba(255,255,255,.92);font-size:.75rem;font-weight:700}
-.say-bubble{position:absolute;left:0;bottom:0;z-index:3;padding:8px 14px 7px;border-radius:14px;font-size:clamp(.9375rem,.8rem + .6vw,1.125rem);font-weight:750;line-height:1.15;letter-spacing:-.01em;white-space:nowrap;visibility:hidden;color:var(--text);box-shadow:0 4px 14px rgba(0,0,0,.25);--tail:50%}
-.say-bubble::after{content:"";position:absolute;top:calc(100% - 1px);left:var(--tail);width:14px;height:9px;margin-left:-7px;background:inherit;clip-path:polygon(0 0,100% 0,50% 100%)}
-.say-bubble.sun{background:var(--kw-arrive)}
-.say-bubble.sky{background:var(--kw-leave)}
-.say-bubble.plain{background:#fff}
-.qcard .dc-body .eyebrow{margin:0 0 4px}
-.qcard{scroll-margin-bottom:16px}
-.stage{scroll-margin-top:calc(var(--kw-top) + 12px)}
-.nudge{min-height:1.4em;margin:8px 0 10px;color:var(--fix);font-size:.875rem;font-weight:600}
-.compare{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(10px,2.6vw,22px);width:100%;max-width:640px;margin:0 auto}
-.scene{margin:0;display:grid;gap:12px}
-.says{display:grid;gap:8px}
-.say{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;min-height:44px;padding:10px 8px;border:0;border-radius:99px;background:var(--c);color:var(--c-ink);font-weight:700;font-size:clamp(.875rem,.8rem + .4vw,1rem);cursor:pointer}
-.say:hover{box-shadow:inset 0 0 0 2px var(--c-strong)}
-.recap-top{display:flex;justify-content:center}
-#recap{display:grid;gap:18px}
-#recap[hidden]{display:none}
-.recap-actions{display:flex;justify-content:center}
-
-/* ---------- Answer options (quiz rows, as in the course) ---------- */
-.options{display:grid;gap:10px}
-.opt{display:flex;align-items:center;gap:12px;width:100%;min-height:52px;padding:12px 14px;border:1px solid var(--line);border-radius:var(--r-md);background:var(--card);font-size:1rem;font-weight:600;text-align:left;cursor:pointer;transition:border-color .15s,background-color .15s}
-.opt::before{content:"";flex:none;width:20px;height:20px;border-radius:50%;box-shadow:inset 0 0 0 2px #c4c9d4;background:#fff;display:grid;place-items:center;font-size:14px;line-height:1;font-weight:800;color:#fff}
-.opt:hover:not(:disabled){border-color:#c4c9d4}
-.opt:disabled{cursor:default}
-.opt.is-right{border-color:var(--good);background:var(--good-soft);color:var(--good)}
-.opt.is-right::before{display:none}
-.opt .ok{flex:none;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;background:var(--good);color:#fff}
-.opt .ok svg{width:13px;height:13px}
-.opt.is-wrong{border-color:var(--fix);background:var(--fix-soft);color:var(--fix)}
-.opt.is-wrong::before{content:"×";background:var(--fix);box-shadow:none}
-
-/* ---------- Games shared ---------- */
-.game-row{display:flex;align-items:center;justify-content:space-between;gap:10px 16px;flex-wrap:wrap}
-.score{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.score-label{font-size:.8125rem;color:var(--muted);font-weight:600;white-space:nowrap}
-.pips{display:flex;gap:6px}
-.pip{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:#e3e6eb;color:transparent;transition:background-color .2s,color .2s}
-.pip svg{width:13px;height:13px}
-.pip.is-on{background:var(--mint);color:var(--mint-ink)}
-
-/* Hanging game timer: Figma moodboard node 34:84 (Engineering / Display / Timer, 209 x 115).
-   It hangs from the top edge of the panel; .timer-inner keeps the design's native geometry, scaled by --ts. */
-.timer{--ts:.58;position:relative;flex:none;width:calc(209px * var(--ts));height:calc(115px * var(--ts));margin-top:-26px}
-@media (max-width:22.5em){.timer{--ts:.5;margin-top:-22px}}
-@media (min-width:37.5em){.timer{--ts:.74}}
-.timer-inner{position:absolute;left:0;top:0;width:209px;height:115px;transform:scale(var(--ts));transform-origin:0 0}
-.timer-swing{position:absolute;inset:0}
-.timer-rod{position:absolute;top:0;right:49.28%;bottom:72.17%;left:48.33%;background-image:linear-gradient(90deg,#326FC6 0%,#326FC6 100%),linear-gradient(90deg,#D9D9D9 0%,#D9D9D9 100%);box-shadow:inset 0 2px 4px 0 #67B9F9}
-.timer-mount{position:absolute;top:26.09%;right:46.41%;bottom:68.7%;left:46.41%;border-radius:4px;background-image:linear-gradient(90deg,#326FC6 0%,#326FC6 100%),linear-gradient(90deg,#D9D9D9 0%,#D9D9D9 100%);box-shadow:inset 0 2px 4px 0 #67B9F9}
-.timer-body{position:absolute;left:0;top:29.57%;display:block;max-width:none}
-.timer-time{position:absolute;top:36.52%;right:16.27%;bottom:6.96%;left:15.31%;display:flex;flex-direction:column;justify-content:center;font:700 50px/normal "Chakra Petch",ui-monospace,monospace;font-variant-numeric:tabular-nums;color:#154879;text-align:center;white-space:nowrap;transition:color .3s}
-.timer.is-low .timer-time,.timer.is-up .timer-time{color:#C2272F}
-.timer.is-done .timer-time{color:#0B7A3E}
-
-/* ---------- 4d Word Match ---------- */
-.mgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;width:100%;max-width:600px;margin:0 auto}
-@media (min-width:37.5em){.mgrid{grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}}
-/* short, wide screens (phones on their side): 6 x 2 so the whole board fits without scrolling */
-@media (min-width:40em) and (max-height:33.75em){
-  .mgrid{grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;max-width:640px}
-  .pagehead{padding-top:16px}
-  main{padding-top:14px}
-}
-.mcard{display:block;aspect-ratio:1/1;padding:0;border:0;background:none;cursor:pointer;perspective:900px;border-radius:var(--r-lg)}
-.mcard-inner{position:relative;display:block;width:100%;height:100%;transform-style:preserve-3d}
-.mcard-face{position:absolute;inset:0;display:grid;place-items:center;border-radius:var(--r-lg);-webkit-backface-visibility:hidden;backface-visibility:hidden}
-.mcard-back{background-color:var(--text);background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.045) 0 6px,transparent 6px 12px);box-shadow:var(--shadow);transition:background-color .2s}
-.mcard:not(.is-up):hover .mcard-back{background-color:#2a2d35}
-.mcard-back svg{width:36%;height:auto}
-.mcard-front{transform:rotateY(180deg);background:var(--card);box-shadow:var(--shadow),inset 0 0 0 3px var(--c-strong)}
-.mcard-front svg.ico{width:72%;height:72%;overflow:visible}
-.mword{padding:6px;font-size:clamp(.875rem,.75rem + .6vw,1.125rem);font-weight:700;line-height:1.2;text-align:center}
-.mcard.is-matched{cursor:default}
-.mcard.is-matched .mcard-front{background:var(--c)}
-.mcard-check{position:absolute;top:8px;right:8px;width:22px;height:22px;border-radius:50%;background:var(--mint);color:var(--mint-ink);display:grid;place-items:center;transform:scale(0)}
-
-/* ---------- 4e Scenario Sprint ---------- */
-.sprint{display:grid;gap:18px}
-@media (min-width:48em){.sprint{grid-template-columns:1.15fr 1fr;align-items:start}}
-.sprint-art{position:relative;border-radius:var(--r-lg);overflow:hidden;aspect-ratio:320/200;box-shadow:var(--shadow)}
-.sprint-art svg{display:block;width:100%;height:100%}
-.sprint-count{position:absolute;top:10px;left:10px;padding:3px 10px;border-radius:99px;background:rgba(255,255,255,.92);font-size:.75rem;font-weight:700}
-.fb{scroll-margin-bottom:16px;scroll-margin-top:calc(var(--kw-top) + 12px)}
-.result-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.result-top h2{margin:0}
-.ok-dot{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--good-soft);color:var(--good)}
-.result p{margin:10px 0 0}
-.result .fb-note{color:var(--muted);font-size:.875rem;margin-top:4px}
-.result .tipbox{margin-top:0;background:#fff}
-.result .dc-body p{margin:0}
-.result .dc-body .fb-note{margin-top:6px}
-.result-top .pill{margin-left:auto;background:#fff}
-.result .ok-dot{background:#fff;color:var(--good)}
-.scorecard .stats{grid-column:1/-1;width:100%;margin-top:4px}
-.recap-col ul{margin:0}
-
-@media (max-width:37.49em){.recap-col .dc-meta{display:none}}
-@media (max-width:22.5em){#practise .dc-meta{display:none}}
-
-/* ---------- End ---------- */
-.scorecard{display:grid;grid-template-columns:auto minmax(0,1fr);gap:18px;align-items:center}
-@media (max-width:22.5em){.scorecard{grid-template-columns:minmax(0,1fr);justify-items:center;text-align:center}}
-.lvl{margin:0;font-size:1.375rem;font-weight:750;letter-spacing:-.02em;color:var(--ink)}
-.scorecard p{margin:4px 0 0}
-.scorecard .sub{color:var(--muted);font-size:.9375rem}
-.recap{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
-@media (max-width:22.5em){.recap{grid-template-columns:minmax(0,1fr)}}
-.recap-col ul{list-style:none;padding:0;margin:12px 0 0;display:grid;gap:8px}
-.recap-word{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;min-height:44px;padding:10px 14px;border:0;border-radius:var(--r-md);background:var(--c);color:var(--text);font-weight:600;line-height:1.25;text-align:left;cursor:pointer}
-.recap-word svg{flex:none;color:var(--c-ink)}
-
-/* ---------- Dialog ---------- */
-.modal{position:fixed;inset:0;z-index:80;display:grid;place-items:center;padding:16px;background:rgba(15,23,42,.35)}
-.modal-card{width:min(420px,100%);padding:28px 24px 22px;border-radius:var(--r-xl);background:var(--card);text-align:center;box-shadow:0 30px 60px -20px rgba(0,0,0,.35)}
-.modal-icon{width:64px;height:64px;margin:0 auto 14px;border-radius:50%;display:grid;place-items:center;background:var(--soft)}
-.modal-card h2{margin:0;font-size:1.5rem;font-weight:750;letter-spacing:-.02em}
-.modal-card p{margin:8px 0 22px;color:var(--muted)}
-.modal-card .btn{width:100%}
-
-/* ---------- Read aloud, Practice / Test, speaking, hints, results, report ---------- */
-.read-btn{flex:none;display:inline-grid;place-items:center;width:44px;height:44px;border:0;border-radius:50%;background:var(--soft);color:var(--text);cursor:pointer;vertical-align:middle}
-.read-btn:hover{background:#e3e6eb}
-.read-btn.is-playing{background:var(--frame);color:#fff}
-.read-btn svg{width:20px;height:20px}
-.q-row{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
-.tipbox .read-btn{margin-left:auto;background:#fff}
-/* the course's segmented control */
-.modes{display:inline-flex;padding:3px;border-radius:99px;background:var(--soft)}
-.modes button{min-height:38px;padding:0 14px;border:0;border-radius:99px;background:none;color:var(--muted);font-size:.875rem;font-weight:700;cursor:pointer}
-.modes button[aria-pressed="true"]{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(16,24,40,.14)}
-.ctrls{display:flex;gap:8px;flex-wrap:wrap}
-.game-row p{flex:1 1 220px}
-/* speaking: a black "Say it" pill (rust while listening, halo follows the voice) */
-.speak-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
-.mic-pill{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 18px 0 14px;border:0;border-radius:99px;color:#fff;font-weight:700;cursor:pointer}
-.mic-pill svg{width:20px;height:20px;flex:none}
-.mic-pill.recording{background:var(--rec);box-shadow:0 0 0 calc(6px + var(--level, 0) * 16px) rgba(180,83,42,.18)}
-.mic-pill:disabled{background:#aab3c3;box-shadow:none;cursor:default}
-.mic-pill:not(.recording):not(:disabled){box-shadow:0 0 0 calc(var(--level, 0) * 14px) rgba(0,0,0,.1)}
-.speak-msg{margin:0;flex:1 1 160px;font-size:.875rem;color:var(--muted)}
-.speak-msg.ok{color:var(--good);font-weight:600}
-.speak-msg.fix{color:var(--fix);font-weight:600}
-/* practice hint */
-.opt.is-hint{border:2px dashed var(--good);background:#f2fbf5}
-/* Word Match, sound cards */
-.sound-face{display:grid;justify-items:center;gap:6px;color:var(--c-ink);font-size:.875rem;font-weight:700}
-.sound-face svg{width:40px;height:40px}
-/* results lists (course style) */
-.list{list-style:none;margin:0;padding:0;display:grid;gap:12px}
-.list li{display:grid;grid-template-columns:24px minmax(0,1fr);gap:10px;align-items:start}
-.list .dot{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:.75rem;font-weight:800}
-.list.good .dot{background:var(--good-soft);color:var(--good)}
-.list.fix .dot{background:var(--fix-soft);color:var(--fix)}
-.list p{margin:0}
-.q{padding:0 6px;border-radius:6px;background:var(--fix-soft);color:#8f5508;font-weight:600}
-.b{padding:0 6px;border-radius:6px;background:var(--soft);color:var(--ink);font-weight:600}
-/* session report */
-
-/* ---------- Buttons: chunky and pressable, like Duolingo, in the course colours ----------
-   Every button stands on a solid edge (--kw-edge, --kw-lift high) and sinks onto it when pressed.
-   Sentence case and pill shapes keep the course look; mistakes stay amber, never red. */
-.btn,.mic-pill,.read-btn,.opt,.say,.recap-word{--kw-lift:4px;transition:transform .08s ease,box-shadow .08s ease,background-color .15s ease,border-color .15s ease,color .15s ease}
-.btn{min-height:46px;font-weight:700;letter-spacing:.005em;box-shadow:0 var(--kw-lift) 0 var(--kw-edge,#000)}
-.btn.primary{background:#1d1f25;color:#fff;--kw-edge:#000}
-.btn.primary:hover:not(:disabled){background:#2a2d35}
-.btn.secondary{background:#e9ebef;color:var(--text);--kw-edge:#c9cdd5}
-.btn.secondary:hover:not(:disabled){background:#f1f2f5}
-.btn.go{background:var(--good);color:#fff;--kw-edge:#0b4126}
-.btn.go:hover:not(:disabled){background:#187c48}
-.btn:disabled{opacity:1;background:#e3e6eb;color:#9aa0ab;--kw-edge:#cfd3da}
-/* on the black top bar */
-.actionbar .btn.primary{background:#fff;color:var(--text);--kw-edge:#9da2ad}
-.actionbar .btn.primary:hover:not(:disabled){background:#f1f2f5}
-.actionbar .btn.secondary{background:#30323a;color:#fff;--kw-edge:#15161a}
-.actionbar .btn.secondary:hover:not(:disabled){background:#3a3d46}
-.actionbar .btn:disabled{background:#2a2c33;color:#6e737e;--kw-edge:#15161a}
-/* the big Start / Continue button */
-.start-btn{background:#1d1f25;box-shadow:0 6px 0 #000,0 22px 34px -18px rgba(0,0,0,.55);transition:transform .08s ease,box-shadow .08s ease,background-color .15s ease}
-.start-btn:hover{transform:none;background:#2a2d35;box-shadow:0 6px 0 #000,0 22px 34px -18px rgba(0,0,0,.55)}
-.start-btn:active{transform:translateY(6px);box-shadow:0 0 0 #000,0 10px 18px -14px rgba(0,0,0,.4)}
-/* Say it */
-.mic-pill:not(.recording):not(:disabled){background:#1d1f25;box-shadow:0 4px 0 #000,0 0 0 calc(var(--level,0) * 14px) rgba(0,0,0,.1)}
-.mic-pill:disabled{background:#c9ced8;color:#fff;box-shadow:0 4px 0 #aab1be}
-.mic-pill.recording{box-shadow:0 4px 0 #7d3417,0 0 0 calc(6px + var(--level,0) * 16px) rgba(180,83,42,.18)}
-.wword .dc-foot.is-said .mic-pill:not(.recording):not(:disabled){background:var(--good);box-shadow:0 4px 0 #0b4126}
-/* read aloud */
-.read-btn{--kw-lift:3px;--kw-edge:#d5d9e0;box-shadow:0 3px 0 var(--kw-edge)}
-.read-btn.is-playing{--kw-edge:#000}
-/* answer rows */
-.opt{border:2px solid #e1e4ea;border-radius:16px;--kw-edge:#e1e4ea;box-shadow:0 4px 0 var(--kw-edge)}
-.opt:hover:not(:disabled){border-color:#c4c9d4;--kw-edge:#c4c9d4;background:#fbfbfc}
-.opt.is-right{border-color:var(--good);--kw-edge:var(--good)}
-.opt.is-wrong{border-color:var(--fix);--kw-edge:var(--fix)}
-.opt.is-hint{--kw-edge:#bfe5cc}
-/* pastel word buttons (story recap) and the word list on the result screen */
-.say{--kw-edge:var(--c-strong);box-shadow:0 4px 0 var(--kw-edge)}
-.say:hover{box-shadow:0 4px 0 var(--kw-edge);filter:brightness(1.03)}
-.recap-col .recap-word{--kw-lift:3px;--kw-edge:var(--c-strong);box-shadow:0 3px 0 var(--kw-edge)}
-/* pressed: sink onto the edge */
-.btn:active:not(:disabled),.mic-pill:active:not(:disabled):not(.recording),.read-btn:active,.opt:active:not(:disabled),.say:active,.recap-word:active{transform:translateY(var(--kw-lift));box-shadow:0 0 0 var(--kw-edge,#000)}
-
-/* ---------- Answer feedback ----------
-   Wrong: the option shakes and a short amber note says what to check (never red), then you try again.
-   Right: the option pops with confetti; in Scenario Sprint a green sheet slides up with why and Continue. */
-.fbx{display:grid;grid-template-columns:34px minmax(0,1fr);gap:10px;align-items:center;padding:10px 12px;border-radius:16px;box-shadow:inset 0 0 0 2px var(--fx)}
-.fbx.fix{--fx:#f1cf9a;background:var(--fix-soft)}
-.fbx.good{--fx:#9fdcb6;background:var(--good-soft)}
-.fbx-ico{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;color:#fff}
-.fbx.fix .fbx-ico{background:var(--fix)}
-.fbx.good .fbx-ico{background:var(--good)}
-.fbx-ico svg{width:18px;height:18px}
-.fbx b{display:block;font-size:.9375rem;font-weight:750;line-height:1.25}
-.fbx.fix b{color:var(--fix)}
-.fbx.good b{color:var(--good)}
-.fbx p{margin:2px 0 0;font-size:.875rem;font-weight:500;line-height:1.4;color:var(--text)}
-/* the Scenario Sprint result sheet */
-.fb{position:fixed;left:0;right:0;bottom:0;z-index:55;pointer-events:none}
-.fb-sheet{pointer-events:auto;padding:18px max(var(--gutter),env(safe-area-inset-right)) calc(18px + env(safe-area-inset-bottom)) max(var(--gutter),env(safe-area-inset-left));
-  border-radius:28px 28px 0 0;background:var(--good-soft);box-shadow:0 -1px 0 #9fdcb6,0 -18px 40px -20px rgba(16,24,40,.4)}
-.fb-in{max-width:var(--max);margin:0 auto;display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px 16px;align-items:center}
-.fb-badge{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;background:#fff;color:var(--good);box-shadow:0 4px 0 #9fdcb6}
-.fb-badge svg{width:30px;height:30px}
-.fb-head{display:flex;align-items:center;gap:8px 10px;flex-wrap:wrap}
-.fb-title{margin:0;font-size:1.375rem;font-weight:750;line-height:1.15;letter-spacing:-.02em;color:var(--good)}
-.fb .pill{background:#fff}
-.fb-text p{margin:4px 0 0;font-size:1rem}
-.fb .fb-note{color:#3d4250;font-size:.875rem}
-.fb .tipbox{grid-column:1/-1;background:#fff}
-.fb-next{grid-column:1/-1;width:100%;min-height:52px;font-size:1.0625rem}
-@media (min-width:48em){
-  .fb-in{grid-template-columns:auto minmax(0,1fr) auto}
-  .fb-next{grid-column:3;grid-row:1;width:auto;min-width:200px}
-  .fb .tipbox{grid-column:2/4}
-}
-body.kw-sheet main{padding-bottom:calc(var(--kw-sheet,220px) + 24px)}
-
-/* ================= Stage 5: Reading Card ================= */
-.kind.lilac{--c:var(--lilac);--c-ink:var(--tip)}
-.read-instr>p{flex:1 1 240px;min-width:0}
-.reading{position:relative;display:grid;gap:18px;padding:22px 20px 24px}
-@media (min-width:37.5em){.reading{padding:30px 34px 32px}}
-.reading-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
-.reading-id{display:grid;gap:10px;min-width:0}
-.read-art{display:block;color:var(--text)}
-.read-art svg{display:block;width:clamp(170px,40vw,220px);height:auto}
-.reading .reading-title{margin:0;font-size:clamp(1.5rem,1.1rem + 1.6vw,2.125rem);font-weight:750;line-height:1.15;letter-spacing:-.025em}
-.listen-btn{flex:none}
-.listen-btn.is-playing{background:#1d1f25;color:#fff;--kw-edge:#000}
-.listen-btn svg{width:18px;height:18px}
-@media (max-width:30em){.listen-btn span{display:none}.listen-btn{width:46px;padding:0}}
-/* body text 20px, line spacing 1.6, for beginner readers; paragraph numbers in the margin */
-.passage{max-width:68ch}
-.passage p{position:relative;margin:0 0 1em;padding-left:2.1rem;font-size:20px;line-height:1.6;color:var(--text)}
-.passage p:last-child{margin-bottom:0}
-.pnum{position:absolute;left:0;top:.3em;width:1.45rem;height:1.45rem;border-radius:50%;display:grid;place-items:center;background:var(--soft);color:var(--muted);font-size:.75rem;font-weight:700;line-height:1}
-.passage p.flash{border-radius:12px}
-/* glossary words: dotted underline and a small "i"; tapping opens a bubble right under the word */
-.gloss{display:inline;padding:0 1px;border:0;border-radius:6px;background:none;color:inherit;font:inherit;font-weight:700;cursor:pointer;
-  text-decoration:underline dotted var(--accent);text-decoration-thickness:2px;text-underline-offset:5px}
-.gloss:hover{background:#eef2fd}
-.gloss[aria-expanded="true"]{background:#e0e8fb}
-.gi{display:inline-grid;place-items:center;width:15px;height:15px;margin-left:3px;border-radius:50%;background:var(--accent);color:#fff;font-size:10px;font-weight:800;font-style:normal;line-height:1;vertical-align:.5em;text-decoration:none}
-.gloss-pop{position:absolute;z-index:5;width:min(300px,calc(100% - 16px));padding:12px 14px 13px;border-radius:16px;background:var(--frame);color:#fff;box-shadow:0 14px 30px -12px rgba(0,0,0,.5)}
-.gloss-pop::before{content:"";position:absolute;top:-6px;left:var(--arrow,24px);width:12px;height:12px;margin-left:-6px;background:var(--frame);transform:rotate(45deg);border-radius:2px}
-.gloss-pop b{font-family:var(--kw-display);font-size:1.0625rem}
-.gloss-pop .gp-pos{color:#a3a7b1;font-size:.875rem}
-.gloss-pop p{margin:4px 0 0;font-size:.9375rem;line-height:1.45}
-.source{margin:0;font-size:.8125rem;line-height:1.5;color:var(--muted)}
-.source a{color:var(--accent)}
-.glossary h3{margin:0 0 6px;font-family:var(--kw-display);font-size:1.125rem}
-.glossary dl{margin:0}
-.gl-row{display:grid;grid-template-columns:minmax(130px,190px) minmax(0,1fr) auto;gap:2px 16px;padding:10px 0;border-top:1px solid var(--line);align-items:baseline}
-.gl-row dt span{color:var(--muted);font-size:.875rem}
-.gl-row dd{margin:0}
-.gl-p{color:var(--muted);font-size:.8125rem;white-space:nowrap}
-@media (max-width:37.49em){.gl-row{grid-template-columns:minmax(0,1fr) auto}.gl-row dd:not(.gl-p){grid-column:1/-1;grid-row:2}}
-
-/* ================= Question screens (Stage 5 questions, Stage 8 quiz) ================= */
-.quiz{display:grid;gap:14px;width:100%;max-width:760px;margin:0 auto}
-.qtop{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:46px}
-.qdots{display:flex;gap:8px;align-items:center}
-.qdots i{width:10px;height:10px;border-radius:99px;background:#d3d7df;transition:width .25s ease,background-color .25s ease}
-.qdots i.done{background:var(--frame)}
-.qdots i.on{width:30px;background:var(--frame)}
-.show-text svg{width:18px;height:18px}
-.bigq{gap:16px;padding:20px}
-@media (min-width:37.5em){.bigq{padding:26px 28px}}
-.bigq .question{margin:0;font-size:clamp(1.25rem,1.05rem + .9vw,1.625rem);font-weight:650;line-height:1.35;letter-spacing:-.01em}
-.bigq .options{gap:12px}
-.check-btn{width:100%;min-height:54px;font-size:1.0625rem}
-.btn.wide{width:100%;min-height:54px;font-size:1.0625rem}
-/* answer choices: select first, then Check (pressable like every button) */
-.choice{display:flex;align-items:center;gap:12px;width:100%;min-height:56px;padding:13px 16px;border:2px solid #e1e4ea;border-radius:16px;background:#fff;color:var(--text);
-  font:inherit;font-size:1.0625rem;font-weight:600;line-height:1.35;text-align:left;cursor:pointer;
-  --kw-lift:4px;--kw-edge:#e1e4ea;box-shadow:0 4px 0 var(--kw-edge);transition:transform .08s ease,box-shadow .08s ease,background-color .15s ease,border-color .15s ease}
-.choice.row::before{content:"";flex:none;width:22px;height:22px;border-radius:50%;box-shadow:inset 0 0 0 2px #c4c9d4;transition:box-shadow .15s ease}
-.choice:hover:not(:disabled){border-color:#c4c9d4;--kw-edge:#c4c9d4}
-.choice[aria-pressed="true"]{border-color:var(--accent);--kw-edge:#2c48a8;background:#eef2fd;color:var(--ink)}
-.choice.row[aria-pressed="true"]::before{box-shadow:inset 0 0 0 7px var(--accent)}
-.choice.is-right{border-color:var(--good);--kw-edge:var(--good);background:var(--good-soft);color:var(--good)}
-.choice.is-wrong{border-color:var(--fix);--kw-edge:var(--fix);background:var(--fix-soft);color:var(--fix)}
-.choice.is-answer{border-style:dashed;border-color:var(--good);--kw-edge:#bfe5cc;background:#f2fbf5;color:var(--good)}
-.choice.row.is-right::before,.choice.row.is-answer::before{box-shadow:inset 0 0 0 7px var(--good)}
-.choice.row.is-wrong::before{box-shadow:inset 0 0 0 7px var(--fix)}
-.choice:disabled{cursor:default}
-.choice:active:not(:disabled){transform:translateY(4px);box-shadow:0 0 0 var(--kw-edge)}
-.chips-opts{display:flex;flex-wrap:wrap;gap:12px}
-.choice.chip{width:auto;min-width:92px;min-height:50px;justify-content:center;padding:10px 20px;border-radius:99px;font-size:1.125rem}
-.tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
-.choice.tile{flex-direction:column;justify-content:center;text-align:center;min-height:128px;padding:14px 8px}
-.choice.tile .ico{width:76px;height:76px;overflow:visible}
-.choice.tile.word{min-height:100px;font-family:var(--kw-display);font-size:clamp(1rem,.9rem + .6vw,1.25rem);font-weight:700}
-@media (max-width:22.5em){.choice.tile .ico{width:56px;height:56px}.choice.tile{min-height:104px}}
-/* Q1: hear the greeting */
-.qc-listen{display:flex;align-items:center;gap:14px;color:var(--muted);font-weight:600}
-.qc-play{display:grid;place-items:center;width:72px;height:72px;border:0;border-radius:50%;background:#1d1f25;color:#fff;cursor:pointer;
-  --kw-lift:5px;--kw-edge:#000;box-shadow:0 5px 0 var(--kw-edge);transition:transform .08s ease,box-shadow .08s ease}
-.qc-play svg{width:30px;height:30px}
-.qc-play:active{transform:translateY(5px);box-shadow:0 0 0 var(--kw-edge)}
-.qc-play.is-playing{background:var(--accent);--kw-edge:#2c48a8}
-/* Q3: drag "am" and "is" into the blanks */
-.sentence{margin:4px 0;font-family:var(--kw-display);font-size:clamp(1.375rem,1.1rem + 1.4vw,1.875rem);font-weight:600;line-height:2.3}
-.slot{display:inline-grid;place-items:center;min-width:92px;height:50px;margin:0 6px;padding:0 16px;border:2px dashed #b4bccb;border-radius:14px;background:var(--soft-2);color:var(--ink);
-  font:inherit;font-weight:700;vertical-align:middle;cursor:pointer;transition:background-color .15s ease,border-color .15s ease}
-.slot.filled{border-style:solid;border-color:var(--accent);background:#eef2fd;box-shadow:0 4px 0 #2c48a8}
-.slot.is-over{border-color:var(--accent);background:#dfe7fb}
-.slot.is-right{border-color:var(--good);background:var(--good-soft);color:var(--good);box-shadow:0 4px 0 var(--good)}
-.slot.is-wrong{border-color:var(--fix);background:var(--fix-soft);color:var(--fix);box-shadow:0 4px 0 var(--fix)}
-.bank{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;padding:16px;border-radius:20px;background:var(--soft-2)}
-.wchip{min-width:92px;min-height:54px;padding:0 22px;border:2px solid #e1e4ea;border-radius:16px;background:#fff;color:var(--text);font:inherit;font-family:var(--kw-display);font-size:1.375rem;font-weight:700;
-  box-shadow:0 4px 0 #e1e4ea;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
-.wchip.is-used{visibility:hidden}
-.wchip.is-lifted{opacity:.3}
-.drag-ghost{position:fixed;left:0;top:0;margin:0;z-index:90;pointer-events:none;cursor:grabbing;box-shadow:0 18px 30px -12px rgba(0,0,0,.35),0 4px 0 #c4c9d4}
-/* Q4: a small shop front */
-.qc-art{overflow:hidden;width:100%;max-width:440px;margin:0 auto;border-radius:20px}
-.qc-art svg{display:block;width:100%;height:auto}
-/* closing screens */
-.done-card{display:grid;justify-items:center;gap:14px;text-align:center;padding:26px 22px 28px}
-.done-title{margin:0;font-size:clamp(1.75rem,1.3rem + 1.8vw,2.5rem);font-weight:750;letter-spacing:-.03em}
-.done-title.big{font-size:clamp(2.25rem,1.6rem + 2.6vw,3.25rem)}
-.done-sub,.done-line{margin:0;max-width:44ch;font-size:1.125rem;line-height:1.5;color:#3d4250}
-.done-line .read-btn{margin-left:6px}
-.done-art{overflow:hidden;width:min(440px,100%);border-radius:var(--r-lg);box-shadow:var(--shadow)}
-.done-art svg{display:block;width:100%;height:auto}
-.review{list-style:none;margin:4px 0;padding:0;width:100%;display:grid;gap:10px;text-align:left}
-.review li{display:grid;grid-template-columns:32px minmax(0,1fr);gap:12px;align-items:start;padding:12px 14px;border-radius:16px;background:var(--soft-2)}
-.rd-mark{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;color:#fff}
-.review li.ok .rd-mark{background:var(--good)}
-.review li.fix .rd-mark{background:var(--fix)}
-.rd-mark svg{width:16px;height:16px}
-.review b{display:block;font-weight:650;line-height:1.35}
-.review p{margin:4px 0 0;color:#3d4250}
-.rd-where{display:inline-block;margin-left:8px;color:var(--muted);font-size:.8125rem}
-/* the result sheet for questions: green when right, amber when not (no negative marking) */
-.qsheet.fix .fb-sheet{background:var(--fix-soft);box-shadow:0 -1px 0 #f1cf9a,0 -18px 40px -20px rgba(16,24,40,.4)}
-.qsheet.fix .fb-title{color:var(--fix)}
-.qsheet.fix .fb-badge{color:var(--fix);box-shadow:0 4px 0 #f1cf9a}
-.qsheet.fix .btn.go{background:var(--fix);--kw-edge:#6e4108}
-.qsheet.fix .btn.go:hover:not(:disabled){background:#b56d12}
-.qsheet .link-btn{margin-left:6px;padding:0;font-size:.875rem}
-/* Show text: the passage opens in a drawer (from the right; from the bottom on phones) */
-.textdrawer{position:fixed;inset:0;z-index:75;display:flex;justify-content:flex-end;background:rgba(15,23,42,.42)}
-.td-panel{display:flex;flex-direction:column;width:min(780px,94vw);height:100%;background:var(--bg);box-shadow:-20px 0 40px -20px rgba(0,0,0,.4)}
-.td-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px max(16px,env(safe-area-inset-right)) 12px 20px;background:var(--frame);color:#fff}
-.td-head .btn{min-height:42px}
-.td-body{flex:1;overflow:auto;padding:16px;overscroll-behavior:contain}
-@media (max-width:37.49em){.textdrawer{align-items:flex-end}.td-panel{width:100%;height:92%;border-radius:24px 24px 0 0;overflow:hidden}.td-body{padding:12px}}
-body.kw-noscroll{overflow:hidden}
-</style>
+<link rel="stylesheet" href="css/kw.css?v=20261118i">
 </head>
 <body data-kind="speak" data-view="welcome">
 
@@ -818,22 +53,6 @@ body.kw-noscroll{overflow:hidden}
           <span class="timer-mount"></span>
           <img class="timer-body" src="assets/timer/timer-body.svg" width="209" height="81" alt="">
           <span class="timer-time">05:00</span>
-        </div></div>
-      </div>
-      <div class="timer" id="read-timer" role="timer" aria-label="Time left" hidden>
-        <div class="timer-inner"><div class="timer-swing">
-          <span class="timer-rod"></span>
-          <span class="timer-mount"></span>
-          <img class="timer-body" src="assets/timer/timer-body.svg" width="209" height="81" alt="">
-          <span class="timer-time">12:00</span>
-        </div></div>
-      </div>
-      <div class="timer" id="check-timer" role="timer" aria-label="Time left" hidden>
-        <div class="timer-inner"><div class="timer-swing">
-          <span class="timer-rod"></span>
-          <span class="timer-mount"></span>
-          <img class="timer-body" src="assets/timer/timer-body.svg" width="209" height="81" alt="">
-          <span class="timer-time">10:00</span>
         </div></div>
       </div>
     </div>
@@ -1075,98 +294,7 @@ body.kw-noscroll{overflow:hidden}
         <button type="button" class="btn primary" data-action="finish">Finish</button>
       </div></div>
     </section>
-    <!-- Stage 5: Reading Card. The passage is the content team's approved text, word for word (CC BY-SA 4.0). -->
-    <section class="screen" data-screen="read" hidden>
-      <div class="work">
-        <div class="instr read-instr"><span class="kind lilac"><i data-ui="book"></i>Reading</span><p>Ananya greeted her manager with words. People greet with actions too. Read the passage, then answer three questions.</p><button type="button" class="read-btn" data-read="ins-read" data-text="Ananya greeted her manager with words. People greet with actions too. Read the passage, then answer three questions." aria-label="Read the instructions aloud"><i data-ui="speaker"></i></button></div>
-        <div class="read-home">
-          <article class="card reading" id="reading" aria-labelledby="read-title">
-            <header class="reading-head">
-              <div class="reading-id">
-                <span class="read-art" aria-hidden="true"></span>
-                <h2 class="reading-title" id="read-title">Saying Hello — Words and Actions</h2>
-              </div>
-              <button type="button" class="btn secondary listen-btn" id="listen" aria-label="Listen to the whole passage"><i data-ui="speaker"></i><span>Listen</span></button>
-            </header>
-            <div class="passage" id="passage"></div>
-            <div class="gloss-pop" id="gloss-pop" role="status" aria-live="polite" hidden></div>
-            <p class="source">Adapted from Simple English Wikipedia, “Hello” and “Handshake,” <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>.<br>This adapted text is shared under the same licence.</p>
-            <section class="glossary" aria-labelledby="gl-title"><h3 id="gl-title">Glossary</h3><dl id="glossary-list"></dl></section>
-          </article>
-        </div>
-      </div>
-      <div class="actionbar"><div class="actionbar-in">
-        <span class="grow">Then 3 questions</span>
-        <button type="button" class="btn secondary back-btn" data-go="welcome" aria-label="Back"><i data-ui="back"></i><span class="back-lb">Back</span></button>
-        <button type="button" class="btn primary" data-go="readq">Continue</button>
-      </div></div>
-    </section>
 
-    <section class="screen" data-screen="readq" hidden>
-      <div class="work">
-        <div class="quiz">
-          <div class="qtop"><div class="qdots" id="rq-dots" role="img"></div><button type="button" class="btn secondary show-text" data-act="show-text"><i data-ui="book"></i><span>Show text</span></button></div>
-          <section class="dc lilac bigq" id="rq-card"></section>
-        </div>
-      </div>
-      <div class="actionbar"><div class="actionbar-in">
-        <span class="grow" id="rq-status">Question 1 of 3</span>
-        <button type="button" class="btn secondary back-btn" data-go="read" aria-label="Back"><i data-ui="back"></i><span class="back-lb">Back</span></button>
-        <button type="button" class="btn primary" id="rq-next" disabled>Check</button>
-      </div></div>
-    </section>
-
-    <section class="screen" data-screen="readdone" hidden>
-      <div class="work">
-        <div class="quiz">
-          <section class="card done-card">
-            <span class="read-art" aria-hidden="true"></span>
-            <h2 class="done-title">Reading done</h2>
-            <p class="done-sub" id="rd-sub"></p>
-            <ol class="review" id="rd-list"></ol>
-            <button type="button" class="btn primary wide" data-go="welcome">Back to your path</button>
-          </section>
-        </div>
-      </div>
-      <div class="actionbar"><div class="actionbar-in">
-        <span class="grow">Stage 5 done</span>
-        <button type="button" class="btn secondary back-btn" data-go="read" aria-label="Back"><i data-ui="back"></i><span class="back-lb">Back</span></button>
-        <button type="button" class="btn primary" data-go="welcome">Continue</button>
-      </div></div>
-    </section>
-
-    <!-- Stage 8: Quick Check (a self-check; not graded) -->
-    <section class="screen" data-screen="check" hidden>
-      <div class="work">
-        <div class="quiz">
-          <div class="qtop"><div class="qdots" id="qc-dots" role="img"></div><span class="chip-soft">Not graded</span></div>
-          <section class="dc bigq" id="qc-card"></section>
-        </div>
-      </div>
-      <div class="actionbar"><div class="actionbar-in">
-        <span class="grow" id="qc-status">Question 1 of 4</span>
-        <button type="button" class="btn secondary back-btn" data-go="welcome" aria-label="Back"><i data-ui="back"></i><span class="back-lb">Back</span></button>
-        <button type="button" class="btn primary" id="qc-next" disabled>Check</button>
-      </div></div>
-    </section>
-
-    <section class="screen" data-screen="checkdone" hidden>
-      <div class="work">
-        <div class="quiz">
-          <section class="card done-card">
-            <div class="done-art" id="qc-done-art"></div>
-            <h2 class="done-title big">Great start!</h2>
-            <p class="done-line">Next, you'll get to use this greeting in five different situations of your own. <button type="button" class="read-btn" data-read="qc-done" data-text="Great start! Next, you'll get to use this greeting in five different situations of your own." aria-label="Read this aloud"><i data-ui="speaker"></i></button></p>
-            <button type="button" class="btn primary wide" data-act="qc-finish">Continue</button>
-          </section>
-        </div>
-      </div>
-      <div class="actionbar"><div class="actionbar-in">
-        <span class="grow">Quick Check done</span>
-        <button type="button" class="btn secondary back-btn" data-go="welcome" aria-label="Back"><i data-ui="back"></i><span class="back-lb">Back</span></button>
-        <button type="button" class="btn primary" data-act="qc-finish">Continue</button>
-      </div></div>
-    </section>
   </main>
 </div>
 
@@ -1190,26 +318,6 @@ body.kw-noscroll{overflow:hidden}
 
 <div id="live" class="sr-only" aria-live="polite"></div>
 
-<section class="fb qsheet" id="qsheet" hidden aria-live="polite">
-  <div class="fb-sheet">
-    <div class="fb-in">
-      <span class="fb-badge" id="qs-badge" aria-hidden="true"></span>
-      <div class="fb-text">
-        <div class="fb-head"><h2 class="fb-title" id="qs-title"></h2></div>
-        <p id="qs-text"></p>
-        <p class="fb-note" id="qs-note"></p>
-      </div>
-      <button type="button" class="btn go fb-next" id="qs-next">Continue</button>
-    </div>
-  </div>
-</section>
-
-<div class="textdrawer" id="textdrawer" hidden role="dialog" aria-modal="true" aria-labelledby="td-title">
-  <div class="td-panel">
-    <div class="td-head"><b id="td-title">The passage</b><button type="button" class="btn secondary" id="td-close">Close</button></div>
-    <div class="td-body"></div>
-  </div>
-</div>
 
 <script>
 (() => {
@@ -1669,7 +777,7 @@ const Sheet = {
     const right = $('#sprint-card .opt.is-right');
     if (right) {
       const over = right.getBoundingClientRect().bottom + 16 - (innerHeight - fb.offsetHeight);
-      if (over > 0) scrollBy({ top: over, behavior: RM ? 'auto' : 'smooth' });
+      if (over > 0) (right.closest('.work') || window).scrollBy({ top: over, behavior: RM ? 'auto' : 'smooth' });
     }
     if (!RM) {
       gsap.fromTo(fb, { yPercent: 100 }, { yPercent: 0, duration: .45, ease: 'back.out(1.1)', clearProps: 'transform' });
@@ -1731,8 +839,6 @@ function setChoice(kind, value) {
   announce(kind === 'mode' ? `${MODE === 'test' ? 'Test' : 'Practice'} mode.` : `Word Match shows ${SHOW}.`);
 }
 function updateTimers(name) {
-  $('#read-timer').hidden = !(name === 'read' || name === 'readq');
-  $('#check-timer').hidden = name !== 'check';
   $('#match-timer').hidden = !(name === 'match' && MODE === 'test');
   $('#sprint-timer').hidden = !(name === 'sprint' && MODE === 'test');
 }
@@ -1900,6 +1006,7 @@ function show(name, dir = 1) {
       gsap.set(from, { clearProps: 'all' });
       to.hidden = false;
       window.scrollTo(0, 0);
+      $$(':scope > .work', to).forEach(w => { w.scrollTop = 0; });
       if (!RM) {
         gsap.fromTo('#page-title', { y: 10, opacity: 0 }, { y: 0, opacity: 1, duration: .45, ease: 'power3.out', clearProps: 'transform,opacity' });
         gsap.fromTo($$(':scope > .work > *', to), { y: 22, opacity: 0 }, { y: 0, opacity: 1, duration: .55, ease: 'power3.out', stagger: .06, clearProps: 'transform,opacity' });
@@ -1917,14 +1024,6 @@ const goBack = () => { const i = ORDER.indexOf(cur); if (i > 0) show(ORDER[i - 1
 function enter(name) {
   Log.enter(name);
   if (name !== 'end' && name !== 'welcome' && STEP[name]) Store.set({ screen: name });
-  const stage = STAGE_OF(name), from = STAGE_OF(lastLeft);
-  if (stage !== 's5') Reading.stop();
-  if (stage !== 's8') QuickCheck.stop();
-  if (stage === 's5' && from !== 's5') Reading.start();          // 12 minutes for reading plus the questions
-  if (name === 'readq') ReadQ.enter();
-  if (name === 'readdone') ReadDone.render();
-  if (name === 'check') QuickCheck.start();                     // 10 minutes, from question 1
-  if (name === 'checkdone') QuickCheck.done();
   if (name === 'welcome') Home.enter(false);
   if (name === 'intro') Intro.enter(false);
   if (name === 'greetings' || name === 'farewells') {
@@ -1938,9 +1037,6 @@ function enter(name) {
 function leave(name) {
   Log.leave(name);
   lastLeft = name;
-  QSheet.hide();
-  TextDrawer.close();
-  Gloss.close();
   Voice.stop();
   Speak.stop();
   if (name === 'welcome') Home.stop();
@@ -1960,11 +1056,11 @@ const PART_NAME = { greetings: 'Greetings', farewells: 'Farewells', compare: 'Ar
 const STAGES = [
   { id: 's4', n: 4, name: 'Key Words', icon: 'chat', go: 'greetings', time: 'about 10 min', meta: '5 parts · about 10 min',
     about: 'What to say when you arrive and when you leave, at work and in daily life.' },
-  { id: 's5', n: 5, name: 'Reading Card', icon: 'book', go: 'read', time: '12 min', meta: '1 short read · 3 questions · 12 min', needs: 's4',
+  { id: 's5', n: 5, name: 'Reading Card', icon: 'book', go: 'reading.html', time: '12 min', meta: '1 short read · 3 questions · 12 min', needs: 's4',
     about: 'A short read: greetings are actions as well as words, and even a handshake differs between cultures.' },
   { id: 's6', n: 6, soon: true },
   { id: 's7', n: 7, soon: true },
-  { id: 's8', n: 8, name: 'Quick Check', icon: 'clip', go: 'check', time: '10 min', meta: '4 questions · 10 min · not graded', needs: 's5',
+  { id: 's8', n: 8, name: 'Quick Check', icon: 'clip', go: 'quick-check.html', time: '10 min', meta: '4 questions · 10 min · not graded', needs: 's5',
     about: 'A short self-check before you move on. Nothing new, and it is not graded.' }
 ];
 const BUILT = STAGES.filter(st => !st.soon);
@@ -2137,7 +1233,7 @@ const Home = {
     if (!RM) gsap.fromTo(pop, { y: -8, scale: .96, autoAlpha: 0, transformOrigin: '50% 0%' }, { y: 0, scale: 1, autoAlpha: 1, duration: .25, ease: 'back.out(2)' });
     setTimeout(() => {
       const r = pop.getBoundingClientRect();
-      if (r.bottom > innerHeight - 12) scrollBy({ top: r.bottom - innerHeight + 24, behavior: RM ? 'auto' : 'smooth' });
+      if (r.bottom > innerHeight - 12) ($('#path').closest('.work') || window).scrollBy({ top: r.bottom - innerHeight + 24, behavior: RM ? 'auto' : 'smooth' });
       const b = $('.btn', pop);
       if (b) b.focus({ preventScroll: true });
     }, 60);
@@ -2169,7 +1265,7 @@ const Launch = {
     announce(`${kicker}: ${title}`);
     Home.closePop();
     Intro.stop();
-    if (RM) return show(to);
+    if (RM) { if (/\.html$/.test(to)) location.href = to; else show(to); return; }
     this.running = true;
     const el = $('#launch'), r = btn.getBoundingClientRect();
     const x = Math.round(r.left + r.width / 2), y = Math.round(r.top + r.height / 2);
@@ -2181,11 +1277,18 @@ const Launch = {
     gsap.set(el, { clipPath: `circle(${Math.round(r.height / 2)}px at ${x}px ${y}px)` });
     gsap.set(parts, { y: 26, autoAlpha: 0 });
     el.hidden = false;
-    gsap.timeline({ onComplete: () => { el.hidden = true; gsap.set(el, { clearProps: 'clipPath' }); this.running = false; } })
-      .to(btn, { scale: .96, duration: .1, yoyo: true, repeat: 1, ease: 'power1.inOut' }, 0)
+    const tl = gsap.timeline({ onComplete: () => { el.hidden = true; gsap.set(el, { clearProps: 'clipPath' }); this.running = false; } });
+    tl.to(btn, { scale: .96, duration: .1, yoyo: true, repeat: 1, ease: 'power1.inOut' }, 0)
       .to(el, { clipPath: `circle(${far}px at ${x}px ${y}px)`, duration: .55, ease: 'power3.in' }, .08)
       .to(parts, { y: 0, autoAlpha: 1, duration: .45, stagger: .07, ease: 'power3.out' }, .45)
-      .add(() => { gsap.set(btn, { clearProps: 'transform' }); show(to); }, .64)
+      .add(() => {
+        gsap.set(btn, { clearProps: 'transform' });
+        if (!/\.html$/.test(to)) return show(to);
+        // another page (Stage 5 or 8): it lifts the cover when it has loaded
+        try { sessionStorage.setItem('kw-launch', JSON.stringify({ kicker, title, dots })); } catch (e) { /* storage blocked */ }
+        tl.pause();
+        location.href = to;
+      }, .64)
       .set(el, { clipPath: 'inset(0px 0px 0px 0px)' }, .66)
       .to('#launch-dots i.on', { width: 40, duration: .35, ease: 'power2.out' }, .75)
       .to(parts, { y: -28, autoAlpha: 0, duration: .3, stagger: .04, ease: 'power2.in' }, 1.12)
@@ -2928,57 +2031,12 @@ function finish() {
   show('welcome', -1);
 }
 
-/* =========================================================
-   Stage 5: Reading Card
-   The passage is the content team's approved text, word for word (Simple English Wikipedia, CC BY-SA 4.0).
-   [[word]] marks a glossary word; [[shown|key]] when the glossary entry has another form.
-   ========================================================= */
+/* Used by the learning path: two extra icons and the handshake drawing shown beside Stage 5.
+   Stage 5 (reading.html) and Stage 8 (quick-check.html) are separate pages now. */
 Object.assign(UI, {
   book: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 6.5C10.5 5.3 8.3 4.8 5.5 4.8H4v13.4h1.5c2.8 0 5 .5 6.5 1.7 1.5-1.2 3.7-1.7 6.5-1.7H20V4.8h-1.5c-2.8 0-5 .5-6.5 1.7z"/><path d="M12 6.5v13.4"/></svg>',
   letters: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 18 7.5 6h1L13 18"/><path d="M4.6 14h6.8"/><path d="M15 11.6c.6-.9 1.5-1.4 2.7-1.4 1.8 0 2.8 1 2.8 2.8V18"/><path d="M20.5 15.1c-.6-.5-1.5-.7-2.5-.7-1.6 0-2.8.8-2.8 2 0 1.1.9 1.8 2.2 1.8 1.4 0 2.6-.9 3.1-2"/></svg>'
 });
-const READ_TITLE = 'Saying Hello — Words and Actions';
-const READ_PARAS = [
-  "Hello is a [[greeting]] used in the English language. People say 'hello' when they meet someone, or when they answer a phone call. Many people also say 'hi'. 'Hi' is an [[informal]] word. We often use it with friends and family. 'Hello' can be used in both informal and [[formal]] places, like a class or an office. There are other informal greetings too, like 'hey' and 'hiya'. Saying hello is a sign of [[politeness]], especially when you say it in a friendly way.",
-  "A greeting is not only a word. People also greet each other with actions. They may wave, nod, bow or shake hands. One of the most common action greetings is the [[handshake]].",
-  "In a handshake, two people hold each other's right hand for a short time. They move their hands up and down a little, and then they let go. People shake hands when they meet. They also shake hands to show that they [[agree]] on something.",
-  "The handshake is very old, and people in many [[cultures|culture]] use it. But it is not exactly the same everywhere. In some places, people give a [[firm]] handshake and hold the other hand tightly. In other places, a [[gentle]] handshake is more polite. In some cultures, the [[senior]] person, who is older or more important, offers a hand first. A handshake can be short or long. Almost everywhere, people shake hands with [[bare]] hands, not with gloves on.",
-  "In some places, men and women do not usually shake hands. Family members often [[hug]] instead. So it is a good idea to watch what other people do, and follow them.",
-  "Whether you say 'hello,' wave, or shake hands, a greeting is your first chance to be friendly and polite to someone new."
-];
-const GLOSS = {
-  greeting:   { w: 'Greeting',   pos: 'n.',   m: 'A word or action you use when you meet someone', p: '1' },
-  informal:   { w: 'Informal',   pos: 'adj.', m: 'Relaxed; used with friends and family, like “hi” or “hey”', p: '1' },
-  formal:     { w: 'Formal',     pos: 'adj.', m: 'Polite and serious; used in places like a class or an office', p: '1' },
-  politeness: { w: 'Politeness', pos: 'n.',   m: 'Being kind and showing good manners', p: '1' },
-  handshake:  { w: 'Handshake',  pos: 'n.',   m: "Holding another person's right hand and moving it up and down a little", p: '2, 3' },
-  agree:      { w: 'Agree',      pos: 'v.',   m: 'To think the same as someone, or say yes to the same thing', p: '3' },
-  culture:    { w: 'Culture',    pos: 'n.',   m: 'The way of life, habits and beliefs of a group of people', p: '4' },
-  firm:       { w: 'Firm',       pos: 'adj.', m: 'Strong and tight, not loose', p: '4' },
-  gentle:     { w: 'Gentle',     pos: 'adj.', m: 'Soft and light, not strong', p: '4' },
-  senior:     { w: 'Senior',     pos: 'adj.', m: 'Older or more important', p: '4' },
-  bare:       { w: 'Bare',       pos: 'adj.', m: 'Not covered; a bare hand has no glove on it', p: '4' },
-  hug:        { w: 'Hug',        pos: 'v.',   m: 'To put your arms around someone', p: '5' }
-};
-/* Questions and answers from the content table. Answer formats (tap two words, pick one row) are ours.
-   "Where in the text" for Q1 is paragraph 1: hi, hey and hiya are all in the first paragraph. */
-const READ_Q = [
-  { id: 'rq1', q: 'What are two example words from the text that mean “hello”?', type: 'multi', pick: 2,
-    options: ['hi', 'hey', 'hiya', 'wave', 'nod', 'hug'], correct: ['hi', 'hey', 'hiya'], answer: 'Hi, hey, hiya', where: 'Paragraph 1', para: [1] },
-  { id: 'rq2', q: 'What is a handshake used for, according to the text?', type: 'single',
-    options: ['When people meet, and to show they agree on something', 'To say goodbye at the end of a phone call', 'Only to greet family members', 'To show who is the oldest person'],
-    correct: [0], answer: 'When people meet, and to show they agree on something', where: 'Paragraph 3', para: [3] },
-  { id: 'rq3', q: 'Is a handshake exactly the same in every culture? Give one difference.', type: 'single',
-    options: ['Yes. It is the same everywhere.', 'No. In some places it is firm, and in other places it is gentle.', 'No. In some places people shake with their left hand.', 'No. In most places people shake hands with gloves on.'],
-    correct: [1], answer: "No: firm or gentle; who offers first; short or long; in some places men and women don't shake hands", where: 'Paragraphs 4–5', para: [4, 5] }
-];
-const escH = t => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-const GLOSS_RE = /\[\[([^|\]]+)(?:\|([^\]]+))?\]\]/g;
-const READ_TEXT = [READ_TITLE, ...READ_PARAS.map(p => p.replace(GLOSS_RE, '$1'))].join('\n\n');
-const praise = () => PRAISE[Math.floor(Math.random() * PRAISE.length)];
-const postStage = (stage, extra = {}) => { try { if (window.parent !== window) window.parent.postMessage({ type: 'stage-complete', stage, ...extra }, '*'); } catch (e) { /* not embedded */ } };
-
-/* Small line illustration: two hands in a handshake beside a waving hand */
 const READ_ART = `<svg viewBox="0 0 200 84" width="200" height="84" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
   <path d="M6 66 26 46"/><path d="M20 76 40 56"/><path d="M26 46l14 10"/><path d="M22 50l14 10" stroke-width="2"/>
   <path d="M134 66 114 46"/><path d="M120 76 100 56"/><path d="M114 46l-14 10"/><path d="M118 50l-14 10" stroke-width="2"/>
@@ -3000,450 +2058,7 @@ const READ_ART = `<svg viewBox="0 0 200 84" width="200" height="84" fill="none" 
   <path d="M195 14c2.4 3.2 3.2 7 2.4 10.6"/><path d="M189 7c1.8 1.5 3 3.4 3.7 5.6"/><path d="M150 16c-2.2 3.2-2.8 6.8-2.1 10.2"/>
 </svg>`;
 
-const Gloss = {
-  btn: null,
-  open(btn) {
-    if (this.btn === btn) return this.close();
-    this.close();
-    const pop = $('#gloss-pop'), card = $('#reading'), g = GLOSS[btn.dataset.g];
-    if (!g || !pop) return;
-    this.btn = btn;
-    btn.setAttribute('aria-expanded', 'true');
-    pop.innerHTML = `<b>${g.w}</b> <span class="gp-pos">(${g.pos})</span><p>${escH(g.m)}</p>`;
-    pop.hidden = false;
-    // directly under the word, kept inside the card
-    const br = btn.getClientRects()[0] || btn.getBoundingClientRect(), cr = card.getBoundingClientRect(), w = pop.offsetWidth;
-    const mid = br.left - cr.left + br.width / 2;
-    const left = Math.max(8, Math.min(mid - w / 2, cr.width - w - 8));
-    pop.style.left = `${left}px`;
-    pop.style.top = `${br.bottom - cr.top + 10}px`;
-    pop.style.setProperty('--arrow', `${Math.max(14, Math.min(w - 14, mid - left))}px`);
-    if (!RM) gsap.fromTo(pop, { y: -6, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .2, ease: 'power2.out' });
-  },
-  close() {
-    if (this.btn) this.btn.setAttribute('aria-expanded', 'false');
-    this.btn = null;
-    const pop = $('#gloss-pop');
-    if (pop) pop.hidden = true;
-  }
-};
-
-const Reading = {
-  LIMIT: 12 * 60 * 1000, timer: null, clock: null,
-  build() {
-    $$('.read-art').forEach(el => { el.innerHTML = READ_ART; });
-    $('#passage').innerHTML = READ_PARAS.map((p, i) => `<p data-para="${i + 1}"><span class="pnum" aria-label="Paragraph ${i + 1}">${i + 1}</span>${escH(p).replace(GLOSS_RE, (m, word, key) => {
-      const k = (key || word).toLowerCase();
-      return `<button type="button" class="gloss" data-g="${k}" aria-expanded="false" aria-controls="gloss-pop">${word}<span class="gi" aria-hidden="true">i</span></button>`;
-    })}</p>`).join('');
-    $('#glossary-list').innerHTML = Object.values(GLOSS).map(g => `<div class="gl-row"><dt><b>${g.w}</b> <span>(${g.pos})</span></dt><dd>${escH(g.m)}</dd><dd class="gl-p">Paragraph ${g.p}</dd></div>`).join('');
-  },
-  /* A new attempt: 12 minutes for reading plus the questions */
-  start() {
-    this.stop();
-    ReadQ.reset();
-    this.timer = setTimeout(() => this.timeUp(), this.LIMIT);
-    this.clock.start();
-  },
-  stop() { clearTimeout(this.timer); this.timer = null; if (this.clock) this.clock.stop(); },
-  timeUp() {
-    this.timer = null;
-    this.clock.stop('is-up');
-    QSheet.hide(); TextDrawer.close(); Voice.stop();
-    postKW('read-timeout');
-    Modal.open({ icon: UI.hourglass, title: 'Time is up', text: 'The questions start again. The text is still here for you.', button: 'Start again',
-      onClose: () => { this.start(); if (cur !== 'read') show('read', -1); } });
-  },
-  /* Listen: every tap reads the whole passage from the start */
-  listen(btn) {
-    let ended = false;
-    Voice.play('read-passage', READ_TEXT, () => { ended = true; btn.classList.remove('is-playing'); });
-    if (!ended) btn.classList.add('is-playing');
-  }
-};
-const postKW = (type, detail) => { try { if (window.parent !== window) window.parent.postMessage({ type: `kw-${type}`, detail }, '*'); } catch (e) { /* not embedded */ } };
-
-function qdots(sel, n, at) {
-  const el = $(sel);
-  el.innerHTML = Array.from({ length: n }, (_, k) => `<i class="${k < at ? 'done' : k === at ? 'on' : ''}"></i>`).join('');
-  el.setAttribute('aria-label', `Question ${Math.min(at + 1, n)} of ${n}`);
-}
-function cardIn(el) { if (!RM) gsap.fromTo(el, { x: 36, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: .35, ease: 'power3.out', clearProps: 'transform,opacity,visibility' }); }
-
-/* Result sheet for the question screens: green when right, amber when not. Nothing is taken away. */
-const QSheet = {
-  onNext: null,
-  show({ ok, title, text, note = '', button, onNext }) {
-    const el = $('#qsheet');
-    el.classList.toggle('fix', !ok);
-    $('#qs-badge').innerHTML = ok ? UI.checkBig : UI.bulb;
-    $('#qs-title').textContent = title;
-    $('#qs-text').textContent = text;
-    $('#qs-note').innerHTML = note;
-    $('#qs-note').hidden = !note;
-    $('#qs-next').textContent = button;
-    this.onNext = onNext;
-    el.hidden = false;
-    document.body.style.setProperty('--kw-sheet', `${el.offsetHeight}px`);
-    document.body.classList.add('kw-sheet');
-    if (!RM) {
-      gsap.fromTo(el, { yPercent: 100 }, { yPercent: 0, duration: .42, ease: 'back.out(1.1)', clearProps: 'transform' });
-      gsap.fromTo('#qs-badge', { scale: 0, rotation: -40 }, { scale: 1, rotation: 0, duration: .5, ease: 'back.out(2.6)', delay: .16 });
-    }
-    if (ok && window.Motion) setTimeout(() => Motion.confetti($('#qs-badge'), 26), 360);
-    setTimeout(() => $('#qs-next').focus({ preventScroll: true }), 160);
-  },
-  hide() { const el = $('#qsheet'); if (!el || el.hidden) return; el.hidden = true; document.body.classList.remove('kw-sheet'); this.onNext = null; },
-  next() { const f = this.onNext; if (f) f(); }
-};
-
-/* Show text: the passage opens in a drawer over the question, then goes back to its place */
-const TextDrawer = {
-  home: null, opener: null,
-  open(paras) {
-    const d = $('#textdrawer'), art = $('#reading');
-    if (!d.hidden) return;
-    this.home = art.parentElement;
-    this.opener = document.activeElement;
-    $('.td-body', d).append(art);
-    d.hidden = false;
-    document.body.classList.add('kw-noscroll');
-    if (!RM) {
-      const phone = innerWidth < 600;
-      gsap.fromTo('.td-panel', phone ? { yPercent: 100 } : { xPercent: 100 }, { xPercent: 0, yPercent: 0, duration: .38, ease: 'power3.out', clearProps: 'transform' });
-      gsap.fromTo(d, { backgroundColor: 'rgba(15,23,42,0)' }, { backgroundColor: 'rgba(15,23,42,.42)', duration: .3, clearProps: 'backgroundColor' });
-    }
-    $('.td-body', d).scrollTop = 0;
-    setTimeout(() => $('#td-close').focus({ preventScroll: true }), 60);
-    if (paras && paras.length) setTimeout(() => {
-      const ps = paras.map(n => $(`#passage p[data-para="${n}"]`)).filter(Boolean);
-      if (!ps.length) return;
-      ps[0].scrollIntoView({ behavior: RM ? 'auto' : 'smooth', block: 'center' });
-      ps.forEach(p => gsap.fromTo(p, { backgroundColor: 'rgba(253,232,176,1)', boxShadow: '0 0 0 8px rgba(253,232,176,1)' }, { backgroundColor: 'rgba(253,232,176,0)', boxShadow: '0 0 0 8px rgba(253,232,176,0)', duration: 2.4, delay: .35, ease: 'power1.in', clearProps: 'backgroundColor,boxShadow' }));
-    }, 300);
-  },
-  close() {
-    const d = $('#textdrawer');
-    if (!d || d.hidden) return;
-    Gloss.close();
-    if (this.home) this.home.append($('#reading'));
-    d.hidden = true;
-    document.body.classList.remove('kw-noscroll');
-    if (this.opener && document.contains(this.opener)) this.opener.focus({ preventScroll: true });
-  }
-};
-
-/* Stage 5 questions: one per screen; one try each, and the right answer shows straight after */
-const ReadQ = {
-  i: 0, picked: [], checked: false, results: [],
-  reset() { this.i = 0; this.picked = []; this.checked = false; this.results = []; },
-  enter() {
-    if (this.results[this.i] !== undefined) this.i++;          // a question checked before leaving counts as done
-    if (this.i >= READ_Q.length) { this.reset(); Reading.start(); }
-    this.render();
-  },
-  render() {
-    const q = READ_Q[this.i];
-    this.picked = []; this.checked = false;
-    qdots('#rq-dots', READ_Q.length, this.i);
-    $('#rq-status').textContent = `Question ${this.i + 1} of ${READ_Q.length}`;
-    const multi = q.type === 'multi';
-    $('#rq-card').innerHTML = `
-      <div class="dc-head"><span class="dc-ico">${UI.book}</span><span>Question ${this.i + 1} of ${READ_Q.length}</span>${multi ? `<span class="dc-meta">Tap ${q.pick}</span>` : ''}</div>
-      <div class="q-row"><p class="question" id="rq-q">${escH(q.q)}</p><button type="button" class="read-btn" data-read="${q.id}" data-text="${escH(q.q)}" aria-label="Read the question aloud">${UI.speaker}</button></div>
-      <div class="${multi ? 'chips-opts' : 'options'}" role="group" aria-labelledby="rq-q">
-        ${q.options.map((o, k) => `<button type="button" class="choice ${multi ? 'chip' : 'row'}" data-k="${k}" aria-pressed="false">${escH(o)}</button>`).join('')}
-      </div>
-      <button type="button" class="btn primary check-btn" data-act="rq-check" disabled>Check</button>`;
-    cardIn($('#rq-card'));
-    this.sync();
-  },
-  pick(btn) {
-    if (this.checked) return;
-    const q = READ_Q[this.i], k = Number(btn.dataset.k);
-    if (q.type === 'multi') {
-      const at = this.picked.indexOf(k);
-      if (at >= 0) this.picked.splice(at, 1);
-      else { this.picked.push(k); if (this.picked.length > q.pick) this.picked.shift(); }
-    } else this.picked = [k];
-    $$('#rq-card .choice').forEach(b => b.setAttribute('aria-pressed', String(this.picked.includes(Number(b.dataset.k)))));
-    if (!RM) gsap.fromTo(btn, { scale: .96 }, { scale: 1, duration: .3, ease: 'back.out(3)', clearProps: 'transform' });
-    this.sync();
-  },
-  ready() { const q = READ_Q[this.i]; return this.picked.length === (q.pick || 1); },
-  sync() {
-    const last = this.i === READ_Q.length - 1, inCard = $('#rq-card [data-act="rq-check"]'), top = $('#rq-next');
-    if (inCard) { inCard.disabled = this.checked || !this.ready(); inCard.hidden = this.checked; }
-    top.disabled = !this.checked && !this.ready();
-    top.textContent = this.checked ? (last ? 'See results' : 'Next question') : 'Check';
-  },
-  primary() { if (this.checked) return QSheet.next(); if (this.ready()) this.check(); },
-  check() {
-    const q = READ_Q[this.i], val = k => (q.type === 'multi' ? q.options[k] : k);
-    const ok = this.picked.every(k => q.correct.includes(val(k)));
-    this.checked = true;
-    this.results[this.i] = ok;
-    $$('#rq-card .choice').forEach(b => {
-      const k = Number(b.dataset.k), isAns = q.correct.includes(val(k)), chosen = this.picked.includes(k);
-      b.disabled = true;
-      b.setAttribute('aria-pressed', String(chosen));
-      if (chosen) b.classList.add(isAns ? 'is-right' : 'is-wrong');
-      else if (isAns && !ok) b.classList.add('is-answer');
-    });
-    const wrongEls = $$('#rq-card .choice.is-wrong');
-    if (ok) { SFX.good(); if (window.Motion) $$('#rq-card .choice.is-right').forEach(b => Motion.confetti(b, 10)); }
-    else { SFX.bad(); buzz(); if (wrongEls.length) shake(wrongEls, 7); }
-    postKW('read-answer', { question: q.id, picked: this.picked.map(k => q.options[k]), correct: ok });
-    const last = this.i === READ_Q.length - 1;
-    QSheet.show({ ok, title: ok ? praise() : 'Not quite', text: `The answer: ${q.answer}.`,
-      note: `It's in ${q.where.toLowerCase()}. <button type="button" class="link-btn" data-act="see-text" data-para="${q.para.join(',')}">See it in the text</button>`,
-      button: last ? 'See results' : 'Next question', onNext: () => this.next() });
-    this.sync();
-  },
-  next() {
-    QSheet.hide();
-    this.i++;
-    if (this.i >= READ_Q.length) { Reading.stop(); show('readdone'); return; }
-    this.render();
-    window.scrollTo({ top: 0, behavior: RM ? 'auto' : 'smooth' });
-  }
-};
-const ReadDone = {
-  render() {
-    const right = ReadQ.results.filter(Boolean).length;
-    $('#rd-sub').textContent = `${right} of ${READ_Q.length} right. Here are the answers and where they are in the text.`;
-    $('#rd-list').innerHTML = READ_Q.map((q, k) => `<li class="${ReadQ.results[k] ? 'ok' : 'fix'}"><span class="rd-mark" aria-label="${ReadQ.results[k] ? 'Right' : 'Not quite'}">${ReadQ.results[k] ? UI.check : UI.replay}</span><div><b>${escH(q.q)}</b><p>${escH(q.answer)}<span class="rd-where">${q.where}</span></p></div></li>`).join('');
-    markStage('s5');
-    postStage(5, { right, outOf: READ_Q.length });
-  }
-};
-
-/* =========================================================
-   Stage 8: Quick Check. A self-check, not graded; feedback after each answer, nothing taken away.
-   ========================================================= */
-const CHECK_Q = [
-  { id: 'qc1', skill: 'Listening', icon: 'speaker', q: 'Listen. Which picture matches?', type: 'icons', correct: 'sun',
-    options: [{ v: 'sunrise', label: 'Picture: the sun coming up' }, { v: 'sun', label: 'Picture: the sun high in the sky' }, { v: 'moon', label: 'Picture: a moon and stars' }],
-    right: '“Good afternoon” goes with the sun high in the sky.', wrong: 'The answer is the sun high in the sky. “Good afternoon” is for the afternoon.' },
-  { id: 'qc2', skill: 'Vocabulary', icon: 'book', q: 'Which word means “a small apology”?', type: 'words', correct: 'Sorry',
-    options: ['Please', 'Sorry', 'Thank you'], right: '“Sorry” is a small apology.', wrong: 'The answer is “Sorry”. It is a small apology.' },
-  { id: 'qc3', skill: 'Grammar', icon: 'letters', q: 'Drag “am” and “is” into the right blanks.', type: 'drag',
-    right: 'I am Ananya. This is my first day.', wrong: 'The answer: I am Ananya. This is my first day.' },
-  { id: 'qc4', skill: 'Application', icon: 'chat', q: "You're leaving a shop in the evening. What do you say?", type: 'words', art: true, correct: 'See you',
-    options: ['Good evening', 'See you', 'Good morning'], right: 'You are leaving, so you say “See you”, even in the evening.', wrong: 'The answer is “See you”. You are leaving, so you say goodbye, even in the evening.' }
-];
-function shopFront() {
-  let awn = '', scal = '';
-  for (let i = 0; i < 8; i++) { const c = i % 2 ? '#FFFFFF' : '#E2A53A'; awn += `<rect x="${64 + i * 21.5}" y="86" width="21.5" height="16" fill="${c}"/>`; scal += `<circle cx="${74.75 + i * 21.5}" cy="102" r="10.75" fill="${c}"/>`; }
-  return `<svg viewBox="0 0 300 180" role="img" aria-label="A small shop in the evening, with its lights on">
-    <rect width="300" height="180" fill="url(#g-sky-evening)"/>${stars([[26, 22], [92, 14], [214, 20], [268, 44], [46, 58]], 1.6)}
-    <circle cx="252" cy="36" r="13" fill="#FFF3C4"/><circle cx="257" cy="31" r="11" fill="#5E4A9A" opacity=".55"/>
-    <rect x="56" y="44" width="188" height="118" fill="#E9DFD0"/><rect x="52" y="40" width="196" height="8" rx="2" fill="#CDBDA6"/>
-    <rect x="96" y="54" width="108" height="24" rx="4" fill="#2D2A4A"/>
-    <text x="150" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-weight="700" font-size="13" letter-spacing="4" fill="#FFD98A">SHOP</text>
-    ${awn}${scal}
-    <rect x="72" y="116" width="92" height="46" rx="3" fill="#FFD98A"/><rect x="72" y="116" width="92" height="46" rx="3" fill="none" stroke="#7A5C48" stroke-width="3"/>
-    <rect x="82" y="132" width="16" height="22" rx="2" fill="#E07A5F"/><rect x="102" y="138" width="14" height="16" rx="2" fill="#3D8B63"/><circle cx="132" cy="146" r="8" fill="#F2A541"/><rect x="144" y="134" width="12" height="20" rx="2" fill="#5B8DEF"/>
-    <rect x="176" y="114" width="52" height="48" rx="3" fill="#6B4B3A"/><rect x="182" y="120" width="40" height="22" rx="2" fill="#FFE2A3" opacity=".55"/><circle cx="216" cy="140" r="2.4" fill="#F4E3C3"/>
-    <rect y="162" width="300" height="18" fill="#3A3263"/><rect y="162" width="300" height="5" fill="#4C437A"/>
-  </svg>`;
-}
-const QuickCheck = {
-  LIMIT: 10 * 60 * 1000, timer: null, clock: null, i: 0, sel: null, checked: false, slots: [null, null],
-  start() {
-    this.stop();
-    QSheet.hide();
-    this.i = 0;
-    this.timer = setTimeout(() => this.timeUp(), this.LIMIT);
-    this.clock.start();
-    this.render();
-  },
-  stop() { clearTimeout(this.timer); this.timer = null; if (this.clock) this.clock.stop(); },
-  timeUp() {
-    this.timer = null;
-    this.clock.stop('is-up');
-    QSheet.hide(); Voice.stop();
-    postKW('check-timeout');
-    Modal.open({ icon: UI.hourglass, title: 'Time is up', text: 'The quiz starts again from question 1.', button: 'Start again',
-      onClose: () => { if (cur === 'check') this.start(); else show('check'); } });
-  },
-  render() {
-    const q = CHECK_Q[this.i];
-    this.sel = null; this.checked = false; this.slots = [null, null];
-    qdots('#qc-dots', CHECK_Q.length, this.i);
-    $('#qc-status').textContent = `Question ${this.i + 1} of ${CHECK_Q.length}`;
-    let body = '';
-    if (q.type === 'icons') body = `<div class="qc-listen"><button type="button" class="qc-play" data-act="qc-play" aria-label="Play the greeting">${UI.speaker}</button><span>Tap to hear it again</span></div>
-      <div class="tiles" role="group" aria-labelledby="qc-q">${q.options.map(o => `<button type="button" class="choice tile" data-v="${o.v}" aria-pressed="false" aria-label="${o.label}">${ICON[o.v]()}</button>`).join('')}</div>`;
-    if (q.type === 'words') body = `${q.art ? `<div class="qc-art">${shopFront()}</div>` : ''}
-      <div class="tiles" role="group" aria-labelledby="qc-q">${q.options.map(o => `<button type="button" class="choice tile word" data-v="${o}" aria-pressed="false">${o}</button>`).join('')}</div>`;
-    if (q.type === 'drag') body = `<p class="sentence">I <button type="button" class="slot" data-slot="0" aria-label="First blank, empty"></button> Ananya. This <button type="button" class="slot" data-slot="1" aria-label="Second blank, empty"></button> my first day.</p>
-      <div class="bank" role="group" aria-label="Words to place. Drag one into a blank, or tap it.">${shuffle(['am', 'is']).map(w => `<button type="button" class="wchip" data-w="${w}">${w}</button>`).join('')}</div>`;
-    $('#qc-card').innerHTML = `
-      <div class="dc-head"><span class="dc-ico">${UI[q.icon]}</span><span>${q.skill}</span><span class="dc-meta">${this.i + 1} of ${CHECK_Q.length}</span></div>
-      <div class="q-row"><p class="question" id="qc-q">${escH(q.q)}</p><button type="button" class="read-btn" data-read="${q.id}" data-text="${escH(q.q)}" aria-label="Read the question aloud">${UI.speaker}</button></div>
-      ${body}
-      <button type="button" class="btn primary check-btn" data-act="qc-check" disabled>Check</button>`;
-    $('#qc-card').classList.toggle('lilac', true);
-    cardIn($('#qc-card'));
-    this.sync();
-    if (q.type === 'icons') setTimeout(() => { if (cur === 'check' && this.i === 0 && !this.checked && $('#modal').hidden) this.play(); }, 700);
-  },
-  play() {
-    const b = $('#qc-card .qc-play');
-    if (!b) return;
-    let ended = false;
-    Voice.play('good-afternoon', 'Good afternoon!', () => { ended = true; b.classList.remove('is-playing'); });
-    if (!ended) b.classList.add('is-playing');
-  },
-  pick(btn) {
-    if (this.checked) return;
-    this.sel = btn.dataset.v;
-    $$('#qc-card .choice').forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
-    if (!RM) gsap.fromTo(btn, { scale: .95 }, { scale: 1, duration: .3, ease: 'back.out(3)', clearProps: 'transform' });
-    this.sync();
-  },
-  /* Q3: tap a word to put it in the next empty blank; tap a filled blank to take the word back */
-  chipTap(chip) {
-    if (this.checked || Drag.justDropped || chip.classList.contains('is-used')) return;
-    const k = this.slots.indexOf(null);
-    if (k >= 0) this.place(chip, $(`#qc-card .slot[data-slot="${k}"]`));
-  },
-  place(chip, slot) {
-    if (this.checked) return;
-    const k = Number(slot.dataset.slot), w = chip.dataset.w;
-    if (this.slots[k]) this.free(k);
-    this.slots[k] = w;
-    slot.textContent = w;
-    slot.classList.add('filled');
-    slot.setAttribute('aria-label', `${k ? 'Second' : 'First'} blank: ${w}. Tap to take it back.`);
-    chip.classList.add('is-used');
-    chip.tabIndex = -1;
-    chip.setAttribute('aria-hidden', 'true');
-    if (!RM) gsap.fromTo(slot, { scale: .85 }, { scale: 1, duration: .35, ease: 'back.out(3)', clearProps: 'transform' });
-    this.sync();
-  },
-  free(k) {
-    const w = this.slots[k], slot = $(`#qc-card .slot[data-slot="${k}"]`), chip = $(`#qc-card .wchip[data-w="${w}"]`);
-    this.slots[k] = null;
-    slot.textContent = '';
-    slot.classList.remove('filled');
-    slot.setAttribute('aria-label', `${k ? 'Second' : 'First'} blank, empty`);
-    if (chip) { chip.classList.remove('is-used'); chip.tabIndex = 0; chip.removeAttribute('aria-hidden'); }
-  },
-  slotTap(slot) {
-    if (this.checked) return;
-    const k = Number(slot.dataset.slot);
-    if (this.slots[k]) { this.free(k); this.sync(); }
-  },
-  ready() { return CHECK_Q[this.i].type === 'drag' ? this.slots.every(Boolean) : !!this.sel; },
-  sync() {
-    const last = this.i === CHECK_Q.length - 1, inCard = $('#qc-card [data-act="qc-check"]'), top = $('#qc-next');
-    if (inCard) { inCard.disabled = this.checked || !this.ready(); inCard.hidden = this.checked; }
-    top.disabled = !this.checked && !this.ready();
-    top.textContent = this.checked ? (last ? 'Finish' : 'Next question') : 'Check';
-  },
-  primary() { if (this.checked) return QSheet.next(); if (this.ready()) this.check(); },
-  check() {
-    const q = CHECK_Q[this.i];
-    let ok;
-    this.checked = true;
-    if (q.type === 'drag') {
-      ok = this.slots[0] === 'am' && this.slots[1] === 'is';
-      $$('#qc-card .slot').forEach((sl, k) => { sl.classList.add(this.slots[k] === (k ? 'is' : 'am') ? 'is-right' : 'is-wrong'); sl.disabled = true; });
-      $$('#qc-card .wchip').forEach(c => { c.disabled = true; });
-    } else {
-      ok = this.sel === q.correct;
-      $$('#qc-card .choice').forEach(b => {
-        b.disabled = true;
-        if (b.dataset.v === this.sel) b.classList.add(ok ? 'is-right' : 'is-wrong');
-        else if (!ok && b.dataset.v === q.correct) b.classList.add('is-answer');
-      });
-    }
-    if (ok) { SFX.good(); const r = $('#qc-card .is-right'); if (r && window.Motion) Motion.confetti(r, 12); }
-    else { SFX.bad(); buzz(); shake($$('#qc-card .is-wrong'), 7); }
-    if (q.id === 'qc1') setTimeout(() => this.play(), 500);
-    postKW('check-answer', { question: q.id, correct: ok });
-    const last = this.i === CHECK_Q.length - 1;
-    QSheet.show({ ok, title: ok ? praise() : 'Not quite', text: ok ? q.right : q.wrong, button: last ? 'Finish' : 'Continue', onNext: () => this.next() });
-    this.sync();
-  },
-  next() {
-    QSheet.hide();
-    this.i++;
-    if (this.i >= CHECK_Q.length) { this.stop(); show('checkdone'); return; }
-    this.render();
-    window.scrollTo({ top: 0, behavior: RM ? 'auto' : 'smooth' });
-  },
-  done() {
-    const art = $('#qc-done-art');
-    if (!art.innerHTML) art.innerHTML = `<svg viewBox="0 0 440 340" role="img" aria-label="Ananya smiles and waves at the office entrance.">${gateBackdrop(440)}<g class="walker">${person({ x: 196, y: 302, s: 1.18, face: 1, wave: true, ...ANANYA })}</g></svg>`;
-    if (!RM) {
-      gsap.fromTo('.done-title.big', { scale: .6, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, duration: .6, ease: 'back.out(2.2)', delay: .25 });
-      if (window.Motion) setTimeout(() => Motion.confetti($('.done-title.big'), 40), 520);
-      const arm = $('#qc-done-art .arm-w');
-      if (arm) gsap.fromTo(arm, { rotation: 0 }, { keyframes: { rotation: [0, -14, 8, -10, 4, 0] }, duration: 1.6, delay: .6, svgOrigin: arm.dataset.origin || '0 0' });
-    }
-  },
-  finish() {
-    markStage('s8');
-    postStage(8);
-    show('welcome', -1);
-  }
-};
-
-/* Drag a word chip into a blank (mouse, pen or touch). A plain tap is handled as a click. */
-const Drag = {
-  s: null, justDropped: false,
-  init() {
-    document.addEventListener('pointerdown', e => {
-      const chip = e.target.closest && e.target.closest('.wchip');
-      if (!chip || chip.disabled || chip.classList.contains('is-used') || QuickCheck.checked || e.button > 0) return;
-      this.s = { chip, x: e.clientX, y: e.clientY, id: e.pointerId, moved: false };
-    });
-    document.addEventListener('pointermove', e => {
-      const s = this.s;
-      if (!s || e.pointerId !== s.id) return;
-      if (!s.moved) {
-        if (Math.hypot(e.clientX - s.x, e.clientY - s.y) < 6) return;
-        const r = s.chip.getBoundingClientRect();
-        s.moved = true; s.dx = s.x - r.left; s.dy = s.y - r.top;
-        s.ghost = s.chip.cloneNode(true);
-        s.ghost.classList.add('drag-ghost');
-        s.ghost.removeAttribute('id');
-        s.ghost.style.width = `${r.width}px`;
-        document.body.append(s.ghost);
-        s.chip.classList.add('is-lifted');
-      }
-      e.preventDefault();
-      s.ghost.style.transform = `translate(${e.clientX - s.dx}px, ${e.clientY - s.dy}px) rotate(-4deg) scale(1.05)`;
-      const over = document.elementFromPoint(e.clientX, e.clientY);
-      const slot = over && over.closest('#qc-card .slot');
-      $$('#qc-card .slot.is-over').forEach(x => { if (x !== slot) x.classList.remove('is-over'); });
-      if (slot) slot.classList.add('is-over');
-    }, { passive: false });
-    const end = e => {
-      const s = this.s;
-      if (!s || e.pointerId !== s.id) return;
-      this.s = null;
-      if (!s.moved) return;
-      const over = document.elementFromPoint(e.clientX, e.clientY);
-      const slot = over && over.closest('#qc-card .slot');
-      $$('#qc-card .slot.is-over').forEach(x => x.classList.remove('is-over'));
-      s.chip.classList.remove('is-lifted');
-      this.justDropped = true;
-      setTimeout(() => { this.justDropped = false; }, 50);
-      if (slot && !slot.disabled) { s.ghost.remove(); QuickCheck.place(s.chip, slot); return; }
-      const r = s.chip.getBoundingClientRect();
-      gsap.to(s.ghost, { x: r.left, y: r.top, rotation: 0, scale: 1, duration: .25, ease: 'power2.out', onComplete: () => s.ghost.remove() });
-    };
-    document.addEventListener('pointerup', end);
-    document.addEventListener('pointercancel', end);
-  }
-};
-
-const STAGE_OF = n => (n === 'welcome' ? 'map' : /^read/.test(n) ? 's5' : /^check/.test(n) ? 's8' : 's4');
-const STAGE_HOME = { s4: 'welcome', s5: 'read', s8: 'check' };
+const STAGE_OF = n => (n === 'welcome' ? 'map' : 's4');
 let lastLeft = 'welcome';
 
 /* =========================================================
@@ -3452,10 +2067,6 @@ let lastLeft = 'welcome';
 function init() {
   $$('[data-ui]').forEach(el => { el.outerHTML = UI[el.dataset.ui] || ''; });
   matchClock = makeClock($('#match-timer'), Match.LIMIT / 1000);
-  Reading.clock = makeClock($('#read-timer'), Reading.LIMIT / 1000);
-  QuickCheck.clock = makeClock($('#check-timer'), QuickCheck.LIMIT / 1000);
-  Reading.build();
-  Drag.init();
   // top-bar tabs: one per stage
   // the top-bar tab always leads back to the learning path
   $('.nav').addEventListener('click', e => {
@@ -3465,13 +2076,8 @@ function init() {
   });
   // the stage card closes when you tap elsewhere
   document.addEventListener('click', e => { if (!e.target.closest('#nodes .node, #node-pop')) Home.closePop(); }, true);
-  // a glossary bubble closes when you tap elsewhere; Escape closes the bubble or the passage drawer
-  document.addEventListener('click', e => { if (!e.target.closest('.gloss, #gloss-pop')) Gloss.close(); }, true);
-  document.addEventListener('keydown', e => {
-    if (e.key !== 'Escape') return;
-    if (!$('#textdrawer').hidden) TextDrawer.close(); else { Gloss.close(); Home.closePop(); }
-  });
-  $('#textdrawer').addEventListener('click', e => { if (e.target.id === 'textdrawer') TextDrawer.close(); });
+  // Escape closes the stage card on the path
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') Home.closePop(); });
   sprintClock = makeClock($('#sprint-timer'), Sprint.LIMIT / 1000);
   buildWordCards();
   Compare.build();
@@ -3487,27 +2093,18 @@ function init() {
   Home.build();
   Intro.build();
   // first screen: the Key Words start screen until Stage 4 is done, then the learning path
-  if (homeScreen() === 'intro') { screenEl('welcome').hidden = true; screenEl('intro').hidden = false; cur = 'intro'; }
+  // (index.html#path, used by the stage pages' Back to your path, always opens the path)
+  if (homeScreen() === 'intro' && location.hash !== '#path') { screenEl('welcome').hidden = true; screenEl('intro').hidden = false; cur = 'intro'; }
   setTop(cur);
+  // every screen opens at the top (no scroll kept from a reload or nudged by the swap above)
+  try { history.scrollRestoration = 'manual'; } catch (e) { /* older browsers */ }
+  window.scrollTo(0, 0);
 
   document.addEventListener('click', e => {
     const t = e.target.closest('button');
     if (!t || t.disabled) return;
     if (t.closest('.modes')) return setChoice(t.closest('.modes').dataset.kind, t.dataset.value);
     if (t.dataset.go) return show(t.dataset.go, t.classList.contains('back-btn') ? -1 : 1);
-    if (t.classList.contains('gloss')) return Gloss.open(t);
-    if (t.id === 'listen') return Reading.listen(t);
-    if (t.dataset.act === 'show-text') return TextDrawer.open();
-    if (t.dataset.act === 'see-text') return TextDrawer.open(t.dataset.para.split(','));
-    if (t.id === 'td-close') return TextDrawer.close();
-    if (t.classList.contains('choice')) return (cur === 'readq' ? ReadQ : QuickCheck).pick(t);
-    if (t.dataset.act === 'rq-check' || t.id === 'rq-next') return ReadQ.primary();
-    if (t.dataset.act === 'qc-check' || t.id === 'qc-next') return QuickCheck.primary();
-    if (t.id === 'qs-next') return QSheet.next();
-    if (t.dataset.act === 'qc-play') return QuickCheck.play();
-    if (t.classList.contains('wchip')) return QuickCheck.chipTap(t);
-    if (t.classList.contains('slot')) return QuickCheck.slotTap(t);
-    if (t.dataset.act === 'qc-finish') return QuickCheck.finish();
     if (t.classList.contains('read-btn')) return readAloud(t);
     if (t.classList.contains('say-word')) return sayWord(t);
     if (t.id === 'sprint-mic') return sayAnswer(t, '#sprint-card .opt', '#sprint-say-msg', b => Sprint.answer(b, 'voice'));
@@ -3543,9 +2140,10 @@ function init() {
     if (k >= 1 && k <= 4) { const b = $$('#sprint-card .opt')[k - 1]; if (b && !b.disabled) { b.focus(); b.click(); } }
   });
 
-  const onScroll = () => document.body.classList.toggle('kw-scrolled', scrollY > 4);
-  addEventListener('scroll', onScroll, { passive: true }); onScroll();
+  // the top bar gets a shadow once a screen's content scrolls under it
+  document.addEventListener('scroll', e => { const el = e.target === document ? document.scrollingElement : e.target; document.body.classList.toggle('kw-scrolled', (el && el.scrollTop) > 4); }, { passive: true, capture: true });
   playWelcome();
+  addEventListener('pageshow', e => { if (e.persisted) { Launch.running = false; $('#launch').hidden = true; if (cur === 'welcome') Home.enter(false); } });
 }
 
 init();
