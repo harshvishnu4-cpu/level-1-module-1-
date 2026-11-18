@@ -47,29 +47,74 @@
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px}
 .btn svg{flex:none}
 
-/* ---------- Welcome ---------- */
-.welcome{grid-template-columns:minmax(0,1fr)}
-@media (min-width:56.25em){.welcome{grid-template-columns:1.1fr 1fr;align-items:stretch}}
-.hero{position:relative;display:flex;flex-direction:column;justify-content:center;gap:20px;padding:58px 22px 28px}
-.hero-time{position:absolute;top:18px;left:50%;transform:translateX(-50%)}
-.hero-row{display:flex;flex-direction:column;gap:8px}
-.hero-row.arrive{align-items:flex-start}
-.hero-row.leave{align-items:flex-end}
-.bubble{position:relative;padding:14px 22px 13px;border-radius:24px;font-size:clamp(1.625rem,1.2rem + 2vw,2.25rem);font-weight:750;line-height:1.1;letter-spacing:-.025em;color:var(--text)}
-.bubble.sun{background:var(--kw-arrive);border-bottom-left-radius:6px}
-.bubble.sky{background:var(--kw-leave);border-bottom-right-radius:6px}
-.bubble .txt{display:inline-block}
-.bubble .dots{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:7px;opacity:0}
-.bubble .dots i{width:9px;height:9px;border-radius:50%;background:currentColor;opacity:.6}
-.hero-chip{display:inline-flex;align-items:center;gap:6px;font-size:.8125rem;font-weight:700;color:var(--c-ink)}
-.plan{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:12px}
-.plan li{display:flex;align-items:center;gap:12px;font-weight:600}
-.plan em{font-style:normal;color:var(--muted);font-size:.8125rem;font-weight:500;margin-left:2px}
-.num{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:#e3e6eb;color:var(--muted);font-size:.8125rem;font-weight:700}
-.num.sun{background:var(--kw-arrive);color:var(--kw-arrive-ink)}
-.num.sky{background:var(--kw-leave);color:var(--kw-leave-ink)}
-.num.both{background:linear-gradient(90deg,var(--kw-arrive) 50%,var(--kw-leave) 50%);color:var(--text)}
-.welcome .about{margin:16px 0 0;color:var(--muted)}
+/* ---------- Welcome: the course start screen ----------
+   One card: the pinboard (Figma sticky notes), the course title, one big Start button, and the 5 parts.
+   The page head is hidden here because the card carries the title. */
+body[data-view="welcome"] .pagehead{display:none}
+.home{display:grid;gap:22px;padding:12px 12px 20px}
+.home-board{position:relative;display:flex;align-items:center;justify-content:center;gap:clamp(14px,5%,34px);min-height:236px;padding:54px 14px 34px;border-radius:var(--r-lg);
+  background-color:var(--soft-2);background-image:radial-gradient(circle,#d7dbe3 1.3px,transparent 1.7px);background-size:20px 20px;background-position:10px 10px}
+.board-time{position:absolute;top:14px;left:14px;background:#fff;color:var(--text);box-shadow:0 1px 3px rgba(16,24,40,.1)}
+.pinned{display:grid;justify-items:center;gap:12px;width:min(46%,240px)}
+.pinned.left{transform:rotate(-3deg)}
+.pinned.right{transform:translateY(22px) rotate(2.5deg)}
+.home-note{width:100%;flex:none}
+.home-note .wcard-text{visibility:visible}
+.home-intro{padding:0 8px}
+.home-crumb{margin:0 0 8px;font-size:.875rem;font-weight:500;color:var(--muted)}
+.home-title{margin:0;font-size:clamp(2.75rem,1.9rem + 3.4vw,4.5rem);font-weight:800;line-height:1;letter-spacing:-.045em;color:var(--text)}
+.home-lede{margin:14px 0 0;max-width:34ch;font-size:clamp(1.0625rem,1rem + .3vw,1.25rem);line-height:1.5;color:#3d4250}
+.home-lede .read-btn{vertical-align:middle;margin-left:4px}
+.home-cta{display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px;margin-top:26px}
+/* the start button: black pill (course action colour) with a white play disc; on Continue the disc carries a progress ring */
+.start-btn{position:relative;display:inline-flex;align-items:center;gap:16px;min-width:300px;min-height:72px;padding:10px 34px 10px 10px;border:0;border-radius:99px;background:var(--frame);color:#fff;text-align:left;cursor:pointer;
+  box-shadow:0 16px 32px -16px rgba(0,0,0,.6);transition:transform .2s ease,box-shadow .2s ease}
+.start-btn:hover{transform:translateY(-2px);box-shadow:0 20px 36px -16px rgba(0,0,0,.65)}
+.start-btn:active{transform:translateY(0) scale(.985)}
+.start-btn:focus-visible{outline:3px solid var(--accent);outline-offset:4px}
+.start-go{position:relative;flex:none;width:52px;height:52px;border-radius:50%;background:#fff;color:var(--frame);display:grid;place-items:center}
+.start-go .play{width:22px;height:22px;margin-left:3px;transition:transform .2s ease}
+.start-btn:hover .start-go .play{transform:translateX(2px)}
+.start-pulse{position:absolute;inset:0;border-radius:50%;background:#fff;opacity:0;pointer-events:none}
+.go-ring{position:absolute;left:-6px;top:-6px;width:64px;height:64px;transform:rotate(-90deg);overflow:visible}
+.go-ring circle{fill:none;stroke-width:3.5}
+.go-ring .bg{stroke:#34363d}
+.go-ring .fg{stroke:var(--mint);stroke-linecap:round;transition:stroke-dasharray .6s ease}
+.start-text b{display:block;font-size:1.25rem;font-weight:750;line-height:1.2;letter-spacing:-.01em}
+.start-text small{display:block;margin-top:3px;font-size:.8125rem;font-weight:500;line-height:1.3;color:#b9bcc5}
+.home-mode{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-top:24px}
+.home-mode .lbl{font-size:.875rem;font-weight:600;color:var(--muted)}
+.home-mode .mode-note{flex-basis:100%}
+/* the five parts, in order: done = mint check, next = black */
+.home-track{list-style:none;margin:0;padding:18px 0 0;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}
+.home-track li{position:relative;display:grid;justify-items:center;align-content:start;gap:6px;padding:0 2px;text-align:center;font-size:.75rem;line-height:1.25;font-weight:600;color:var(--text)}
+.home-track li+li::before{content:"";position:absolute;top:16px;left:calc(-50% + 22px);right:calc(50% + 22px);border-top:2px dashed #cdd2da}
+.home-track li.past::before,.home-track li.on::before{border-top:2px solid var(--path)}
+.ht-n{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#e3e6eb;color:var(--muted);font-size:.8125rem;font-weight:700}
+.ht-n.sun{background:var(--kw-arrive);color:var(--kw-arrive-ink)}
+.ht-n.sky{background:var(--kw-leave);color:var(--kw-leave-ink)}
+.ht-n.both{background:linear-gradient(90deg,var(--kw-arrive) 50%,var(--kw-leave) 50%);color:var(--text)}
+.ht-n svg{width:16px;height:16px}
+.home-track li.past .ht-n{background:var(--mint);color:var(--mint-ink)}
+.home-track li.on .ht-n{background:var(--frame);color:#fff;box-shadow:0 0 0 4px var(--card),0 0 0 6px #d7dbe3}
+.ht-sub{display:none;font-weight:500;color:var(--muted)}
+.home-track li.past .ht-sub{color:var(--mint-ink)}
+@media (min-width:37.5em){
+  .home{padding:16px 16px 24px}
+  .home-board{min-height:300px}
+  .home-track li{font-size:.875rem}
+  .ht-sub{display:block;font-size:.8125rem}
+}
+@media (max-width:37.49em){
+  .start-btn{width:100%}
+  .home-cta .btn{flex:1}
+}
+@media (min-width:56.25em){
+  .home{grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);grid-template-areas:"intro board" "track track";gap:26px 40px;padding:18px 18px 26px 44px}
+  .home-board{grid-area:board;min-height:440px;padding:70px 28px 50px}
+  .home-intro{grid-area:intro;align-self:center;padding:0}
+  .home-track{grid-area:track;margin-right:26px}
+}
 
 /* ---------- 4a / 4b word cards: pinned sticky notes ----------
    Built from Figma moodboard nodes 30:47 (yellow backing, greetings) and 30:15 (blue backing, farewells).
@@ -217,7 +262,6 @@
 .read-btn:hover{background:#e3e6eb}
 .read-btn.is-playing{background:var(--frame);color:#fff}
 .read-btn svg{width:20px;height:20px}
-.about .read-btn{margin-left:4px}
 .q-row{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
 .tipbox .read-btn{margin-left:auto;background:#fff}
 /* the course's segmented control */
@@ -226,8 +270,6 @@
 .modes button[aria-pressed="true"]{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(16,24,40,.14)}
 .ctrls{display:flex;gap:8px;flex-wrap:wrap}
 .game-row p{flex:1 1 220px}
-.mode-row{margin-top:18px;padding-top:16px;border-top:1px solid var(--line);display:grid;gap:8px;justify-items:start}
-.mode-row .eyebrow{margin:0}
 .mode-note{margin:0;font-size:.875rem;color:var(--muted)}
 /* speaking: a black "Say it" pill (rust while listening, halo follows the voice) */
 .speak-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
@@ -267,7 +309,7 @@ details.more .btn{margin-left:20px}
 .copy-msg{margin:8px 20px 0;font-size:.8125rem;color:var(--muted)}
 </style>
 </head>
-<body data-kind="speak">
+<body data-kind="speak" data-view="welcome">
 
 <!-- Shared SVG paint (kept out of display:none so every scene can use it) -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -325,41 +367,43 @@ details.more .btn{margin-left:20px}
 
     <!-- Welcome -->
     <section class="screen" data-screen="welcome">
-      <div class="work welcome">
-        <section class="card hero" aria-hidden="true">
-          <span class="chip-soft hero-time"><i data-ui="clock"></i>6:30 pm</span>
-          <div class="hero-row arrive sun">
-            <div class="bubble sun"><span class="dots"><i></i><i></i><i></i></span><span class="txt">Good evening!</span></div>
-            <span class="hero-chip"><i data-ui="doorIn"></i>Arriving</span>
+      <div class="work">
+        <section class="card home" aria-labelledby="home-title">
+          <div class="home-board">
+            <span class="chip-soft board-time"><i data-ui="clock"></i>6:30 pm</span>
+            <div class="pinned left sun"><span class="note-slot" data-id="good-evening"></span><span class="kind"><i data-ui="doorIn"></i>Arriving</span></div>
+            <div class="pinned right sky"><span class="note-slot" data-id="see-you"></span><span class="kind"><i data-ui="doorOut"></i>Leaving</span></div>
           </div>
-          <div class="hero-row leave sky">
-            <div class="bubble sky"><span class="dots"><i></i><i></i><i></i></span><span class="txt">See you!</span></div>
-            <span class="hero-chip"><i data-ui="doorOut"></i>Leaving</span>
+          <div class="home-intro">
+            <p class="home-crumb">Communication Skills · Stage 4</p>
+            <h1 class="home-title" id="home-title">Key Words</h1>
+            <p class="home-lede">Learn what to say when you arrive and when you leave, at work and in daily life. <button type="button" class="read-btn" data-read="ins-welcome" data-text="Learn what to say when you arrive and when you leave, at work and in daily life." aria-label="Read this aloud"><i data-ui="speaker"></i></button></p>
+            <div class="home-cta">
+              <button type="button" class="start-btn" id="start">
+                <span class="start-go" aria-hidden="true">
+                  <span class="start-pulse"></span>
+                  <svg class="go-ring" viewBox="0 0 64 64" hidden><circle class="bg" cx="32" cy="32" r="30"/><circle class="fg" id="go-fg" cx="32" cy="32" r="30" stroke-dasharray="0 188.5"/></svg>
+                  <svg class="play" viewBox="0 0 24 24"><path d="M7 4.8v14.4a1 1 0 0 0 1.5.86l12-7.2a1 1 0 0 0 0-1.72l-12-7.2A1 1 0 0 0 7 4.8Z" fill="currentColor"/></svg>
+                </span>
+                <span class="start-text"><b id="start-label">Start lesson</b><small id="start-sub">5 parts · about 10 min</small></span>
+              </button>
+              <button type="button" class="btn secondary" id="restart" hidden>Start over</button>
+            </div>
+            <div class="home-mode">
+              <span class="lbl" id="mode-lbl">Games</span>
+              <div class="modes" role="group" aria-labelledby="mode-lbl" data-kind="mode"><button type="button" data-value="practice" aria-pressed="false">Practice</button><button type="button" data-value="test" aria-pressed="true">Test</button></div>
+              <p class="mode-note" id="mode-note">Test: timed games, and your first tries are scored.</p>
+            </div>
           </div>
-        </section>
-        <section class="card">
-          <p class="eyebrow">What you'll do</p>
-          <ol class="plan">
-            <li><span class="num sun">1</span><span>Hear three greetings</span></li>
-            <li><span class="num sky">2</span><span>Hear three farewells</span></li>
-            <li><span class="num both">3</span><span>Compare arriving and leaving</span></li>
-            <li><span class="num">4</span><span>Play Word Match <em>up to 4 min</em></span></li>
-            <li><span class="num">5</span><span>Play Scenario Sprint <em>up to 5 min</em></span></li>
+          <ol class="home-track" id="home-track" aria-label="The five parts">
+            <li data-step="greetings"><span class="ht-n sun">1</span><span class="ht-lb">Greetings</span><span class="ht-sub">3 words</span></li>
+            <li data-step="farewells"><span class="ht-n sky">2</span><span class="ht-lb">Farewells</span><span class="ht-sub">3 words</span></li>
+            <li data-step="compare"><span class="ht-n both">3</span><span class="ht-lb">Arrive or leave</span><span class="ht-sub">Short story</span></li>
+            <li data-step="match"><span class="ht-n">4</span><span class="ht-lb">Word Match</span><span class="ht-sub">Game</span></li>
+            <li data-step="sprint"><span class="ht-n">5</span><span class="ht-lb">Scenario Sprint</span><span class="ht-sub">Game</span></li>
           </ol>
-          <p class="about">Learn what to say when you arrive and when you leave, at work and in daily life. <button type="button" class="read-btn" data-read="ins-welcome" data-text="Learn what to say when you arrive and when you leave, at work and in daily life." aria-label="Read this aloud"><i data-ui="speaker"></i></button></p>
-          <div class="mode-row">
-            <p class="eyebrow">How do you want to play the games?</p>
-            <div class="modes" role="group" aria-label="Practice or test" data-kind="mode"><button type="button" data-value="practice" aria-pressed="false">Practice</button><button type="button" data-value="test" aria-pressed="true">Test</button></div>
-            <p class="mode-note" id="mode-note">Test: timed games, and your first tries are scored.</p>
-          </div>
         </section>
       </div>
-      <div class="actionbar"><div class="actionbar-in">
-        <span class="grow" id="welcome-status">5 parts · 2 short games</span>
-        <button type="button" class="btn secondary" id="restart" hidden>Start over</button>
-        <button type="button" class="btn primary" id="resume" hidden>Continue</button>
-        <button type="button" class="btn primary" id="start">Start</button>
-      </div></div>
     </section>
 
     <!-- 4a Greetings -->
@@ -1168,7 +1212,8 @@ let cur = 'welcome', busy = false;
 
 const TITLES = { welcome: 'Key Words', greetings: 'Greetings', farewells: 'Farewells', compare: 'Arriving or leaving?', match: 'Word Match', sprint: 'Scenario Sprint', end: 'Your result' };
 function setTop(name) {
-  const step = STEP[name], done = name === 'end' ? 5 : Math.max(0, step - 1);
+  const step = STEP[name], done = name === 'end' ? 5 : name === 'welcome' ? Home.done() : Math.max(0, step - 1);
+  document.body.dataset.view = name;
   $('#page-title').textContent = TITLES[name];
   $('#crumb').textContent = name === 'welcome' ? 'Communication Skills · Stage 4' : 'Communication Skills · Key Words';
   $('#steps').hidden = name === 'welcome';
@@ -1215,7 +1260,8 @@ const goBack = () => { const i = ORDER.indexOf(cur); if (i > 0) show(ORDER[i - 1
 
 function enter(name) {
   Log.enter(name);
-  if (name !== 'end') Store.set({ screen: name });
+  if (name !== 'end' && name !== 'welcome') Store.set({ screen: name });
+  if (name === 'welcome') Home.enter();
   if (name === 'greetings' || name === 'farewells') {
     dropNotes(screenEl(name));
   }
@@ -1228,27 +1274,75 @@ function leave(name) {
   Log.leave(name);
   Voice.stop();
   Speak.stop();
+  if (name === 'welcome') Home.stop();
   if (name === 'compare') { Story.stop(); Compare.stop(); }
   if (name === 'match') Match.stop();
   if (name === 'sprint') Sprint.stop();
 }
 
 /* =========================================================
-   Welcome: the one orchestrated load moment
+   Welcome: the course start screen
    ========================================================= */
+const Home = {
+  pulse: null,
+  /* where Continue goes: the saved part, if the learner has started */
+  resumeTo() { const s = Store.get().screen; return s && s !== 'welcome' && s !== 'end' && STEP[s] ? s : null; },
+  done() { const r = this.resumeTo(); return r ? STEP[r] - 1 : 0; },
+  /* the two pinned notes on the board (tap to hear) */
+  build() {
+    $$('.home-board .note-slot').forEach(slot => {
+      const id = slot.dataset.id, w = WORDS[id], n = NOTE[w.kind];
+      slot.outerHTML = `<button type="button" class="note home-note ${w.kind}" data-id="${id}" aria-label="Hear ${w.text}">
+        <span class="note-inner" aria-hidden="true">
+          <span class="note-backing"></span>
+          <span class="note-paper"><span class="note-sheet">
+            <img class="note-paper-img" src="${n.paper}" width="480.192" height="436.273" alt="">
+            ${ICON[w.icon]()}
+            <span class="wcard-word"><span class="wcard-text">${w.text}</span></span>
+          </span></span>
+          <span class="note-pin"><img src="${n.pin}" width="${n.pinW}" height="48.6332" alt=""></span>
+        </span>
+      </button>`;
+    });
+    $$('.home-note').forEach(el => noteSizer.observe(el));
+  },
+  /* Start or Continue, the restart link and the five parts, from the saved progress */
+  render() {
+    const to = this.resumeTo(), step = to ? STEP[to] : 1, done = step - 1;
+    $('#start-label').textContent = to ? 'Continue lesson' : 'Start lesson';
+    $('#start-sub').textContent = to ? `Part ${step} of 5: ${$(`#home-track li[data-step="${to}"] .ht-lb`).textContent}` : '5 parts · about 10 min';
+    $('#start').setAttribute('aria-label', to ? `Continue lesson, part ${step} of 5` : 'Start lesson');
+    $('#restart').hidden = !to;
+    $('.go-ring').toggleAttribute('hidden', !to);
+    $('#go-fg').setAttribute('stroke-dasharray', `${(188.5 * done / 5).toFixed(1)} 188.5`);
+    $$('#home-track li').forEach((li, i) => {
+      const n = i + 1, num = $('.ht-n', li);
+      li.classList.toggle('past', n < step);
+      li.classList.toggle('on', n === step);
+      if (n === step) li.setAttribute('aria-current', 'step'); else li.removeAttribute('aria-current');
+      num.innerHTML = n < step ? UI.check : String(n);
+      if (n < step) num.setAttribute('aria-label', 'Done'); else num.removeAttribute('aria-label');
+    });
+  },
+  /* one soft pulse on the play disc every few seconds, to show where to begin */
+  startPulse() {
+    if (RM || this.pulse) return;
+    this.pulse = gsap.timeline({ repeat: -1, repeatDelay: 2.4, delay: 1.6 })
+      .fromTo('.start-pulse', { scale: 1, opacity: .55 }, { scale: 1.7, opacity: 0, duration: 1.1, ease: 'power2.out' });
+  },
+  stop() { if (this.pulse) { this.pulse.kill(); this.pulse = null; gsap.set('.start-pulse', { opacity: 0 }); } },
+  enter() { this.render(); dropNotes(screenEl('welcome')); this.startPulse(); }
+};
+/* First load: notes drop onto the board, the title rises, then the Start button arrives */
 function playWelcome() {
+  Home.startPulse();
   if (RM) return;
-  const tl = gsap.timeline({ delay: .15 });
-  $$('.hero-row').forEach((row, i) => {
-    const b = $('.bubble', row), dots = $('.dots', row), txt = $('.txt', row), chip = $('.hero-chip', row);
-    const at = .3 + i * 1.2;
-    gsap.set(txt, { autoAlpha: 0 }); gsap.set(dots, { autoAlpha: 1 }); gsap.set([b, chip], { autoAlpha: 0 });
-    tl.fromTo(b, { scale: .2, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, duration: .45, ease: 'back.out(2)', transformOrigin: i ? '100% 100%' : '0% 100%' }, at)
-      .fromTo($$('i', dots), { y: 0 }, { y: -6, duration: .2, repeat: 3, yoyo: true, stagger: .1, ease: 'sine.inOut' }, at + .3)
-      .to(dots, { autoAlpha: 0, duration: .15 }, at + 1)
-      .fromTo(txt, { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, duration: .3, ease: 'back.out(2)' }, at + 1.02)
-      .fromTo(chip, { autoAlpha: 0, y: 6 }, { autoAlpha: 1, y: 0, duration: .3 }, at + 1.12);
-  });
+  dropNotes(screenEl('welcome'));
+  gsap.timeline({ delay: .1 })
+    .fromTo('.home-intro > *', { y: 18, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .55, ease: 'power3.out', stagger: .07, clearProps: 'transform,opacity,visibility' }, 0)
+    .fromTo('.home-board .kind', { y: 8, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .35, ease: 'power2.out', stagger: .12, clearProps: 'transform,opacity,visibility' }, .75)
+    .fromTo('.start-go', { scale: .4 }, { scale: 1, duration: .6, ease: 'back.out(2.4)', clearProps: 'transform' }, .45)
+    .fromTo('.home-track li', { y: 10, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .4, ease: 'power2.out', stagger: .06, clearProps: 'transform,opacity,visibility' }, .5);
 }
 
 /* =========================================================
@@ -1972,12 +2066,9 @@ function init() {
   const saved = Store.get();
   if (saved.heard) restoreHeard(saved.heard);
   if (saved.storyDone) Story.done = true;
-  if (saved.screen && saved.screen !== 'welcome' && ORDER.includes(saved.screen)) {
-    $('#resume').hidden = false;
-    $('#restart').hidden = false;
-    $('#start').hidden = true;
-    $('#welcome-status').textContent = `Saved: ${TITLES[saved.screen]}`;
-  }
+  Home.build();
+  Home.render();
+  setTop('welcome');
 
   document.addEventListener('click', e => {
     const t = e.target.closest('button');
@@ -1988,15 +2079,17 @@ function init() {
     if (t.id === 'story-mic') return sayAnswer(t, '#story-options .opt', '#story-say-msg', b => Story.answer(b, 'voice'));
     if (t.id === 'sprint-mic') return sayAnswer(t, '#sprint-card .opt', '#sprint-say-msg', b => Sprint.answer(b, 'voice'));
     if (t.id === 'copy-report') return copyReport();
-    if (t.id === 'start' || t.id === 'resume' || t.id === 'restart') {
+    if (t.classList.contains('home-note')) {
+      const w = WORDS[t.dataset.id];
+      swingNote(t); WIGGLE[w.icon]($('svg.ico', t));
+      return Voice.play(t.dataset.id, w.text);
+    }
+    if (t.id === 'start' || t.id === 'restart') {
+      const to = t.id === 'start' && Home.resumeTo();
       if (t.id === 'restart') { Store.clear(); buildWordCards(); Story.done = false; }
-      const to = t.id === 'resume' ? (Store.get().screen || 'greetings') : 'greetings';
-      ['resume', 'restart'].forEach(x => { $(`#${x}`).hidden = true; });
-      $('#start').hidden = false;
-      $('#welcome-status').textContent = '5 parts · 2 short games';
       Log.begin();
       Speak.warm();
-      return show(to);
+      return show(to || 'greetings');
     }
     if (t.hasAttribute('data-back')) return goBack();
     if (t.hasAttribute('data-next')) return goNext();
