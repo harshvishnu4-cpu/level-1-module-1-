@@ -101,12 +101,32 @@ body[data-view="welcome"] .pagehead{display:none}
 .home{display:grid;gap:22px;padding:12px 12px 20px}
 .home-board{position:relative;display:flex;align-items:center;justify-content:center;gap:clamp(14px,5%,34px);min-height:236px;padding:54px 14px 34px;border-radius:var(--r-lg);
   background-color:var(--soft-2);background-image:radial-gradient(circle,#d7dbe3 1.3px,transparent 1.7px);background-size:20px 20px;background-position:10px 10px}
-.board-time{position:absolute;top:14px;left:14px;background:#fff;color:var(--text);box-shadow:0 1px 3px rgba(16,24,40,.1)}
-.pinned{display:grid;justify-items:center;gap:12px;width:min(46%,240px)}
-.pinned.left{transform:rotate(-3deg)}
-.pinned.right{transform:translateY(22px) rotate(2.5deg)}
-.home-note{width:100%;flex:none}
-.home-note .wcard-text{visibility:visible}
+.pinned{width:min(47%,250px)}
+.pinned.left{transform:rotate(-4deg)}
+.pinned.right{transform:translateY(26px) rotate(3deg)}
+.hword{width:100%;border:0;font:inherit;text-align:left;cursor:pointer;box-shadow:0 18px 34px -20px rgba(16,24,40,.45)}
+.hword .dc-body{display:grid;justify-items:center;gap:8px;padding:16px 10px}
+.hword .ico{width:clamp(48px,8vw,84px);height:clamp(48px,8vw,84px);overflow:visible}
+.hw-text{font-size:clamp(1.0625rem,.8rem + 1vw,1.5rem);font-weight:750;line-height:1.1;letter-spacing:-.02em;text-align:center}
+.hword .dc-foot{justify-content:space-between;flex-wrap:nowrap}
+.hword .dpill{padding:5px 10px}
+.pinned,.hword{min-width:0}
+/* phones: the board cards drop the small speaker (tapping the card plays the word) and tighten up */
+@media (max-width:37.49em){
+  .hword{gap:10px;padding:10px}
+  .hword .dc-head{gap:6px;font-size:.8125rem}
+  .hword .dc-ico{width:26px;height:26px}
+  .hword .dc-body{padding:12px 6px}
+  .hword .dround{display:none}
+  .hword .dpill{padding:4px 9px;font-size:.75rem}
+}
+/* narrow phones: the two cards stack, still tilted */
+@media (max-width:22.5em){
+  .home-board{flex-direction:column;gap:20px;padding-bottom:30px}
+  .pinned{width:80%}
+  .pinned.left{transform:translateX(-7%) rotate(-4deg)}
+  .pinned.right{transform:translateX(7%) rotate(3deg)}
+}
 .home-intro{padding:0 8px}
 .home-crumb{margin:0 0 8px;font-size:.875rem;font-weight:500;color:var(--muted)}
 .home-title{margin:0;font-size:clamp(2.75rem,1.9rem + 3.4vw,4.5rem);font-weight:800;line-height:1;letter-spacing:-.045em;color:var(--text)}
@@ -180,34 +200,74 @@ body[data-view="welcome"] .pagehead{display:none}
 .launch-dots i.done{background:var(--mint)}
 .launch-dots i.on{width:28px;background:#fff}
 
-/* ---------- 4a / 4b word cards: pinned sticky notes ----------
-   Built from Figma moodboard nodes 30:47 (yellow backing, greetings) and 30:15 (blue backing, farewells).
-   .note-inner is laid out at the design's native 518.773 x 476 px and scaled to the card width by JS (--k). */
-.word-cards{display:flex;flex-wrap:wrap;justify-content:center;gap:20px 14px}
-.note{position:relative;flex:0 0 calc(50% - 7px);aspect-ratio:518.773/476;padding:0;border:0;background:none;cursor:pointer;text-align:center;--k:.33}
-@media (min-width:37.5em){.note{flex-basis:calc(33.333% - 10px)}}
-.note:focus-visible{outline:3px solid var(--accent);outline-offset:6px;border-radius:8px}
-.note-inner{position:absolute;left:0;top:0;width:518.773px;height:476px;transform:scale(var(--k));transform-origin:0 0}
-.note-backing{position:absolute;left:26.608px;top:19.158px;width:465.106px;height:436.369px}
-.note.sun .note-backing{background:#FDD25F}
-.note.sky .note-backing{background:#8DCAFC}
-.note-paper{position:absolute;left:21.419px;top:24.121px;width:475.935px;height:427.758px;transform:rotate(-6.11deg)}
-.note-sheet{position:absolute;inset:0}
-.note-paper-img{position:absolute;left:-.89%;top:0;display:block;max-width:none}
-.note-pin{position:absolute;left:246.223px;top:0;width:57.223px;height:56.794px;display:flex;align-items:center;justify-content:center}
-.note-pin img{display:block;max-width:none;flex:none;transform:rotate(10.52deg)}
-/* Content written on the paper (paper-local px; the fold sits bottom-right, the pin top-centre) */
-.wcard-speak{position:absolute;left:30px;top:28px;display:grid;place-items:center;width:104px;height:70px;border-radius:99px;background:var(--frame);color:#fff}
-.wcard-speak svg{width:42px;height:42px}
-.note .ico{position:absolute;left:143px;top:66px;width:190px;height:190px;overflow:visible}
-.wcard-word{position:absolute;left:40px;top:262px;width:396px;height:120px;display:grid;place-items:center}
+/* ---------- Cards in the style of the learning-plan reference ("Dei") ----------
+   A pastel card with a head row (round icon, label, detail on the right) and a lighter inner panel;
+   status pills and round buttons sit in the foot. Colours keep the stage code: butter = arriving,
+   sky = leaving, lilac = a question (it never gives the answer away), mint = done / correct. */
+.dc{position:relative;display:grid;gap:12px;padding:14px;border-radius:var(--r-lg);background:var(--c,var(--soft));color:var(--text)}
+.dc.lilac{--c:var(--lilac);--c-ink:var(--tip)}
+.dc.mint{--c:var(--mint);--c-ink:var(--mint-ink)}
+.dc.fix{--c:var(--fix-soft);--c-ink:var(--fix)}
+.dc-head{display:flex;align-items:center;gap:10px;min-width:0;font-size:.875rem;font-weight:650;line-height:1.2}
+.dc-head h2{margin:0;font-size:1rem;font-weight:700;letter-spacing:-.01em}
+.dc-ico{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#fff;color:var(--c-ink,var(--text))}
+.dc-ico svg{width:16px;height:16px}
+.dc-meta{margin-left:auto;min-width:0;overflow:hidden;text-overflow:ellipsis;font-size:.8125rem;font-weight:600;color:var(--c-ink,var(--muted));white-space:nowrap}
+.dc-body{display:block;padding:14px 16px;border-radius:16px;background:rgba(255,255,255,.74)}
+.dc-foot{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.dpill{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:99px;background:#fff;color:var(--muted);font-size:.8125rem;font-weight:650;line-height:1.3;white-space:nowrap}
+.dpill svg{width:14px;height:14px;flex:none}
+.dpill.done{background:var(--mint);color:var(--mint-ink)}
+.dround{flex:none;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:#fff;color:var(--text)}
+.dround.dark{background:var(--frame);color:#fff}
+.dround svg{width:17px;height:17px}
+.dc .speak-row{border-top-color:rgba(16,24,40,.1)}
+.dc .nudge{margin:0;min-height:0}
+/* stat tiles (Total / Completed / Upcoming in the reference) */
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.stat{position:relative;display:grid;justify-items:center;gap:2px;padding:12px 6px;border-radius:20px;background:var(--sky);text-align:center}
+.stat b{font-size:1.75rem;font-weight:750;line-height:1.1;letter-spacing:-.02em}
+.stat span{font-size:.8125rem;color:#3d4250}
+.stat.mint{background:var(--mint)}
+.stat.dashed{background:none;border:2px dashed #d3d7df}
+.stat .pop{position:absolute;top:-14px;right:-4px;font-size:1.375rem;font-style:normal;transform:rotate(14deg)}
+
+/* ---------- 4a / 4b word cards ----------
+   Head: Arriving / Leaving and the time of day. Panel: the picture, then the word once heard.
+   Foot: New / Heard and Say it. A mint tick sits on the corner once the word is heard. */
+.word-cards{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+@media (min-width:48em){.word-cards{grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}}
+.wword{align-content:start;transition:box-shadow .2s ease}
+.wword.is-active{box-shadow:0 0 0 3px var(--c-strong)}
+.wword .dc-head{padding-right:24px}
+.wcard{display:grid;gap:12px;width:100%;padding:0;border:0;border-radius:16px;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.wcard:focus-visible{outline:3px solid var(--accent);outline-offset:4px}
+.wcard-body{position:relative;display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:14px;min-height:96px}
+.wword .ico{width:64px;height:64px;overflow:visible}
+.wcard-word{display:grid}
 .wcard-word>*{grid-area:1/1}
-.wcard-hint{font-size:38px;font-weight:500;line-height:1.2;color:var(--muted)}
-.wcard-text{visibility:hidden;font-size:56px;font-weight:750;line-height:1.08;letter-spacing:-.02em;color:var(--text)}
+.wcard-hint{font-size:1rem;font-weight:600;color:var(--muted)}
+.wcard-text{visibility:hidden;font-size:1.5rem;font-weight:750;line-height:1.1;letter-spacing:-.02em;color:var(--text)}
+.wcard-speak{position:absolute;top:10px;right:10px;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--frame);color:#fff}
+.wcard-speak svg{width:16px;height:16px}
 .wd{display:inline-block;white-space:nowrap}
 .ch{display:inline-block}
-.wcard-check{position:absolute;left:432px;top:-4px;width:84px;height:84px;border-radius:50%;background:var(--mint);color:var(--mint-ink);display:grid;place-items:center;box-shadow:0 0 0 8px var(--bg);transform:scale(0)}
-.wcard-check svg{width:44px;height:44px}
+.wcard-check{position:absolute;top:-10px;right:-10px;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--mint);color:var(--mint-ink);box-shadow:0 0 0 5px var(--bg);transform:scale(0)}
+.wcard-check svg{width:20px;height:20px}
+.wword .dc-foot{justify-content:space-between}
+.wword .speak-msg{flex:1 1 100%;margin:0;font-size:.8125rem}
+.wword .speak-msg:empty{display:none}
+.wword .dc-foot.is-said .mic-pill:not(.recording):not(:disabled){background:var(--good)}
+@media (min-width:48em){
+  .wcard-body{grid-template-columns:minmax(0,1fr);justify-items:center;text-align:center;gap:10px;padding:26px 12px 18px;min-height:206px}
+  .wword .ico{width:96px;height:96px}
+  .wcard-text{font-size:1.5rem}
+}
+/* instruction cards for the word screens take the pastel card look */
+.instr.sun,.instr.sky{background:var(--c);box-shadow:none}
+.instr.sun .kind,.instr.sky .kind{background:#fff}
+.instr.sun>p,.instr.sky>p{flex:1 1 240px;padding:10px 14px;border-radius:14px;background:rgba(255,255,255,.74)}
+.instr.sun .read-btn,.instr.sky .read-btn{background:#fff}
 
 /* ---------- 4c arriving or leaving ---------- */
 .story{display:grid;gap:18px}
@@ -226,7 +286,7 @@ body[data-view="welcome"] .pagehead{display:none}
 .say-bubble.sun{background:var(--kw-arrive)}
 .say-bubble.sky{background:var(--kw-leave)}
 .say-bubble.plain{background:#fff}
-.qcard .chip-soft{margin-bottom:10px}
+.qcard .dc-body .eyebrow{margin:0 0 4px}
 .qcard{scroll-margin-bottom:16px}
 .stage{scroll-margin-top:calc(var(--kw-top) + 12px)}
 .nudge{min-height:1.4em;margin:8px 0 10px;color:var(--fix);font-size:.875rem;font-weight:600}
@@ -310,7 +370,16 @@ body[data-view="welcome"] .pagehead{display:none}
 .ok-dot{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--good-soft);color:var(--good)}
 .result p{margin:10px 0 0}
 .result .fb-note{color:var(--muted);font-size:.875rem;margin-top:4px}
-.result .tipbox{margin-top:14px}
+.result .tipbox{margin-top:0;background:#fff}
+.result .dc-body p{margin:0}
+.result .dc-body .fb-note{margin-top:6px}
+.result-top .pill{margin-left:auto;background:#fff}
+.result .ok-dot{background:#fff;color:var(--good)}
+.scorecard .stats{grid-column:1/-1;width:100%;margin-top:4px}
+.recap-col ul{margin:0}
+.recap-col .recap-word{background:#fff}
+@media (max-width:37.49em){.recap-col .dc-meta{display:none}}
+@media (max-width:22.5em){#practise .dc-meta{display:none}}
 
 /* ---------- End ---------- */
 .scorecard{display:grid;grid-template-columns:auto minmax(0,1fr);gap:18px;align-items:center}
@@ -355,11 +424,6 @@ body[data-view="welcome"] .pagehead{display:none}
 .speak-msg{margin:0;flex:1 1 160px;font-size:.875rem;color:var(--muted)}
 .speak-msg.ok{color:var(--good);font-weight:600}
 .speak-msg.fix{color:var(--fix);font-weight:600}
-.note-wrap{flex:0 0 calc(50% - 7px);display:grid;gap:8px;justify-items:center;align-content:start}
-@media (min-width:37.5em){.note-wrap{flex-basis:calc(33.333% - 10px)}}
-.note-wrap .note{flex:none;width:100%}
-.note-wrap .speak-msg{flex:none;min-height:1.4em;text-align:center}
-.note-wrap.is-said .mic-pill:not(.recording):not(:disabled){background:var(--good)}
 /* practice hint */
 .opt.is-hint{border:2px dashed var(--good);background:#f2fbf5}
 /* Word Match, sound cards */
@@ -439,9 +503,8 @@ details.more .btn{margin-left:20px}
       <div class="work">
         <section class="card home" aria-labelledby="home-title">
           <div class="home-board">
-            <span class="chip-soft board-time"><i data-ui="clock"></i>6:30 pm</span>
-            <div class="pinned left sun"><span class="note-slot" data-id="good-evening"></span><span class="kind"><i data-ui="doorIn"></i>Arriving</span></div>
-            <div class="pinned right sky"><span class="note-slot" data-id="see-you"></span><span class="kind"><i data-ui="doorOut"></i>Leaving</span></div>
+            <div class="pinned left"><span class="hword-slot" data-id="good-evening"></span></div>
+            <div class="pinned right"><span class="hword-slot" data-id="see-you"></span></div>
           </div>
           <div class="home-intro">
             <p class="home-crumb">Communication Skills · Stage 4</p>
@@ -508,10 +571,12 @@ details.more .btn{margin-left:20px}
               <div class="say-bubble plain" id="bubble-teacher" aria-hidden="true"></div>
             </div>
           </figure>
-          <section class="card qcard">
-            <span class="chip-soft story-time"><i data-ui="moon"></i>Evening</span>
+          <section class="qcard dc lilac">
+            <div class="dc-head"><span class="dc-ico"><i data-ui="moon"></i></span><span>Evening</span><span class="dc-meta" id="story-meta">Question 1 of 2</span></div>
+            <div class="dc-body">
             <p class="eyebrow" id="compare-lede">Watch Ananya at the office. Pick what she says.</p>
             <div class="q-row"><p class="question" id="story-q"></p><button type="button" class="read-btn" id="story-read" data-read="ins-story-1" data-text="" aria-label="Read the question aloud"><i data-ui="speaker"></i></button></div>
+            </div>
             <p class="nudge" id="story-nudge" aria-live="polite"></p>
             <div class="options" id="story-options" role="group" aria-labelledby="story-q"></div>
           </section>
@@ -579,14 +644,16 @@ details.more .btn{margin-left:20px}
         </div>
         <div class="sprint" id="sprint-card"></div>
         <section class="fb" id="feedback" hidden aria-live="polite">
-          <div class="card result">
-            <div class="result-top">
-              <span class="ok-dot"><i data-ui="check"></i></span>
+          <div class="dc mint result">
+            <div class="dc-head result-top">
+              <span class="dc-ico ok-dot"><i data-ui="check"></i></span>
               <h2>Correct</h2>
               <span class="pill done" id="fb-first">First try</span>
             </div>
+            <div class="dc-body">
             <p id="fb-why"></p>
             <p class="fb-note" id="fb-note">Right on the second try. Only first tries count toward your score.</p>
+            </div>
             <div class="tipbox" id="fb-tip" hidden>
               <span class="tip-icon"><i data-ui="bulb"></i></span>
               <p>Tip: when you meet someone at night, say ‘Good evening.’ You’ll find out when to say ‘Good night’ later.</p>
@@ -612,14 +679,15 @@ details.more .btn{margin-left:20px}
             <p id="end-title">You matched 0 out of 5!</p>
             <p class="sub" id="end-note"></p>
           </div>
+          <div class="stats" id="end-stats"></div>
         </section>
-        <section class="card" id="practise">
-          <h2 id="practise-title">What to practise</h2>
-          <ul class="list" id="practise-list"></ul>
+        <section class="dc fix" id="practise">
+          <div class="dc-head"><span class="dc-ico"><i data-ui="bulb"></i></span><h2 id="practise-title">What to practise</h2><span class="dc-meta" id="practise-meta"></span></div>
+          <div class="dc-body"><ul class="list" id="practise-list"></ul></div>
         </section>
         <div class="recap">
-          <section class="card recap-col sun"><span class="kind"><i data-ui="doorIn"></i>Arriving</span><ul id="recap-sun"></ul></section>
-          <section class="card recap-col sky"><span class="kind"><i data-ui="doorOut"></i>Leaving</span><ul id="recap-sky"></ul></section>
+          <section class="dc recap-col sun"><div class="dc-head"><span class="dc-ico"><i data-ui="doorIn"></i></span><span>Arriving</span><span class="dc-meta">Greetings</span></div><ul id="recap-sun"></ul></section>
+          <section class="dc recap-col sky"><div class="dc-head"><span class="dc-ico"><i data-ui="doorOut"></i></span><span>Leaving</span><span class="dc-meta">Farewells</span></div><ul id="recap-sky"></ul></section>
         </div>
         <details class="card more" id="report-box">
           <summary>Session details for testers</summary>
@@ -1326,7 +1394,7 @@ function enter(name) {
   if (name !== 'end' && name !== 'welcome') Store.set({ screen: name });
   if (name === 'welcome') Home.enter();
   if (name === 'greetings' || name === 'farewells') {
-    dropNotes(screenEl(name));
+    dealCards(screenEl(name));
   }
   if (name === 'compare') Story.start();
   if (name === 'match') Match.start();
@@ -1350,23 +1418,16 @@ const Home = {
   pulse: null,
   /* where Continue goes: the saved part, if the learner has started */
   resumeTo() { const s = Store.get().screen; return s && s !== 'welcome' && s !== 'end' && STEP[s] ? s : null; },
-  /* the two pinned notes on the board (tap to hear) */
+  /* the two cards on the board (tap to hear) */
   build() {
-    $$('.home-board .note-slot').forEach(slot => {
-      const id = slot.dataset.id, w = WORDS[id], n = NOTE[w.kind];
-      slot.outerHTML = `<button type="button" class="note home-note ${w.kind}" data-id="${id}" aria-label="Hear ${w.text}">
-        <span class="note-inner" aria-hidden="true">
-          <span class="note-backing"></span>
-          <span class="note-paper"><span class="note-sheet">
-            <img class="note-paper-img" src="${n.paper}" width="480.192" height="436.273" alt="">
-            ${ICON[w.icon]()}
-            <span class="wcard-word"><span class="wcard-text">${w.text}</span></span>
-          </span></span>
-          <span class="note-pin"><img src="${n.pin}" width="${n.pinW}" height="48.6332" alt=""></span>
-        </span>
+    $$('.home-board .hword-slot').forEach(slot => {
+      const id = slot.dataset.id, w = WORDS[id], arrive = w.kind === 'sun';
+      slot.outerHTML = `<button type="button" class="dc hword home-note ${w.kind}" data-id="${id}" aria-label="Hear ${w.text}">
+        <span class="dc-head"><span class="dc-ico">${arrive ? UI.doorIn : UI.doorOut}</span><span>${arrive ? 'Arriving' : 'Leaving'}</span></span>
+        <span class="dc-body">${ICON[w.icon]()}<span class="hw-text">${w.text}</span></span>
+        <span class="dc-foot"><span class="dpill">${UI.clock}6:30 pm</span><span class="dround dark" aria-hidden="true">${UI.speaker}</span></span>
       </button>`;
     });
-    $$('.home-note').forEach(el => noteSizer.observe(el));
   },
   /* Start or Continue, the restart link and the five parts, from the saved progress */
   render() {
@@ -1393,7 +1454,7 @@ const Home = {
       .fromTo('.start-pulse', { scale: 1, opacity: .55 }, { scale: 1.7, opacity: 0, duration: 1.1, ease: 'power2.out' });
   },
   stop() { if (this.pulse) { this.pulse.kill(); this.pulse = null; gsap.set('.start-pulse', { opacity: 0 }); } },
-  enter() { this.render(); dropNotes(screenEl('welcome')); this.startPulse(); }
+  enter() { this.render(); dealCards(screenEl('welcome')); this.startPulse(); }
 };
 /* Start / Continue: press, the black grows from the button to fill the screen, the part is named,
    the screen changes underneath, then the black lifts into the top bar. Reduced motion: a plain change. */
@@ -1432,10 +1493,9 @@ const Launch = {
 function playWelcome() {
   Home.startPulse();
   if (RM) return;
-  dropNotes(screenEl('welcome'));
+  dealCards(screenEl('welcome'));
   gsap.timeline({ delay: .1 })
     .fromTo('.home-intro > *', { y: 18, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .55, ease: 'power3.out', stagger: .07, clearProps: 'transform,opacity,visibility' }, 0)
-    .fromTo('.home-board .kind', { y: 8, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .35, ease: 'power2.out', stagger: .12, clearProps: 'transform,opacity,visibility' }, .75)
     .fromTo('.start-go', { scale: .4 }, { scale: 1, duration: .6, ease: 'back.out(2.4)', clearProps: 'transform' }, .45)
     .fromTo('.home-track li', { y: 10, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .4, ease: 'power2.out', stagger: .06, clearProps: 'transform,opacity,visibility' }, .5);
 }
@@ -1443,87 +1503,65 @@ function playWelcome() {
 /* =========================================================
    4a / 4b: tap-to-hear cards
    ========================================================= */
-/* Sticky-note assets from Figma (yellow = greetings / arriving, blue = farewells / leaving) */
-const NOTE = {
-  sun: { paper: 'assets/sticky/paper-yellow.svg', pin: 'assets/sticky/pin-30-47.svg', pinW: 49.1693 },
-  sky: { paper: 'assets/sticky/paper-blue.svg',   pin: 'assets/sticky/pin-30-15.svg', pinW: 49.1692 }
-};
-const NOTE_W = 518.773;
-const PIN_ORIGIN = '261.7px 18.7px';   // where the pin pierces the paper, in paper-local px
-/* Scale each note's native-size layout to its card width */
-const noteSizer = new ResizeObserver(entries => entries.forEach(e => e.target.style.setProperty('--k', (e.contentRect.width / NOTE_W).toFixed(4))));
-
-/* Notes drop onto the board, the pin is pushed in, then the paper swings and settles on it */
-function dropNotes(scr) {
-  $$('.note', scr).forEach((n, i) => {
-    n.classList.remove('is-active');
-    const sheet = $('.note-sheet', n), pin = $('.note-pin', n);
-    gsap.killTweensOf([n, sheet, pin]);
-    gsap.set(sheet, { rotation: 7, transformOrigin: PIN_ORIGIN });
-    gsap.timeline({ delay: .08 + i * .16 })
-      .fromTo(n, { y: -70, rotation: gsap.utils.random(-12, 12), scale: 1.12, autoAlpha: 0 }, { y: 0, rotation: 0, scale: 1, autoAlpha: 1, duration: .5, ease: 'back.out(1.3)' }, 0)
-      .fromTo(pin, { y: -46, scale: 1.8, autoAlpha: 0, transformOrigin: '28% 73%' }, { y: 0, scale: 1, autoAlpha: 1, duration: .22, ease: 'power3.in', transformOrigin: '28% 73%' }, .3)
-      .to(pin, { scale: .84, duration: .07, yoyo: true, repeat: 1, ease: 'power1.inOut' }, .52)
-      .to(sheet, { keyframes: { rotation: [7, -4.5, 2.5, -1.2, .5, 0], easeEach: 'sine.inOut' }, duration: 1.15, ease: 'none' }, .52);
-  });
+/* Cards are dealt onto the screen: they rise from a slight tilt and settle */
+function dealCards(scr) {
+  const cards = $$('.wword, .hword', scr);
+  cards.forEach(c => c.classList.remove('is-active'));
+  if (RM || !cards.length) return;
+  gsap.killTweensOf(cards);
+  gsap.fromTo(cards, { y: 36, rotation: i => (i % 2 ? 5 : -5), autoAlpha: 0 },
+    { y: 0, rotation: 0, autoAlpha: 1, duration: .55, ease: 'back.out(1.5)', stagger: .1, delay: .08, clearProps: 'transform,opacity,visibility' });
 }
-/* Tapped: the note lifts off the board and swings on its pin like a pendulum */
-function swingNote(card) {
-  const sheet = $('.note-sheet', card), pin = $('.note-pin', card);
-  gsap.fromTo(sheet, { rotation: 0, transformOrigin: PIN_ORIGIN }, { keyframes: { rotation: [0, 8, -6, 4, -2.2, 1, 0], easeEach: 'sine.inOut' }, duration: 1.35, ease: 'none', transformOrigin: PIN_ORIGIN });
-  gsap.fromTo(pin, { scale: 1, transformOrigin: '28% 73%' }, { scale: .86, duration: .09, yoyo: true, repeat: 1, transformOrigin: '28% 73%' });
+/* Tapped: the card lifts and drops back */
+function bumpCard(el) {
+  if (RM) return;
+  gsap.fromTo(el, { y: 0 }, { y: -7, duration: .16, yoyo: true, repeat: 1, ease: 'power2.out', clearProps: 'transform' });
 }
-/* Hover (mouse only): the paper tilts a little on its pin */
-if (window.matchMedia('(hover: hover)').matches) {
-  document.addEventListener('pointerover', e => {
-    const n = e.target.closest && e.target.closest('.note');
-    if (!n || n.contains(e.relatedTarget)) return;
-    gsap.to($('.note-sheet', n), { rotation: 2.5, duration: .35, ease: 'power2.out', transformOrigin: PIN_ORIGIN, overwrite: 'auto' });
-  });
-  document.addEventListener('pointerout', e => {
-    const n = e.target.closest && e.target.closest('.note');
-    if (!n || n.contains(e.relatedTarget)) return;
-    gsap.to($('.note-sheet', n), { rotation: 0, duration: .5, ease: 'back.out(2)', transformOrigin: PIN_ORIGIN, overwrite: 'auto' });
-  });
-}
+/* time of day shown in each word card's head */
+const WMETA = { 'good-morning': 'Morning', 'good-afternoon': 'Afternoon', 'good-evening': 'Evening', 'goodbye': 'Any time', 'see-you': 'Any time', 'see-you-tomorrow': 'Tomorrow' };
 
 const splitChars = text => text.split(' ').map(w => `<span class="wd">${[...w].map(c => `<span class="ch">${c}</span>`).join('')}</span>`).join(' ');
 function buildWordCards() {
   [['greetings', GREETINGS], ['farewells', FAREWELLS]].forEach(([set, ids]) => {
     $(`[data-set="${set}"]`).innerHTML = ids.map(id => {
-      const w = WORDS[id];
-      const n = NOTE[w.kind];
-      return `<div class="note-wrap"><button class="wcard note ${w.kind}" data-id="${id}" aria-label="Tap to hear a word. ${w.alt}.">
-        <span class="note-inner" aria-hidden="true">
-          <span class="note-backing"></span>
-          <span class="note-paper"><span class="note-sheet">
-            <img class="note-paper-img" src="${n.paper}" width="480.192" height="436.273" alt="">
-            <span class="wcard-speak">${UI.speaker}</span>
+      const w = WORDS[id], arrive = w.kind === 'sun';
+      return `<div class="dc wword ${w.kind}" data-id="${id}">
+        <button type="button" class="wcard" data-id="${id}" aria-label="Tap to hear a word. ${w.alt}.">
+          <span class="dc-head"><span class="dc-ico">${arrive ? UI.doorIn : UI.doorOut}</span><span>${arrive ? 'Arriving' : 'Leaving'}</span><span class="dc-meta">${WMETA[id]}</span></span>
+          <span class="dc-body wcard-body">
+            <span class="wcard-speak" aria-hidden="true">${UI.speaker}</span>
             ${ICON[w.icon]()}
             <span class="wcard-word"><span class="wcard-hint">Tap to hear</span><span class="wcard-text">${splitChars(w.text)}</span></span>
-          </span></span>
-          <span class="note-pin"><img src="${n.pin}" width="${n.pinW}" height="48.6332" alt=""></span>
-          <span class="wcard-check">${UI.check}</span>
-        </span>
-      </button>
-      <button type="button" class="mic mic-pill say-word" data-id="${id}" aria-label="Say ${w.text}">${UI.mic}<span>Say it</span></button>
-      <p class="speak-msg" aria-live="polite"></p></div>`;
+          </span>
+          <span class="wcard-check" aria-hidden="true">${UI.check}</span>
+        </button>
+        <div class="dc-foot">
+          <span class="dpill wcard-status">New</span>
+          <button type="button" class="mic mic-pill say-word" data-id="${id}" aria-label="Say ${w.text}">${UI.mic}<span>Say it</span></button>
+          <p class="speak-msg" aria-live="polite"></p>
+        </div>
+      </div>`;
     }).join('');
-    $$(`[data-set="${set}"] .note`).forEach(el => noteSizer.observe(el));
     const scr = screenEl(set);
     $('.heard-n', scr).textContent = '0';
     $('[data-next]', scr).disabled = true;
   });
 }
+/* the foot pill: New -> Heard */
+function markHeard(box, animate) {
+  const pill = $('.wcard-status', box);
+  pill.textContent = 'Heard 👏';
+  pill.classList.add('done');
+  if (animate && !RM) gsap.fromTo(pill, { scale: .7 }, { scale: 1, duration: .45, ease: 'back.out(3)', delay: .3 });
+}
 function tapWord(card) {
   const id = card.dataset.id, w = WORDS[id];
-  const set = card.closest('.word-cards'), scr = card.closest('.screen');
-  $$('.wcard.is-active', set).forEach(c => { if (c !== card) { c.classList.remove('is-active'); gsap.to(c, { y: 0, scale: 1, duration: .3, ease: 'power2.out' }); } });
-  card.classList.add('is-active');
-  gsap.fromTo(card, { y: 0, scale: 1 }, { y: -8, scale: 1.04, duration: .4, ease: 'back.out(3)' });
-  swingNote(card);
+  const set = card.closest('.word-cards'), scr = card.closest('.screen'), box = card.closest('.wword');
+  $$('.wword.is-active', set).forEach(c => { if (c !== box) c.classList.remove('is-active'); });
+  box.classList.add('is-active');
+  bumpCard(box);
   WIGGLE[w.icon]($('svg.ico', card));
-  gsap.fromTo($('.wcard-speak', card), { scale: 1 }, { scale: 1.15, duration: .16, repeat: 5, yoyo: true, ease: 'sine.inOut' });
+  gsap.fromTo($('.wcard-speak', card), { scale: 1 }, { scale: 1.2, duration: .16, repeat: 5, yoyo: true, ease: 'sine.inOut' });
   Voice.play(id, w.text);
   if (card.classList.contains('is-heard')) return;
   card.classList.add('is-heard');
@@ -1533,6 +1571,7 @@ function tapWord(card) {
   gsap.set(text, { visibility: 'visible' });
   gsap.fromTo($$('.ch', text), { y: 16, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .4, stagger: .035, ease: 'back.out(2.2)', delay: .08 });
   gsap.fromTo($('.wcard-check', card), { scale: 0 }, { scale: 1, duration: .45, ease: 'back.out(3)', delay: .35 });
+  markHeard(box, true);
   saveHeard();
   const n = $$('.wcard.is-heard', set).length;
   const nEl = $('.heard-n', scr);
@@ -1562,6 +1601,7 @@ function restoreHeard(heard) {
       gsap.set($('.wcard-hint', card), { autoAlpha: 0 });
       gsap.set($('.wcard-text', card), { visibility: 'visible' });
       gsap.set($('.wcard-check', card), { scale: 1 });
+      markHeard(card.closest('.wword'), false);
     });
     const scr = screenEl(set), n = $$(`[data-set="${set}"] .wcard.is-heard`).length;
     $('.heard-n', scr).textContent = n;
@@ -1649,6 +1689,7 @@ const Story = {
   setQuestion(step) {
     const q = step === 1 ? 'Ananya arrives at the office in the evening. What does she say?' : 'Later that evening, Ananya leaves. What does she say now?';
     $('#story-q').textContent = q;
+    $('#story-meta').textContent = `Question ${step} of 2`;
     Object.assign($('#story-read').dataset, { read: `ins-story-${step}`, text: q });
     this.wrongNow = false;
     $('#story-nudge').textContent = '';
@@ -1996,9 +2037,9 @@ const Sprint = {
     const build = () => {
       wrap.innerHTML = `
         <div class="sprint-art">${ART[sc.id]()}<span class="sprint-count">${this.i + 1} of 5</span></div>
-        <section class="card qcard">
-          <p class="eyebrow">Situation ${this.i + 1} of 5</p>
-          <div class="q-row"><p class="question" id="sprint-q">${sc.text}</p><button type="button" class="read-btn" data-read="sit-${sc.id}" data-text="${sc.text}" aria-label="Read the situation aloud">${UI.speaker}</button></div>
+        <section class="qcard dc lilac">
+          <div class="dc-head"><span class="dc-ico">${UI.chat}</span><span>Situation</span><span class="dc-meta">${this.i + 1} of 5</span></div>
+          <div class="dc-body"><div class="q-row"><p class="question" id="sprint-q">${sc.text}</p><button type="button" class="read-btn" data-read="sit-${sc.id}" data-text="${sc.text}" aria-label="Read the situation aloud">${UI.speaker}</button></div></div>
           <p class="nudge" id="nudge" aria-live="polite"></p>
           <div class="options" role="group" aria-labelledby="sprint-q">
             ${shuffle(sc.options).map(id => `<button type="button" class="opt" data-id="${id}"><span>${WORDS[id].text}</span></button>`).join('')}
@@ -2095,6 +2136,8 @@ const End = {
     };
     const said = Log.ensure().speaking.filter(x => x.ok).length;
     $('#practise-title').textContent = conf.length ? 'What to practise' : 'What went well';
+    $('#practise').className = `dc ${conf.length ? 'fix' : 'mint'}`;
+    $('#practise-meta').textContent = conf.length ? `${conf.length} to review` : '';
     list.className = `list ${conf.length ? 'fix' : 'good'}`;
     list.innerHTML = conf.length
       ? conf.map(([k, a], i) => `<li><span class="dot">${i + 1}</span><p>${MSG[k](a)}</p></li>`).join('')
@@ -2114,6 +2157,7 @@ const End = {
     Store.set({ best });
     $('#end-status').textContent = `Score ${n} of 5 · best ${best}`;
     this.practise();
+    $('#end-stats').innerHTML = `<div class="stat"><b>5</b><span>Situations</span></div><div class="stat mint"><b>${n}</b><span>First try</span>${n >= 3 ? '<i class="pop" aria-hidden="true">🎉</i>' : ''}</div><div class="stat dashed"><b>${5 - n}</b><span>To practise</span></div>`;
     $('#report').textContent = Log.report();
     try { localStorage.setItem('kw-stage4-last-report', $('#report').textContent); } catch (e) { /* storage blocked */ }
     $('#end-ring').innerHTML = `<svg class="ring" viewBox="0 0 96 96" role="img" aria-label="${n} of 5"><circle class="bg" cx="48" cy="48" r="40" fill="none" stroke-width="10"/><circle class="fg" cx="48" cy="48" r="40" fill="none" stroke-width="10" stroke-linecap="round" stroke-dasharray="${len} 251.3" transform="rotate(-90 48 48)"/><text x="48" y="57" text-anchor="middle" font-weight="700">${n}<tspan class="of">/5</tspan></text></svg>`;
@@ -2171,7 +2215,7 @@ function init() {
     if (t.id === 'copy-report') return copyReport();
     if (t.classList.contains('home-note')) {
       const w = WORDS[t.dataset.id];
-      swingNote(t); WIGGLE[w.icon]($('svg.ico', t));
+      bumpCard(t); WIGGLE[w.icon]($('svg.ico', t));
       return Voice.play(t.dataset.id, w.text);
     }
     if (t.id === 'start' || t.id === 'restart') {

@@ -2,7 +2,7 @@
 
 Stage 4 · Key Words: an interactive HTML lesson on greetings and farewells
 (arriving vs leaving). Open `index.html` in a browser; it needs an internet
-connection for GSAP and Google Fonts.
+connection only for the timer's digit font (GSAP and the rest are local).
 
 ## What ships
 
@@ -10,7 +10,7 @@ connection for GSAP and Google Fonts.
 |---|---|
 | `index.html` | The whole lesson (HTML, CSS, JS with GSAP) |
 | `audio/` | Recorded word clips (ElevenLabs, voice: Tripti). The page plays these. |
-| `assets/sticky/` | Sticky-note card artwork (Figma) |
+| `assets/sticky/` | Sticky-note artwork from Figma. No longer used by the page (the word cards now use the learning-plan card style); kept for reference |
 | `assets/timer/` | Game timer artwork (Figma) |
 | `tools/generate-audio.mjs` | Script that makes the clips in `audio/` |
 
@@ -24,7 +24,7 @@ speech checking: `kit/commkit.js`, `lib/vosk.js`, `js/scoring.js`,
 
 ## What learners can do
 
-- Hear each word on a sticky note, then tap **Say it** and say it (checked on the device).
+- Hear each word on its card, then tap **Say it** and say it (checked on the device).
 - Read aloud: every instruction, question and situation has a speaker button.
 - **Practice / Test**: Practice has no timer and hints after a wrong answer; Test is timed and scored (the spec).
 - Word Match with **Words** or **Sounds** (sound cards play the phrase instead of showing it).
