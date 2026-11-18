@@ -11,3 +11,7 @@ secrets/
 .DS_Store
 Thumbs.db
 .vscode/
+
+# Fonts: Switzer's licence (fonts/switzer/FFL.txt) does not allow sharing the font file through a public
+# repository. Keep it on your machine; the page loads the same font from Fontshare when the file is missing.
+fonts/switzer/*.woff2

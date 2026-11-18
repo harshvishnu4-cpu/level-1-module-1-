@@ -30,12 +30,12 @@ Write down:
 
 ## After the session
 
-1. On the end screen, open **Session details for testers** and tap **Copy report**. Paste it into your notes. It lists the time per part, every answer (tapped or said), time-outs, and speaking tries.
+1. Get the session report from the device (it is no longer shown on the end screen). In Chrome: open the developer tools (Cmd+Option+I on a Mac, F12 on Windows), go to **Console**, type `copy(localStorage.getItem('kw-stage4-last-report'))` and press Enter; the report is now on the clipboard. Paste it into your notes. It lists the time per part, every answer (tapped or said), time-outs, and speaking tries.
 2. Ask:
    - "When do you say *Good evening*? When do you say *Goodbye*?" (checks the arrive/leave rule)
    - "Was anything confusing or too fast?"
    - "Did speaking out loud help?"
-3. If a learner closed the page before the end, the last report is also kept on the device under the browser storage key `kw-stage4-last-report`.
+3. The report is saved when a learner reaches the Key Words result screen. If they closed the page earlier, use the events sent to the parent page (below), or ask them to finish Scenario Sprint.
 
 ## What to look at across all sessions
 

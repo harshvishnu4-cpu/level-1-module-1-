@@ -64,7 +64,19 @@ const CLIPS = [
   { id: 'sit-friend-home', text: "You are leaving a friend's home at night." },
   { id: 'sit-college', text: 'You are arriving at college in the afternoon.' },
   { id: 'sit-office-evening', text: 'You are leaving the office in the evening. You will come back tomorrow.' },
-  { id: 'sit-manager-morning', text: 'You meet your manager at the office gate in the morning.' }
+  { id: 'sit-manager-morning', text: 'You meet your manager at the office gate in the morning.' },
+  // Stage 5: Reading Card (the passage is read from index.html's text, word for word) and its questions
+  { id: "ins-read", text: "Ananya greeted her manager with words. People greet with actions too. Read the passage, then answer three questions." },
+  { id: "read-passage", text: "Saying Hello — Words and Actions\n\nHello is a greeting used in the English language. People say 'hello' when they meet someone, or when they answer a phone call. Many people also say 'hi'. 'Hi' is an informal word. We often use it with friends and family. 'Hello' can be used in both informal and formal places, like a class or an office. There are other informal greetings too, like 'hey' and 'hiya'. Saying hello is a sign of politeness, especially when you say it in a friendly way.\n\nA greeting is not only a word. People also greet each other with actions. They may wave, nod, bow or shake hands. One of the most common action greetings is the handshake.\n\nIn a handshake, two people hold each other's right hand for a short time. They move their hands up and down a little, and then they let go. People shake hands when they meet. They also shake hands to show that they agree on something.\n\nThe handshake is very old, and people in many cultures use it. But it is not exactly the same everywhere. In some places, people give a firm handshake and hold the other hand tightly. In other places, a gentle handshake is more polite. In some cultures, the senior person, who is older or more important, offers a hand first. A handshake can be short or long. Almost everywhere, people shake hands with bare hands, not with gloves on.\n\nIn some places, men and women do not usually shake hands. Family members often hug instead. So it is a good idea to watch what other people do, and follow them.\n\nWhether you say 'hello,' wave, or shake hands, a greeting is your first chance to be friendly and polite to someone new." },
+  { id: "rq1", text: "What are two example words from the text that mean “hello”?" },
+  { id: "rq2", text: "What is a handshake used for, according to the text?" },
+  { id: "rq3", text: "Is a handshake exactly the same in every culture? Give one difference." },
+  // Stage 8: Quick Check
+  { id: "qc1", text: "Listen. Which picture matches?" },
+  { id: "qc2", text: "Which word means “a small apology”?" },
+  { id: "qc3", text: "Drag “am” and “is” into the right blanks." },
+  { id: "qc4", text: "You're leaving a shop in the evening. What do you say?" },
+  { id: "qc-done", text: "Great start! Next, you'll get to use this greeting in five different situations of your own." }
 ];
 
 /* Read KEY=value lines from .env without printing anything */
