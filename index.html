@@ -28,11 +28,58 @@
 
 /* ---------- Shell additions ---------- */
 .screen{display:block}
+/* ---------- Top bar: Back in the top-left corner, Continue in the top-right corner ----------
+   Each screen keeps its own .actionbar (so the game code is unchanged); it is pinned over the black top bar.
+   The top bar stays at the top while the page scrolls, so Back and Continue are always in reach.
+   The status text (e.g. "Matched 2 of 6") shows beside Continue on wide screens only; the page shows the same progress. */
+:root{--kw-top:72px}
+.topbar{position:sticky;top:0;z-index:5;height:var(--kw-top);background:var(--frame);padding-left:max(var(--gutter),env(safe-area-inset-left));padding-right:max(var(--gutter),env(safe-area-inset-right))}
+.topbar .nav{justify-content:center}
+body.kw-scrolled .nav a[aria-current="page"]::after{opacity:0}
+body.kw-scrolled .topbar{box-shadow:0 6px 18px -10px rgba(0,0,0,.5)}
+.actionbar{top:0;bottom:auto;left:0;right:0;width:auto;height:var(--kw-top);transform:none;z-index:6;background:none;border-radius:0;box-shadow:none;pointer-events:none}
+.actionbar-in{height:100%;gap:10px;padding:0 max(var(--gutter),env(safe-area-inset-right)) 0 max(var(--gutter),env(safe-area-inset-left))}
+.actionbar .btn{pointer-events:auto;padding:10px 20px}
+.actionbar .back-btn,.actionbar [data-action="replay"]{order:-1;margin-right:auto}
+.back-btn{padding-left:14px !important}
+.back-btn svg{width:20px;height:20px}
+.actionbar .grow{display:none;flex:0 1 auto;max-width:20vw;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (min-width:56.25em){.actionbar .grow{display:block}}
+/* phones: the tab would sit under the buttons, and the page title already names the part */
+@media (max-width:37.49em){
+  body:not([data-view="welcome"]) .topbar .nav{visibility:hidden}
+  .actionbar .btn{padding:10px 16px}
+}
+@media (max-width:25em){
+  .back-btn{width:44px;padding:0 !important}
+  .back-btn .back-lb{display:none}
+}
+/* short screens (phones on their side): a slimmer top bar */
+@media (max-height:33.75em) and (orientation:landscape){
+  :root{--kw-top:58px}
+  .nav a[aria-current="page"]::after{bottom:-8px}
+  .panel{min-height:calc(100vh - var(--kw-top))}
+}
+/* no bottom bar any more, and keep clear of rounded corners and notches */
+main{padding-bottom:calc(48px + env(safe-area-inset-bottom));padding-left:max(var(--gutter),env(safe-area-inset-left));padding-right:max(var(--gutter),env(safe-area-inset-right))}
+.pagehead{padding-left:max(var(--gutter),env(safe-area-inset-left));padding-right:max(var(--gutter),env(safe-area-inset-right))}
 .pagehead{flex-wrap:nowrap;align-items:flex-start}
 .pagehead > div:first-child{min-width:0}
 .title-tools{flex:none}
 .steps{flex-wrap:nowrap}
-@media (max-width:30em){.steps li + li::before{width:12px}}
+/* phones and small tablets: only the current step is named (the full row needs about 760px),
+   the dashes flex, and the row never pushes the page wider */
+@media (max-width:47.99em){
+  .steps .lb{display:none}
+  .steps li.on .lb{display:inline}
+  .steps{gap:6px}
+  .steps li{gap:6px;flex:1 1 auto;min-width:0}
+  .steps li:first-child{flex:0 0 auto}
+  .steps li + li::before{width:auto;min-width:6px;flex:1 1 6px}
+  .steps li.on .lb{min-width:0;line-height:1.15}
+}
+/* narrow phones: the page title already names the part, so the steps show numbers only */
+@media (max-width:23.75em){.steps li.on .lb{display:none}}
 .actionbar .grow b{color:#fff}
 .kind{display:inline-flex;align-items:center;gap:6px;padding:4px 12px 4px 9px;border-radius:99px;background:var(--c);color:var(--c-ink);font-size:.8125rem;font-weight:700;line-height:1.4}
 .kind svg{width:17px;height:17px;flex:none}
@@ -67,7 +114,7 @@ body[data-view="welcome"] .pagehead{display:none}
 .home-lede .read-btn{vertical-align:middle;margin-left:4px}
 .home-cta{display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px;margin-top:26px}
 /* the start button: black pill (course action colour) with a white play disc; on Continue the disc carries a progress ring */
-.start-btn{position:relative;display:inline-flex;align-items:center;gap:16px;min-width:300px;min-height:72px;padding:10px 34px 10px 10px;border:0;border-radius:99px;background:var(--frame);color:#fff;text-align:left;cursor:pointer;
+.start-btn{position:relative;display:inline-flex;align-items:center;gap:16px;min-width:min(300px,100%);min-height:72px;padding:10px 34px 10px 10px;border:0;border-radius:99px;background:var(--frame);color:#fff;text-align:left;cursor:pointer;
   box-shadow:0 16px 32px -16px rgba(0,0,0,.6);transition:transform .2s ease,box-shadow .2s ease}
 .start-btn:hover{transform:translateY(-2px);box-shadow:0 20px 36px -16px rgba(0,0,0,.65)}
 .start-btn:active{transform:translateY(0) scale(.985)}
@@ -82,9 +129,6 @@ body[data-view="welcome"] .pagehead{display:none}
 .go-ring .fg{stroke:var(--mint);stroke-linecap:round;transition:stroke-dasharray .6s ease}
 .start-text b{display:block;font-size:1.25rem;font-weight:750;line-height:1.2;letter-spacing:-.01em}
 .start-text small{display:block;margin-top:3px;font-size:.8125rem;font-weight:500;line-height:1.3;color:#b9bcc5}
-.home-mode{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-top:24px}
-.home-mode .lbl{font-size:.875rem;font-weight:600;color:var(--muted)}
-.home-mode .mode-note{flex-basis:100%}
 /* the five parts, in order: done = mint check, next = black */
 .home-track{list-style:none;margin:0;padding:18px 0 0;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}
 .home-track li{position:relative;display:grid;justify-items:center;align-content:start;gap:6px;padding:0 2px;text-align:center;font-size:.75rem;line-height:1.25;font-weight:600;color:var(--text)}
@@ -108,6 +152,15 @@ body[data-view="welcome"] .pagehead{display:none}
 @media (max-width:37.49em){
   .start-btn{width:100%}
   .home-cta .btn{flex:1}
+}
+@media (min-width:40em) and (max-height:33.75em){
+  .home{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"intro board" "track track";gap:18px 24px;padding:12px 12px 18px 26px}
+  .home-board{grid-area:board;min-height:0;padding:46px 12px 30px}
+  .home-intro{grid-area:intro;align-self:center;padding:0}
+  .home-title{font-size:2.5rem}
+  .home-lede{font-size:1rem;margin-top:10px}
+  .home-cta{margin-top:18px}
+  .home-track{grid-area:track}
 }
 @media (min-width:56.25em){
   .home{grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);grid-template-areas:"intro board" "track track";gap:26px 40px;padding:18px 18px 26px 44px}
@@ -148,6 +201,8 @@ body[data-view="welcome"] .pagehead{display:none}
 /* ---------- 4c arriving or leaving ---------- */
 .story{display:grid;gap:18px}
 @media (min-width:48em){.story{grid-template-columns:1.25fr 1fr;align-items:start}}
+/* phones on their side: picture and question side by side, so the picture does not fill the screen */
+@media (min-width:33em) and (max-height:33.75em) and (orientation:landscape){.story,.sprint{grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);align-items:start}}
 .stage{margin:0}
 .stage-art,.scene-art{position:relative;overflow:hidden;border-radius:var(--r-lg);border:6px solid var(--c);background:#3E3A8E;box-shadow:var(--shadow);transition:border-color .45s ease}
 .stage-art{aspect-ratio:440/340}
@@ -161,8 +216,8 @@ body[data-view="welcome"] .pagehead{display:none}
 .say-bubble.sky{background:var(--kw-leave)}
 .say-bubble.plain{background:#fff}
 .qcard .chip-soft{margin-bottom:10px}
-.qcard{scroll-margin-bottom:100px}
-.stage{scroll-margin-top:12px}
+.qcard{scroll-margin-bottom:16px}
+.stage{scroll-margin-top:calc(var(--kw-top) + 12px)}
 .nudge{min-height:1.4em;margin:8px 0 10px;color:var(--fix);font-size:.875rem;font-weight:600}
 .compare{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(10px,2.6vw,22px);width:100%;max-width:640px;margin:0 auto}
 .scene{margin:0;display:grid;gap:12px}
@@ -199,6 +254,7 @@ body[data-view="welcome"] .pagehead{display:none}
 /* Hanging game timer: Figma moodboard node 34:84 (Engineering / Display / Timer, 209 x 115).
    It hangs from the top edge of the panel; .timer-inner keeps the design's native geometry, scaled by --ts. */
 .timer{--ts:.58;position:relative;flex:none;width:calc(209px * var(--ts));height:calc(115px * var(--ts));margin-top:-26px}
+@media (max-width:22.5em){.timer{--ts:.5;margin-top:-22px}}
 @media (min-width:37.5em){.timer{--ts:.74}}
 .timer-inner{position:absolute;left:0;top:0;width:209px;height:115px;transform:scale(var(--ts));transform-origin:0 0}
 .timer-swing{position:absolute;inset:0}
@@ -212,6 +268,12 @@ body[data-view="welcome"] .pagehead{display:none}
 /* ---------- 4d Word Match ---------- */
 .mgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;width:100%;max-width:600px;margin:0 auto}
 @media (min-width:37.5em){.mgrid{grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}}
+/* short, wide screens (phones on their side): 6 x 2 so the whole board fits without scrolling */
+@media (min-width:40em) and (max-height:33.75em){
+  .mgrid{grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;max-width:640px}
+  .pagehead{padding-top:16px}
+  main{padding-top:14px}
+}
 .mcard{display:block;aspect-ratio:1/1;padding:0;border:0;background:none;cursor:pointer;perspective:900px;border-radius:var(--r-lg)}
 .mcard-inner{position:relative;display:block;width:100%;height:100%;transform-style:preserve-3d}
 .mcard-face{position:absolute;inset:0;display:grid;place-items:center;border-radius:var(--r-lg);-webkit-backface-visibility:hidden;backface-visibility:hidden}
@@ -231,20 +293,22 @@ body[data-view="welcome"] .pagehead{display:none}
 .sprint-art{position:relative;border-radius:var(--r-lg);overflow:hidden;aspect-ratio:320/200;box-shadow:var(--shadow)}
 .sprint-art svg{display:block;width:100%;height:100%}
 .sprint-count{position:absolute;top:10px;left:10px;padding:3px 10px;border-radius:99px;background:rgba(255,255,255,.92);font-size:.75rem;font-weight:700}
-.fb{scroll-margin-bottom:100px}
+.fb{scroll-margin-bottom:16px;scroll-margin-top:calc(var(--kw-top) + 12px)}
 .result-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .result-top h2{margin:0}
 .ok-dot{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--good-soft);color:var(--good)}
 .result p{margin:10px 0 0}
-.result .note{color:var(--muted);font-size:.875rem;margin-top:4px}
+.result .fb-note{color:var(--muted);font-size:.875rem;margin-top:4px}
 .result .tipbox{margin-top:14px}
 
 /* ---------- End ---------- */
 .scorecard{display:grid;grid-template-columns:auto minmax(0,1fr);gap:18px;align-items:center}
+@media (max-width:22.5em){.scorecard{grid-template-columns:minmax(0,1fr);justify-items:center;text-align:center}}
 .lvl{margin:0;font-size:1.375rem;font-weight:750;letter-spacing:-.02em;color:var(--ink)}
 .scorecard p{margin:4px 0 0}
 .scorecard .sub{color:var(--muted);font-size:.9375rem}
 .recap{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+@media (max-width:22.5em){.recap{grid-template-columns:minmax(0,1fr)}}
 .recap-col ul{list-style:none;padding:0;margin:12px 0 0;display:grid;gap:8px}
 .recap-word{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;min-height:44px;padding:10px 14px;border:0;border-radius:var(--r-md);background:var(--c);color:var(--text);font-weight:600;line-height:1.25;text-align:left;cursor:pointer}
 .recap-word svg{flex:none;color:var(--c-ink)}
@@ -270,7 +334,6 @@ body[data-view="welcome"] .pagehead{display:none}
 .modes button[aria-pressed="true"]{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(16,24,40,.14)}
 .ctrls{display:flex;gap:8px;flex-wrap:wrap}
 .game-row p{flex:1 1 220px}
-.mode-note{margin:0;font-size:.875rem;color:var(--muted)}
 /* speaking: a black "Say it" pill (rust while listening, halo follows the voice) */
 .speak-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
 .mic-pill{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 18px 0 14px;border:0;border-radius:99px;color:#fff;font-weight:700;cursor:pointer}
@@ -323,14 +386,9 @@ details.more .btn{margin-left:20px}
 </svg>
 
 <header class="topbar" id="topbar">
-  <span class="brand">Communicate<small>English course</small></span>
   <nav class="nav" aria-label="Main">
     <a href="#main" aria-current="page" title="Key Words"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5h16a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1h-9l-4.5 3.5V16.5H4a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1z"/><path d="M7.5 10h9M7.5 13h6"/></svg><span class="lbl">Key Words</span></a>
   </nav>
-  <div class="me" id="me" role="img" aria-label="0 of 5 parts done">
-    <svg class="ring" viewBox="0 0 96 96" aria-hidden="true"><circle class="bg" cx="48" cy="48" r="40" fill="none" stroke-width="10"/><circle class="fg" id="me-fg" cx="48" cy="48" r="40" fill="none" stroke-width="10" stroke-linecap="round" stroke-dasharray="0 251.3" transform="rotate(-90 48 48)"/><text x="48" y="57" text-anchor="middle" font-weight="700" id="me-n">0</text></svg>
-    <div><b id="me-text">0 of 5 parts</b><span>Stage 4 · Key Words</span></div>
-  </div>
 </header>
 
 <div class="panel">
@@ -389,11 +447,6 @@ details.more .btn{margin-left:20px}
               </button>
               <button type="button" class="btn secondary" id="restart" hidden>Start over</button>
             </div>
-            <div class="home-mode">
-              <span class="lbl" id="mode-lbl">Games</span>
-              <div class="modes" role="group" aria-labelledby="mode-lbl" data-kind="mode"><button type="button" data-value="practice" aria-pressed="false">Practice</button><button type="button" data-value="test" aria-pressed="true">Test</button></div>
-              <p class="mode-note" id="mode-note">Test: timed games, and your first tries are scored.</p>
-            </div>
           </div>
           <ol class="home-track" id="home-track" aria-label="The five parts">
             <li data-step="greetings"><span class="ht-n sun">1</span><span class="ht-lb">Greetings</span><span class="ht-sub">3 words</span></li>
@@ -414,7 +467,7 @@ details.more .btn{margin-left:20px}
       </div>
       <div class="actionbar"><div class="actionbar-in">
         <span class="grow"><b class="heard-n">0</b> of 3 heard</span>
-        <button type="button" class="btn secondary" data-back>Back</button>
+        <button type="button" class="btn secondary back-btn" data-back aria-label="Back"><i data-ui="back"></i><span class="back-lb">Back</span></button>
         <button type="button" class="btn primary" data-next disabled>Continue</button>
       </div></div>
     </section>
@@ -427,7 +480,7 @@ details.more .btn{margin-left:20px}
       </div>
       <div class="actionbar"><div class="actionbar-in">
         <span class="grow"><b class="heard-n">0</b> of 3 heard</span>
-        <button type="button" class="btn secondary" data-back>Back</button>
+        <button type="button" class="btn secondary back-btn" data-back aria-label="Back"><i data-ui="back"></i><span class="back-lb">Back</span></button>
         <button type="button" class="btn primary" data-next disabled>Continue</button>
       </div></div>
     </section>
@@ -450,10 +503,6 @@ details.more .btn{margin-left:20px}
             <div class="q-row"><p class="question" id="story-q"></p><button type="button" class="read-btn" id="story-read" data-read="ins-story-1" data-text="" aria-label="Read the question aloud"><i data-ui="speaker"></i></button></div>
             <p class="nudge" id="story-nudge" aria-live="polite"></p>
             <div class="options" id="story-options" role="group" aria-labelledby="story-q"></div>
-            <div class="speak-row">
-              <button type="button" class="mic mic-pill" id="story-mic" disabled><i data-ui="mic"></i><span>Say it</span></button>
-              <p class="speak-msg" id="story-say-msg" aria-live="polite">Or say your answer out loud.</p>
-            </div>
           </section>
         </div>
 
@@ -483,7 +532,7 @@ details.more .btn{margin-left:20px}
       </div>
       <div class="actionbar"><div class="actionbar-in">
         <span class="grow" id="compare-status">Answer both questions</span>
-        <button type="button" class="btn secondary" data-back>Back</button>
+        <button type="button" class="btn secondary back-btn" data-back aria-label="Back"><i data-ui="back"></i><span class="back-lb">Back</span></button>
         <button type="button" class="btn primary" data-next disabled>I understand</button>
       </div></div>
     </section>
@@ -503,7 +552,7 @@ details.more .btn{margin-left:20px}
       </div>
       <div class="actionbar"><div class="actionbar-in">
         <span class="grow" id="tally">Matched <b id="tally-n">0</b> of 6</span>
-        <button type="button" class="btn secondary" data-back>Back</button>
+        <button type="button" class="btn secondary back-btn" data-back aria-label="Back"><i data-ui="back"></i><span class="back-lb">Back</span></button>
         <button type="button" class="btn primary" data-next disabled>Continue</button>
       </div></div>
     </section>
@@ -526,7 +575,7 @@ details.more .btn{margin-left:20px}
               <span class="pill done" id="fb-first">First try</span>
             </div>
             <p id="fb-why"></p>
-            <p class="note" id="fb-note">Right on the second try. Only first tries count toward your score.</p>
+            <p class="fb-note" id="fb-note">Right on the second try. Only first tries count toward your score.</p>
             <div class="tipbox" id="fb-tip" hidden>
               <span class="tip-icon"><i data-ui="bulb"></i></span>
               <p>Tip: when you meet someone at night, say ‘Good evening.’ You’ll find out when to say ‘Good night’ later.</p>
@@ -537,7 +586,7 @@ details.more .btn{margin-left:20px}
       </div>
       <div class="actionbar"><div class="actionbar-in">
         <span class="grow" id="sprint-status">Situation 1 of 5</span>
-        <button type="button" class="btn secondary" data-back>Back</button>
+        <button type="button" class="btn secondary back-btn" data-back aria-label="Back"><i data-ui="back"></i><span class="back-lb">Back</span></button>
         <button type="button" class="btn primary" id="sprint-next" disabled>Next situation</button>
       </div></div>
     </section>
@@ -1064,7 +1113,6 @@ function syncChoices() {
   $$('.modes[data-kind="mode"] button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.value === MODE)));
   $$('.modes[data-kind="show"] button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.value === SHOW)));
   $$('.limit-note').forEach(n => { n.hidden = MODE !== 'test'; });
-  $('#mode-note').textContent = MODE === 'test' ? 'Test: timed games, and your first tries are scored.' : 'Practice: no timer, and you get a hint after a wrong answer.';
 }
 function setChoice(kind, value) {
   if (kind === 'mode') { if (MODE === value) return; MODE = value; Store.set({ mode: MODE }); }
@@ -1212,7 +1260,7 @@ let cur = 'welcome', busy = false;
 
 const TITLES = { welcome: 'Key Words', greetings: 'Greetings', farewells: 'Farewells', compare: 'Arriving or leaving?', match: 'Word Match', sprint: 'Scenario Sprint', end: 'Your result' };
 function setTop(name) {
-  const step = STEP[name], done = name === 'end' ? 5 : name === 'welcome' ? Home.done() : Math.max(0, step - 1);
+  const step = STEP[name];
   document.body.dataset.view = name;
   $('#page-title').textContent = TITLES[name];
   $('#crumb').textContent = name === 'welcome' ? 'Communication Skills · Stage 4' : 'Communication Skills · Key Words';
@@ -1224,10 +1272,6 @@ function setTop(name) {
     if (on) li.setAttribute('aria-current', 'step'); else li.removeAttribute('aria-current');
   });
   updateTimers(name);
-  gsap.to('#me-fg', { attr: { 'stroke-dasharray': `${(251.3 * done / 5).toFixed(1)} 251.3` }, duration: .6, ease: 'power3.out' });
-  $('#me-n').textContent = done;
-  $('#me-text').textContent = `${done} of 5 parts`;
-  $('#me').setAttribute('aria-label', `${done} of 5 parts done`);
 }
 
 function show(name, dir = 1) {
@@ -1248,7 +1292,7 @@ function show(name, dir = 1) {
         gsap.fromTo('#page-title', { y: 10, opacity: 0 }, { y: 0, opacity: 1, duration: .45, ease: 'power3.out', clearProps: 'transform,opacity' });
         gsap.fromTo($$(':scope > .work > *', to), { y: 22, opacity: 0 }, { y: 0, opacity: 1, duration: .55, ease: 'power3.out', stagger: .06, clearProps: 'transform,opacity' });
         const bar = $(':scope > .actionbar', to);
-        if (bar) gsap.fromTo(bar, { y: 90, opacity: 0 }, { y: 0, opacity: 1, duration: .5, ease: 'back.out(1.4)', clearProps: 'transform,opacity' });
+        if (bar) gsap.fromTo(bar, { y: -14, opacity: 0 }, { y: 0, opacity: 1, duration: .4, ease: 'power3.out', clearProps: 'transform,opacity' });
       }
       enter(name);
       gsap.delayedCall(.3, () => { busy = false; });
@@ -1287,7 +1331,6 @@ const Home = {
   pulse: null,
   /* where Continue goes: the saved part, if the learner has started */
   resumeTo() { const s = Store.get().screen; return s && s !== 'welcome' && s !== 'end' && STEP[s] ? s : null; },
-  done() { const r = this.resumeTo(); return r ? STEP[r] - 1 : 0; },
   /* the two pinned notes on the board (tap to hear) */
   build() {
     $$('.home-board .note-slot').forEach(slot => {
@@ -1556,8 +1599,6 @@ const Story = {
     $('#story-q').textContent = q;
     Object.assign($('#story-read').dataset, { read: `ins-story-${step}`, text: q });
     this.wrongNow = false;
-    $('#story-mic').disabled = true;
-    Speak.msg($('#story-say-msg'), 'Or say your answer out loud.');
     $('#story-nudge').textContent = '';
     $('#story-options').innerHTML = shuffle(['good-evening', 'see-you', 'goodbye'])
       .map(id => `<button class="opt" data-id="${id}" disabled><span>${WORDS[id].text}</span></button>`).join('');
@@ -1569,9 +1610,8 @@ const Story = {
     opts.forEach(b => { b.disabled = false; });
     gsap.fromTo(opts, { y: 12, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .35, stagger: .07, ease: 'back.out(2)' });
     this.locked = false;
-    $('#story-mic').disabled = false;
     const q = $('#story .qcard');
-    if (q.getBoundingClientRect().bottom > innerHeight - 90) q.scrollIntoView({ behavior: RM ? 'auto' : 'smooth', block: 'end' });
+    if (q.getBoundingClientRect().bottom > innerHeight - 16) q.scrollIntoView({ behavior: RM ? 'auto' : 'smooth', block: 'end' });
   },
   arrows(step) {
     const inA = $('#story-svg [data-for="in"]'), outA = $('#story-svg [data-for="out"]');
@@ -1653,10 +1693,9 @@ const Story = {
       }
       return;
     }
-    $('#story-mic').disabled = true;
     this.locked = true;
     btn.classList.add('is-right');
-    if ($('#stage').getBoundingClientRect().top < 0) $('#stage').scrollIntoView({ behavior: RM ? 'auto' : 'smooth', block: 'start' });
+    if ($('#stage').getBoundingClientRect().top < $('#topbar').offsetHeight) $('#stage').scrollIntoView({ behavior: RM ? 'auto' : 'smooth', block: 'start' });
     btn.insertAdjacentHTML('afterbegin', `<span class="ok" aria-hidden="true">${UI.check}</span>`);
     $$('#story-options .opt').forEach(b => { b.disabled = true; });
     gsap.fromTo(btn, { scale: 1 }, { scale: 1.06, duration: .15, yoyo: true, repeat: 1 });
@@ -2076,7 +2115,6 @@ function init() {
     if (t.closest('.modes')) return setChoice(t.closest('.modes').dataset.kind, t.dataset.value);
     if (t.classList.contains('read-btn')) return readAloud(t);
     if (t.classList.contains('say-word')) return sayWord(t);
-    if (t.id === 'story-mic') return sayAnswer(t, '#story-options .opt', '#story-say-msg', b => Story.answer(b, 'voice'));
     if (t.id === 'sprint-mic') return sayAnswer(t, '#sprint-card .opt', '#sprint-say-msg', b => Sprint.answer(b, 'voice'));
     if (t.id === 'copy-report') return copyReport();
     if (t.classList.contains('home-note')) {
@@ -2118,6 +2156,8 @@ function init() {
     if (k >= 1 && k <= 4) { const b = $$('#sprint-card .opt')[k - 1]; if (b && !b.disabled) { b.focus(); b.click(); } }
   });
 
+  const onScroll = () => document.body.classList.toggle('kw-scrolled', scrollY > 4);
+  addEventListener('scroll', onScroll, { passive: true }); onScroll();
   playWelcome();
 }
 
