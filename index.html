@@ -1,0 +1,1667 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F4F6FB">
+<title>Key Words</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Chakra+Petch:wght@700&family=Lexend:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+/* ---------- Tokens ----------
+   Colour code for the whole stage:
+   sun (warm yellow) = arriving / greetings
+   sky (cool blue)   = leaving  / farewells
+   leaf (green)      = correct / progress
+------------------------------------------------ */
+:root{
+  --ink:#1E2240; --ink-2:#555B7F; --ink-3:#8D93B0; --ink-edge:#0B0E24;
+  --line:#E3E6F0; --line-2:#CDD2E2; --paper:#F4F6FB; --card:#FFFFFF;
+  --sun:#FFC21A; --sun-edge:#E2A100; --sun-tint:#FFF5D6; --sun-ink:#6E4600;
+  --sky:#3B8CFF; --sky-edge:#1F66D6; --sky-tint:#E6F0FF; --sky-ink:#14469A;
+  --leaf:#1FB866; --leaf-edge:#128A4A; --leaf-tint:#E2F8EC; --leaf-ink:#0B6334;
+  --coral:#FF5C64; --coral-tint:#FFEDEE; --coral-ink:#B0252D;
+  --display:"Baloo 2", ui-rounded, system-ui, sans-serif;
+  --text:"Lexend", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --r-lg:24px; --r-md:18px;
+  color-scheme: light;
+}
+.sun{--c:var(--sun);--c-edge:var(--sun-edge);--c-tint:var(--sun-tint);--c-ink:var(--sun-ink);--c-on:#4A2F00}
+.sky{--c:var(--sky);--c-edge:var(--sky-edge);--c-tint:var(--sky-tint);--c-ink:var(--sky-ink);--c-on:#FFFFFF}
+
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 16px/1.5 var(--text);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+button{font:inherit;color:inherit;-webkit-tap-highlight-color:transparent}
+h1,h2,p{margin:0}
+:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ---------- Shell ---------- */
+.app{max-width:860px;margin:0 auto;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}
+main{flex:1;display:flex;flex-direction:column}
+.screen{flex:1;display:flex;flex-direction:column}
+.screen-body{flex:1;padding:8px 16px 28px}
+body.has-sheet .screen-body{padding-bottom:300px}
+
+.topbar{display:flex;align-items:center;gap:14px;padding:14px 16px 6px}
+.icon-btn{flex:none;width:44px;height:44px;border-radius:14px;border:2px solid var(--line);background:var(--card);color:var(--ink-2);display:grid;place-items:center;cursor:pointer;box-shadow:0 3px 0 var(--line)}
+.icon-btn:hover{color:var(--ink);border-color:var(--line-2)}
+.icon-btn:active{transform:translateY(3px);box-shadow:none}
+.progress{flex:1;display:flex;gap:6px}
+.progress>span{flex:1;height:12px;border-radius:99px;background:var(--line);overflow:hidden}
+.progress>span>i{display:block;height:100%;border-radius:inherit;background:var(--leaf);transform-origin:left center;transform:scaleX(0);box-shadow:inset 0 -3px 0 rgba(0,0,0,.12)}
+
+/* ---------- Buttons ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:54px;padding:0 28px;border:0;border-radius:16px;background:var(--ink);color:#fff;font:600 17px/1 var(--text);cursor:pointer;box-shadow:0 5px 0 var(--ink-edge);transition:transform .08s ease,box-shadow .08s ease,background-color .2s}
+.btn:hover{background:#2B3058}
+.btn:active{transform:translateY(5px);box-shadow:0 0 0 var(--ink-edge)}
+.btn:disabled{background:var(--line);color:var(--ink-3);box-shadow:0 5px 0 var(--line-2);cursor:not-allowed;transform:none}
+.btn-leaf{background:var(--leaf);box-shadow:0 5px 0 var(--leaf-edge)}
+.btn-leaf:hover{background:#22C56F}
+.btn-leaf:active{box-shadow:0 0 0 var(--leaf-edge)}
+.btn-quiet{background:var(--card);color:var(--ink);box-shadow:0 0 0 2px var(--line) inset,0 5px 0 var(--line)}
+.btn-quiet:hover{background:#FAFBFE}
+.btn-quiet:active{box-shadow:0 0 0 2px var(--line) inset,0 0 0 var(--line)}
+.btn-lg{min-height:58px;padding:0 44px;font-size:18px}
+.footer{position:sticky;bottom:0;z-index:5;display:flex;justify-content:flex-end;gap:12px;padding:14px 16px calc(14px + env(safe-area-inset-bottom));border-top:2px solid var(--line);background:rgba(244,246,251,.92);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+@media (max-width:600px){.footer .btn{flex:1;padding:0 16px}}
+
+/* ---------- Type ---------- */
+.head{margin:10px 0 18px}
+.h1,.head h1{font:800 clamp(30px,6.4vw,42px)/1.02 var(--display);letter-spacing:-.01em}
+.head .tag+h1{margin-top:10px}
+.lede{color:var(--ink-2);font-size:17px;margin-top:6px;max-width:54ch}
+.center{text-align:center}
+.center .lede{margin-left:auto;margin-right:auto}
+.tag{display:inline-flex;align-items:center;gap:6px;padding:5px 12px 5px 9px;border-radius:99px;background:var(--c-tint);color:var(--c-ink);box-shadow:inset 0 0 0 2px var(--c);font:600 14px/1.2 var(--text)}
+.tag svg{width:18px;height:18px;flex:none}
+
+/* ---------- Welcome ---------- */
+.welcome{flex:1;display:grid;gap:28px;align-content:center;padding:24px 16px 36px}
+@media (min-width:780px){.welcome{grid-template-columns:1.05fr 1fr;gap:52px;align-items:center;padding:48px 24px}}
+.hero-art{position:relative;display:flex;flex-direction:column;gap:22px;padding:62px 22px 30px;border-radius:32px;background-color:var(--card);background-image:radial-gradient(circle at 1px 1px,#E6E9F3 1.3px,transparent 0);background-size:18px 18px;box-shadow:0 0 0 2px var(--line) inset,0 8px 0 var(--line)}
+.hero-time{position:absolute;top:18px;left:50%;transform:translateX(-50%);display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:99px;background:var(--paper);color:var(--ink-2);font:600 14px/1.2 var(--text);white-space:nowrap}
+.hero-row{display:flex;flex-direction:column;gap:9px}
+.hero-row.arrive{align-items:flex-start}
+.hero-row.leave{align-items:flex-end}
+.bubble{position:relative;padding:14px 24px 11px;border-radius:26px;font:800 clamp(28px,6.4vw,40px)/1.05 var(--display)}
+.bubble.sun{background:var(--sun);color:#3D2800;border-bottom-left-radius:8px;box-shadow:0 6px 0 var(--sun-edge)}
+.bubble.sky{background:var(--sky);color:#fff;border-bottom-right-radius:8px;box-shadow:0 6px 0 var(--sky-edge)}
+.bubble .txt{display:inline-block}
+.bubble .dots{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:7px;opacity:0}
+.bubble .dots i{width:10px;height:10px;border-radius:50%;background:currentColor;opacity:.75}
+.hero-chip{display:inline-flex;align-items:center;gap:6px;font:600 14px/1.2 var(--text);color:var(--c-ink)}
+.stage-pill{display:inline-block;padding:4px 12px;border-radius:99px;background:var(--ink);color:#fff;font:600 13px/1.4 var(--text)}
+.title{font:800 clamp(56px,12vw,88px)/.9 var(--display);letter-spacing:-.02em;margin-top:14px}
+.welcome .lede{font-size:18px;margin-top:10px}
+.plan{list-style:none;padding:0;margin:24px 0 28px;display:grid;gap:11px}
+.plan li{display:flex;align-items:center;gap:12px;font-weight:500}
+.plan em{font-style:normal;color:var(--ink-3);font-size:14px;margin-left:4px}
+.num{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font:700 14px/1 var(--text);background:var(--line);color:var(--ink)}
+.num.sun{background:var(--sun);color:#3D2800}
+.num.sky{background:var(--sky);color:#fff}
+.num.both{background:linear-gradient(90deg,var(--sun) 50%,var(--sky) 50%);color:var(--ink)}
+@media (max-width:779px){.welcome .btn-lg{width:100%}}
+
+/* ---------- 4a / 4b word cards: pinned sticky notes ----------
+   Built from Figma moodboard nodes 30:47 (yellow backing, greetings) and 30:15 (blue backing, farewells).
+   .note-inner is laid out at the design's native 518.773 x 476 px and scaled to the card width by JS (--k),
+   so every layer keeps the design's exact proportions. */
+.word-cards{display:flex;flex-wrap:wrap;justify-content:center;gap:20px 14px;margin-top:10px}
+.note{position:relative;flex:0 0 calc(50% - 7px);aspect-ratio:518.773/476;padding:0;border:0;background:none;cursor:pointer;text-align:center;--k:.33}
+@media (min-width:600px){.note{flex-basis:calc(33.333% - 10px)}}
+.note:focus-visible{outline:3px solid var(--ink);outline-offset:6px;border-radius:6px}
+.note-inner{position:absolute;left:0;top:0;width:518.773px;height:476px;transform:scale(var(--k));transform-origin:0 0}
+.note-backing{position:absolute;left:26.608px;top:19.158px;width:465.106px;height:436.369px}
+.note.sun .note-backing{background:#FDD25F}
+.note.sky .note-backing{background:#8DCAFC}
+.note-paper{position:absolute;left:21.419px;top:24.121px;width:475.935px;height:427.758px;transform:rotate(-6.11deg)}
+.note-sheet{position:absolute;inset:0}
+.note-paper-img{position:absolute;left:-.89%;top:0;display:block;max-width:none}
+.note-pin{position:absolute;left:246.223px;top:0;width:57.223px;height:56.794px;display:flex;align-items:center;justify-content:center}
+.note-pin img{display:block;max-width:none;flex:none;transform:rotate(10.52deg)}
+/* Content written on the paper (paper-local px; the fold sits bottom-right, the pin top-centre) */
+.wcard-speak{position:absolute;left:30px;top:28px;display:grid;place-items:center;width:104px;height:70px;border-radius:99px;background:var(--c);color:var(--c-on);box-shadow:0 7px 0 var(--c-edge)}
+.wcard-speak svg{width:42px;height:42px}
+.note .ico{position:absolute;left:143px;top:66px;width:190px;height:190px;overflow:visible}
+.wcard-word{position:absolute;left:40px;top:262px;width:396px;height:120px;display:grid;place-items:center}
+.wcard-word>*{grid-area:1/1}
+.wcard-hint{font:500 38px/1.2 var(--text);color:var(--ink-3)}
+.wcard-text{visibility:hidden;font:600 56px/1.08 var(--text);color:var(--ink)}
+.wd{display:inline-block;white-space:nowrap}
+.ch{display:inline-block}
+.wcard-check{position:absolute;left:432px;top:-4px;width:86px;height:86px;border-radius:50%;background:var(--leaf);color:#fff;display:grid;place-items:center;box-shadow:0 0 0 8px var(--paper);transform:scale(0)}
+.wcard-check svg{width:46px;height:46px}
+.heard{margin-top:24px;text-align:center;color:var(--ink-2);font-weight:500}
+.heard b{color:var(--ink)}
+
+/* ---------- 4c compare ---------- */
+.time-chip{display:flex;width:max-content;align-items:center;gap:7px;margin:0 auto;padding:6px 14px;border-radius:99px;background:var(--card);box-shadow:inset 0 0 0 2px var(--line);font:600 14px/1.2 var(--text);color:var(--ink-2)}
+.compare{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(10px,2.6vw,22px);max-width:600px;margin:16px auto 0}
+.takeaway{max-width:600px;margin-left:auto;margin-right:auto}
+.scene{margin:0;display:flex;flex-direction:column;align-items:center;gap:14px}
+.scene-art{position:relative;width:100%;aspect-ratio:300/340;border-radius:var(--r-lg);overflow:hidden;border:4px solid var(--c);box-shadow:0 6px 0 var(--c-edge);background:#3E3A8E}
+.scene-art>svg{display:block;width:100%;height:100%}
+.scene-art .tag{position:absolute;top:10px;left:10px;background:var(--c);color:var(--c-on);box-shadow:0 3px 0 var(--c-edge)}
+.says{display:flex;flex-direction:column;align-items:stretch;gap:10px;width:100%}
+.say{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:11px 8px;border-radius:16px;border:2px solid var(--c);background:var(--c-tint);color:var(--c-ink);box-shadow:0 4px 0 var(--c-edge);font:600 clamp(14px,3.6vw,18px)/1.15 var(--text);text-align:center;cursor:pointer}
+.say:active{transform:translateY(4px);box-shadow:none}
+.say svg{flex:none}
+.takeaway{display:flex;gap:12px;align-items:center;margin-top:24px;padding:14px 16px;border-radius:var(--r-md);background:var(--card);box-shadow:inset 0 0 0 2px var(--line)}
+.takeaway p{font-weight:500}
+.takeaway .tip-icon{flex:none}
+.text-btn{display:inline-flex;align-items:center;gap:6px;margin:16px auto 0;padding:8px 12px;border:0;border-radius:12px;background:none;color:var(--ink-2);font-weight:600;font-size:15px;cursor:pointer}
+.text-btn:hover{background:var(--card);color:var(--ink)}
+
+/* 4c story stage */
+.story{display:grid;gap:14px;margin-top:4px}
+@media (min-width:760px){.story{grid-template-columns:1.3fr 1fr;align-items:center;gap:28px}}
+.stage{margin:0}
+.stage-art{position:relative;aspect-ratio:440/340;border-radius:var(--r-lg);overflow:hidden;border:4px solid var(--c);box-shadow:0 6px 0 var(--c-edge);background:#3E3A8E;transition:border-color .45s ease,box-shadow .45s ease}
+.stage-art>svg{display:block;width:100%;height:100%}
+.stage-art .tag{position:absolute;top:10px;left:10px;z-index:2;background:var(--c);color:var(--c-on);box-shadow:0 3px 0 var(--c-edge);transition:background-color .45s,color .45s}
+.stage-step{position:absolute;top:10px;right:10px;z-index:2;padding:4px 11px;border-radius:99px;background:rgba(255,255,255,.92);font:600 13px/1.3 var(--text)}
+.say-bubble{position:absolute;left:0;bottom:0;z-index:3;padding:8px 14px 6px;border-radius:16px;font:800 clamp(15px,3.9vw,20px)/1.1 var(--display);white-space:nowrap;visibility:hidden;box-shadow:0 4px 0 rgba(11,14,36,.22);--tail:50%}
+.say-bubble::after{content:"";position:absolute;top:calc(100% - 1px);left:var(--tail);width:16px;height:11px;margin-left:-8px;background:inherit;clip-path:polygon(0 0,100% 0,50% 100%)}
+.say-bubble.sun{background:var(--sun);color:#3D2800}
+.say-bubble.sky{background:var(--sky);color:#fff}
+.say-bubble.plain{background:#fff;color:var(--ink)}
+.story-time{margin-bottom:10px}
+.story-time svg{flex:none}
+.options.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+
+/* ---------- Games shared ---------- */
+.game-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin:8px 0 4px}
+.game-head-main{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:10px}
+
+/* Hanging game timer: Figma moodboard node 34:84 (Engineering / Display / Timer, 209 x 115).
+   .timer-inner keeps the design's native geometry and is scaled by --ts. */
+.timer{--ts:.58;position:relative;flex:none;width:calc(209px * var(--ts));height:calc(115px * var(--ts));margin-top:-16px}
+@media (min-width:600px){.timer{--ts:.74;margin-top:-18px}}
+.timer-inner{position:absolute;left:0;top:0;width:209px;height:115px;transform:scale(var(--ts));transform-origin:0 0}
+.timer-swing{position:absolute;inset:0}
+.timer-rod{position:absolute;top:0;right:49.28%;bottom:72.17%;left:48.33%;background-image:linear-gradient(90deg,#326FC6 0%,#326FC6 100%),linear-gradient(90deg,#D9D9D9 0%,#D9D9D9 100%);box-shadow:inset 0 2px 4px 0 #67B9F9}
+.timer-mount{position:absolute;top:26.09%;right:46.41%;bottom:68.7%;left:46.41%;border-radius:4px;background-image:linear-gradient(90deg,#326FC6 0%,#326FC6 100%),linear-gradient(90deg,#D9D9D9 0%,#D9D9D9 100%);box-shadow:inset 0 2px 4px 0 #67B9F9}
+.timer-body{position:absolute;left:0;top:29.57%;display:block;max-width:none}
+.timer-time{position:absolute;top:36.52%;right:16.27%;bottom:6.96%;left:15.31%;display:flex;flex-direction:column;justify-content:center;font:700 50px/normal "Chakra Petch",ui-monospace,monospace;font-variant-numeric:tabular-nums;color:#154879;text-align:center;white-space:nowrap;transition:color .3s}
+.timer.is-low .timer-time,.timer.is-up .timer-time{color:#C2272F}
+.timer.is-done .timer-time{color:#0B7A3E}
+.game-title{display:flex;align-items:center;gap:10px;font:800 clamp(28px,6vw,38px)/1 var(--display)}
+.game-title svg{flex:none}
+.pill{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:99px;background:var(--card);box-shadow:inset 0 0 0 2px var(--line);font-weight:500;font-size:15px;white-space:nowrap}
+.pill b{font-weight:700}
+.star svg{display:block;width:28px;height:28px}
+.star path{fill:var(--line);stroke:var(--line-2)}
+.star.is-on path{fill:#FFC21A;stroke:#E2A100}
+.stars{display:flex;gap:4px}
+
+/* ---------- 4d Word Match ---------- */
+.mgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:18px}
+@media (min-width:600px){.mgrid{grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}}
+.mcard{display:block;aspect-ratio:1/1;padding:0;border:0;background:none;cursor:pointer;perspective:900px;border-radius:18px}
+.mcard-inner{position:relative;display:block;width:100%;height:100%;transform-style:preserve-3d}
+.mcard-face{position:absolute;inset:0;display:grid;place-items:center;border-radius:18px;-webkit-backface-visibility:hidden;backface-visibility:hidden}
+.mcard-back{background-color:var(--ink);border-bottom:6px solid var(--ink-edge);background-image:radial-gradient(circle at 18% 22%,rgba(255,255,255,.07) 0 16%,transparent 17%),radial-gradient(circle at 84% 82%,rgba(255,255,255,.06) 0 22%,transparent 23%);transition:background-color .2s}
+.mcard:not(.is-up):hover .mcard-back{background-color:#2D3260}
+.mcard-back svg{width:44%;height:auto}
+.mcard-front{transform:rotateY(180deg);background:var(--card);border:3px solid var(--c);border-bottom-width:6px}
+.mcard-front svg.ico{width:74%;height:74%;overflow:visible}
+.mword{padding:6px;font:600 clamp(14px,3.5vw,19px)/1.15 var(--text);text-align:center}
+.mcard.is-matched{cursor:default}
+.mcard.is-matched .mcard-front{background:var(--c-tint)}
+.mcard-check{position:absolute;top:6px;right:6px;width:24px;height:24px;border-radius:50%;background:var(--leaf);color:#fff;display:grid;place-items:center;transform:scale(0)}
+
+/* ---------- 4e Scenario Sprint ---------- */
+#sprint-card{display:grid;gap:16px;margin-top:16px}
+@media (min-width:760px){#sprint-card{grid-template-columns:1.15fr 1fr;align-items:start;gap:26px}}
+.sprint-art{position:relative;border-radius:var(--r-lg);overflow:hidden;aspect-ratio:320/200;background:#DDEBFF;box-shadow:0 0 0 2px var(--line),0 6px 0 var(--line)}
+.sprint-art svg{display:block;width:100%;height:100%}
+.sprint-count{position:absolute;top:10px;left:10px;padding:4px 11px;border-radius:99px;background:rgba(255,255,255,.92);color:var(--ink);font:600 13px/1.3 var(--text)}
+.sprint-q{font:700 clamp(23px,5vw,29px)/1.15 var(--display)}
+.nudge{min-height:1.5em;margin:6px 0 10px;color:var(--coral-ink);font-weight:500;font-size:15px}
+.options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.opt{display:flex;align-items:center;justify-content:center;gap:8px;min-height:62px;padding:10px 12px;border:0;border-radius:16px;background:var(--card);box-shadow:inset 0 0 0 2px var(--line),0 4px 0 var(--line);font:600 clamp(15px,3.8vw,17px)/1.2 var(--text);text-align:center;cursor:pointer;transition:background-color .15s}
+.opt:hover:not(:disabled){background:#F7F8FD}
+.opt:active:not(:disabled){transform:translateY(4px);box-shadow:inset 0 0 0 2px var(--line)}
+.opt:disabled{cursor:default}
+.opt.is-right{background:var(--leaf-tint);color:var(--leaf-ink);box-shadow:inset 0 0 0 2px var(--leaf),0 4px 0 var(--leaf-edge)}
+.opt.is-wrong{background:var(--coral-tint);color:var(--coral-ink);box-shadow:inset 0 0 0 2px var(--coral),0 4px 0 #F3B3B7}
+.opt .ok{display:grid;place-items:center;flex:none;width:24px;height:24px;border-radius:50%;background:var(--leaf);color:#fff}
+
+/* Feedback sheet (slides up after a correct answer) */
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:40;background:var(--leaf-tint);box-shadow:0 -2px 0 #BDEBD0;padding:18px 16px calc(18px + env(safe-area-inset-bottom))}
+.sheet-inner{max-width:828px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:16px 24px}
+.sheet-msg{flex:1 1 340px;display:flex;gap:14px;align-items:flex-start}
+.sheet-badge{flex:none;width:52px;height:52px;border-radius:50%;background:#fff;color:var(--leaf);display:grid;place-items:center}
+.sheet-title{display:flex;align-items:center;flex-wrap:wrap;gap:6px 10px;font:800 26px/1.1 var(--display);color:var(--leaf-ink)}
+.star-pill{display:inline-flex;align-items:center;gap:5px;padding:3px 10px 3px 7px;border-radius:99px;background:#fff;color:#7A5200;font:600 13px/1.4 var(--text)}
+.star-pill svg{width:16px;height:16px}
+.star-pill path{fill:#FFC21A;stroke:#E2A100}
+.sheet-why{margin-top:4px;color:var(--leaf-ink);font-weight:500}
+.sheet-note{margin-top:2px;color:var(--leaf-ink);opacity:.8;font-size:14px}
+.sheet .btn{flex:0 0 auto;min-width:180px}
+@media (max-width:600px){.sheet .btn{flex:1 1 100%}}
+.tip{display:flex;gap:12px;align-items:flex-start;margin-top:12px;padding:12px 14px;border-radius:14px;background:#fff;box-shadow:inset 4px 0 0 var(--sun)}
+.tip p{font-size:15px;color:var(--ink)}
+.tip-icon{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--sun-tint);color:var(--sun-ink);flex:none}
+
+/* ---------- End ---------- */
+.end{display:flex;flex-direction:column;align-items:center;text-align:center;padding-top:24px}
+.end-stars{display:flex;gap:8px;margin-bottom:18px}
+.end-stars .star svg{width:clamp(44px,11vw,62px);height:auto}
+.recap{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;width:100%;max-width:580px;margin-top:28px;text-align:left}
+.recap-col{padding:14px;border-radius:var(--r-md);background:var(--card);border:3px solid var(--c);box-shadow:0 5px 0 var(--c-edge)}
+.recap-col ul{list-style:none;padding:0;margin:12px 0 0;display:grid;gap:8px}
+.recap-word{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;padding:10px 12px;border:0;border-radius:12px;background:var(--c-tint);font-weight:600;font-size:15px;line-height:1.2;text-align:left;cursor:pointer}
+.recap-word svg{flex:none;color:var(--c-ink)}
+
+/* ---------- Overlays ---------- */
+.modal{position:fixed;inset:0;z-index:80;display:grid;place-items:center;padding:16px;background:rgba(30,34,64,.45);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+.modal-card{width:min(400px,100%);padding:28px 24px 22px;border-radius:28px;background:var(--card);text-align:center;box-shadow:0 10px 0 rgba(11,14,36,.12)}
+.modal-icon{width:76px;height:76px;margin:0 auto 14px;border-radius:50%;display:grid;place-items:center;background:var(--sun-tint)}
+.modal-card h2{font:800 30px/1.05 var(--display)}
+.modal-card p{color:var(--ink-2);margin:8px 0 22px}
+.modal-card .btn{width:100%}
+.fly-star{position:fixed;left:0;top:0;z-index:60;pointer-events:none}
+.fly-star svg{width:100%;height:100%}
+.fly-star path{fill:#FFC21A;stroke:#E2A100}
+.confetti{position:fixed;inset:0;z-index:70;pointer-events:none;overflow:hidden}
+.confetti i{position:absolute;left:0;top:0;border-radius:2px}
+</style>
+</head>
+<body>
+
+<!-- Shared SVG paint (kept out of display:none so every scene can use it) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="g-sky-morning" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8CCBFF"/><stop offset=".7" stop-color="#CFE8FF"/><stop offset="1" stop-color="#FFE2C4"/></linearGradient>
+    <linearGradient id="g-sky-afternoon" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#47A6FF"/><stop offset="1" stop-color="#BEE4FF"/></linearGradient>
+    <linearGradient id="g-sky-evening" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3E3A8E"/><stop offset=".55" stop-color="#9A5AA6"/><stop offset="1" stop-color="#FF9D6C"/></linearGradient>
+    <linearGradient id="g-sky-night" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0E1440"/><stop offset="1" stop-color="#2C347A"/></linearGradient>
+    <radialGradient id="g-glow"><stop offset="0" stop-color="#FFE08A" stop-opacity=".75"/><stop offset="1" stop-color="#FFE08A" stop-opacity="0"/></radialGradient>
+  </defs>
+</svg>
+
+<div class="app">
+  <header class="topbar" id="topbar" hidden>
+    <button class="icon-btn" id="back" aria-label="Go back"><i data-ui="back"></i></button>
+    <div class="progress" id="progress" role="progressbar" aria-label="Stage progress" aria-valuemin="0" aria-valuemax="5" aria-valuenow="0">
+      <span><i></i></span><span><i></i></span><span><i></i></span><span><i></i></span><span><i></i></span>
+    </div>
+  </header>
+
+  <main>
+    <!-- Welcome -->
+    <section class="screen" data-screen="welcome">
+      <div class="welcome">
+        <div class="hero-art" aria-hidden="true">
+          <span class="hero-time"><i data-ui="clock"></i>6:30 pm</span>
+          <div class="hero-row arrive sun">
+            <div class="bubble sun"><span class="dots"><i></i><i></i><i></i></span><span class="txt">Good evening!</span></div>
+            <span class="hero-chip"><i data-ui="doorIn"></i>Arriving</span>
+          </div>
+          <div class="hero-row leave sky">
+            <div class="bubble sky"><span class="dots"><i></i><i></i><i></i></span><span class="txt">See you!</span></div>
+            <span class="hero-chip"><i data-ui="doorOut"></i>Leaving</span>
+          </div>
+        </div>
+        <div class="welcome-copy">
+          <span class="stage-pill">Stage 4</span>
+          <h1 class="title">Key Words</h1>
+          <p class="lede">Learn what to say when you arrive and when you leave.</p>
+          <ol class="plan">
+            <li><span class="num sun">1</span><span>Hear three greetings</span></li>
+            <li><span class="num sky">2</span><span>Hear three farewells</span></li>
+            <li><span class="num both">3</span><span>Compare arriving and leaving</span></li>
+            <li><span class="num">4</span><span>Play Word Match <em>up to 4 min</em></span></li>
+            <li><span class="num">5</span><span>Play Scenario Sprint <em>up to 5 min</em></span></li>
+          </ol>
+          <button class="btn btn-lg" id="start">Start</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4a Greetings -->
+    <section class="screen" data-screen="greetings" hidden>
+      <div class="screen-body">
+        <div class="head sun">
+          <span class="tag"><i data-ui="doorIn"></i>Arriving</span>
+          <h1>Greetings</h1>
+          <p class="lede">Say these when you arrive. Tap each card to hear it.</p>
+        </div>
+        <div class="word-cards" data-set="greetings"></div>
+        <p class="heard"><b class="heard-n">0</b> of 3 heard</p>
+      </div>
+      <div class="footer"><button class="btn" data-next disabled>Continue</button></div>
+    </section>
+
+    <!-- 4b Farewells -->
+    <section class="screen" data-screen="farewells" hidden>
+      <div class="screen-body">
+        <div class="head sky">
+          <span class="tag"><i data-ui="doorOut"></i>Leaving</span>
+          <h1>Farewells</h1>
+          <p class="lede">Say these when you leave. Tap each card to hear it.</p>
+        </div>
+        <div class="word-cards" data-set="farewells"></div>
+        <p class="heard"><b class="heard-n">0</b> of 3 heard</p>
+      </div>
+      <div class="footer"><button class="btn" data-next disabled>Continue</button></div>
+    </section>
+
+    <!-- 4c Arrive vs leave: a two-step story, then the side-by-side recap -->
+    <section class="screen" data-screen="compare" hidden>
+      <div class="screen-body">
+        <div class="head center">
+          <h1>Arriving or leaving?</h1>
+          <p class="lede" id="compare-lede">Watch Ananya at the institute. Pick what she says.</p>
+        </div>
+
+        <div class="story" id="story">
+          <figure class="stage sun" id="stage">
+            <div class="stage-art" id="stage-art">
+              <span class="tag" id="stage-tag"></span>
+              <span class="stage-step" id="stage-step">1 of 2</span>
+              <div class="say-bubble" id="bubble-ananya" aria-hidden="true"></div>
+              <div class="say-bubble plain" id="bubble-teacher" aria-hidden="true"></div>
+            </div>
+          </figure>
+          <div class="story-side">
+            <span class="pill story-time"><i data-ui="moon"></i>Evening</span>
+            <p class="sprint-q" id="story-q"></p>
+            <p class="nudge" id="story-nudge" aria-live="polite"></p>
+            <div class="options three" id="story-options" role="group" aria-labelledby="story-q"></div>
+          </div>
+        </div>
+
+        <div id="recap" hidden>
+          <span class="time-chip"><i data-ui="moon"></i>Evening in both pictures</span>
+          <div class="compare">
+            <figure class="scene sun">
+              <div class="scene-art" id="scene-arrive"><span class="tag"><i data-ui="doorIn"></i>Arriving</span></div>
+              <div class="says">
+                <button class="say" data-id="good-evening" data-text="Good evening!"><i data-ui="speaker"></i>“Good evening!”</button>
+              </div>
+            </figure>
+            <figure class="scene sky">
+              <div class="scene-art" id="scene-leave"><span class="tag"><i data-ui="doorOut"></i>Leaving</span></div>
+              <div class="says">
+                <button class="say" data-id="see-you" data-text="See you!"><i data-ui="speaker"></i>“See you!”</button>
+                <button class="say" data-id="goodbye" data-text="Goodbye!"><i data-ui="speaker"></i>“Goodbye!”</button>
+              </div>
+            </figure>
+          </div>
+          <div class="takeaway">
+            <span class="tip-icon"><i data-ui="bulb"></i></span>
+            <p>Even in the evening, say “Goodbye” or “See you” when you leave.</p>
+          </div>
+          <div class="center"><button class="text-btn" id="replay-compare"><i data-ui="replay"></i>Watch the story again</button></div>
+        </div>
+      </div>
+      <div class="footer"><button class="btn" data-next disabled>I understand</button></div>
+    </section>
+
+    <!-- 4d Word Match -->
+    <section class="screen" data-screen="match" hidden>
+      <div class="screen-body">
+        <div class="game-head">
+          <div class="game-head-main">
+            <h1 class="game-title"><i data-ui="pad"></i>Word Match</h1>
+            <div class="pill" id="tally"><i data-ui="trophy"></i><span>Matched <b id="tally-n">0</b> of 6</span></div>
+          </div>
+          <div class="timer" id="match-timer" role="timer" aria-label="Time left">
+            <div class="timer-inner"><div class="timer-swing">
+              <span class="timer-rod"></span>
+              <span class="timer-mount"></span>
+              <img class="timer-body" src="assets/timer/timer-body.svg" width="209" height="81" alt="">
+              <span class="timer-time">04:00</span>
+            </div></div>
+          </div>
+        </div>
+        <p class="lede">Find each word and its picture. You have 4 minutes.</p>
+        <div class="mgrid" id="match-grid"></div>
+      </div>
+      <div class="footer"><button class="btn" data-next disabled>Continue</button></div>
+    </section>
+
+    <!-- 4e Scenario Sprint -->
+    <section class="screen" data-screen="sprint" hidden>
+      <div class="screen-body">
+        <div class="game-head">
+          <div class="game-head-main">
+            <h1 class="game-title"><i data-ui="pad"></i>Scenario Sprint</h1>
+            <div class="stars" id="stars" role="img" aria-label="0 of 5 stars"></div>
+          </div>
+          <div class="timer" id="sprint-timer" role="timer" aria-label="Time left">
+            <div class="timer-inner"><div class="timer-swing">
+              <span class="timer-rod"></span>
+              <span class="timer-mount"></span>
+              <img class="timer-body" src="assets/timer/timer-body.svg" width="209" height="81" alt="">
+              <span class="timer-time">05:00</span>
+            </div></div>
+          </div>
+        </div>
+        <p class="lede">Pick what you would say. You have 5 minutes.</p>
+        <div id="sprint-card"></div>
+      </div>
+    </section>
+
+    <!-- End -->
+    <section class="screen" data-screen="end" hidden>
+      <div class="screen-body end">
+        <div class="end-stars" id="end-stars" role="img"></div>
+        <h1 class="h1" id="end-title">You matched 0 out of 5!</h1>
+        <p class="lede" id="end-note"></p>
+        <div class="recap">
+          <div class="recap-col sun"><span class="tag"><i data-ui="doorIn"></i>Arriving</span><ul id="recap-sun"></ul></div>
+          <div class="recap-col sky"><span class="tag"><i data-ui="doorOut"></i>Leaving</span><ul id="recap-sky"></ul></div>
+        </div>
+      </div>
+      <div class="footer">
+        <button class="btn btn-quiet" data-action="replay"><i data-ui="replay"></i>Play again</button>
+        <button class="btn" data-action="finish">Finish</button>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- Feedback sheet -->
+<div class="sheet" id="sheet" hidden role="status">
+  <div class="sheet-inner">
+    <div class="sheet-msg">
+      <span class="sheet-badge"><i data-ui="checkBig"></i></span>
+      <div>
+        <p class="sheet-title"><span>Correct!</span><span class="star-pill" id="sheet-star"><i data-ui="star"></i>+1 star</span></p>
+        <p class="sheet-why" id="sheet-why"></p>
+        <p class="sheet-note" id="sheet-note">No star this time. Stars are for first tries.</p>
+        <div class="tip" id="sheet-tip" hidden>
+          <span class="tip-icon"><i data-ui="bulb"></i></span>
+          <p>Tip: when you meet someone at night, say ‘Good evening.’ You’ll find out when to say ‘Good night’ later.</p>
+        </div>
+      </div>
+    </div>
+    <button class="btn btn-leaf" id="sheet-btn">Continue</button>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal" id="modal" hidden role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal-card">
+    <div class="modal-icon" id="modal-icon"></div>
+    <h2 id="modal-title"></h2>
+    <p id="modal-text"></p>
+    <button class="btn" id="modal-btn"></button>
+  </div>
+</div>
+
+<div id="live" class="sr-only" aria-live="polite"></div>
+
+<script>
+(() => {
+'use strict';
+
+/* =========================================================
+   Helpers
+   ========================================================= */
+const RM = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+if (RM) gsap.globalTimeline.timeScale(5);
+const $  = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const shuffle = list => { const a = list.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const announce = msg => { const l = $('#live'); l.textContent = ''; requestAnimationFrame(() => { l.textContent = msg; }); };
+const shake = (els, amp = 7) => gsap.to(els, { keyframes: { x: [0, -amp, amp, -amp * .7, amp * .7, -amp * .3, 0] }, duration: .45, ease: 'none' });
+
+/* =========================================================
+   UI icons
+   ========================================================= */
+const STAR_PATH = 'M12 2.6l2.85 5.95 6.5.85-4.75 4.5 1.2 6.45L12 17.25 6.2 20.35l1.2-6.45L2.65 9.4l6.5-.85z';
+const UI = {
+  back: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>',
+  speaker: '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4 9.5v5h3.6L12.5 19V5L7.6 9.5z" fill="currentColor"/><path d="M15.5 9a4.2 4.2 0 0 1 0 6M18 6.5a7.8 7.8 0 0 1 0 11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+  check: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.2 4.2L19 7"/></svg>',
+  checkBig: '<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.2 4.2L19 7"/></svg>',
+  star: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${STAR_PATH}" stroke-width="1.5" stroke-linejoin="round"/></svg>`,
+  clock: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+  doorIn: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="13" y="3" width="8" height="18" rx="1.5"/><path d="M2 12h8M7 8.5l3.5 3.5L7 15.5"/></svg>',
+  doorOut: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="8" height="18" rx="1.5"/><path d="M13 12h9M18.5 8.5L22 12l-3.5 3.5"/></svg>',
+  bulb: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.3 1.1 2.2h5c0-.9.4-1.6 1.1-2.2A6 6 0 0 0 12 3z" fill="#FFD55C"/><path d="M9.5 19h5M10.5 22h3"/></svg>',
+  moon: '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M20.5 14.6A8.5 8.5 0 0 1 9.4 3.5a8.5 8.5 0 1 0 11.1 11.1z" fill="#8B7CF6"/></svg>',
+  replay: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4.5h4.5"/></svg>',
+  trophy: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4" stroke="#C98A00" stroke-width="2"/><path d="M8 4h8v5a4 4 0 0 1-8 0z" fill="#FFC21A" stroke="#C98A00" stroke-width="2"/><path d="M12 13v3" stroke="#C98A00" stroke-width="2"/><path d="M9 20h6l-1-4h-4z" fill="#FFC21A" stroke="#C98A00" stroke-width="2"/></svg>',
+  trophyBig: '<svg viewBox="0 0 24 24" width="44" height="44" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4" stroke="#C98A00" stroke-width="1.8"/><path d="M8 4h8v5a4 4 0 0 1-8 0z" fill="#FFC21A" stroke="#C98A00" stroke-width="1.8"/><path d="M12 13v3" stroke="#C98A00" stroke-width="1.8"/><path d="M9 20h6l-1-4h-4z" fill="#FFC21A" stroke="#C98A00" stroke-width="1.8"/></svg>',
+  hourglass: '<svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="#B07A00" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12M6 21h12"/><path d="M7.5 3v2.5c0 2.6 4.5 4 4.5 6.5s-4.5 3.9-4.5 6.5V21M16.5 3v2.5c0 2.6-4.5 4-4.5 6.5s4.5 3.9 4.5 6.5V21"/><path d="M9 20.2h6c-.4-1.8-1.6-2.8-3-3.4-1.4.6-2.6 1.6-3 3.4z" fill="#FFC21A" stroke="none"/></svg>',
+  pad: '<svg viewBox="0 0 32 24" width="36" height="27" aria-hidden="true"><path d="M9 3h14a8 8 0 0 1 8 8v2a6 6 0 0 1-10.6 3.9L19 15h-6l-1.4 1.9A6 6 0 0 1 1 13v-2a8 8 0 0 1 8-8z" fill="#E8476F"/><path d="M9 8v6M6 11h6" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><circle cx="22" cy="9.5" r="1.9" fill="#fff"/><circle cx="25.6" cy="13" r="1.9" fill="#fff"/></svg>',
+  cardBack: '<svg viewBox="0 0 48 44" aria-hidden="true"><path d="M8 3h32a6 6 0 0 1 6 6v18a6 6 0 0 1-6 6H22l-9 8v-8H8a6 6 0 0 1-6-6V9a6 6 0 0 1 6-6z" fill="#fff"/><text x="24" y="26.5" text-anchor="middle" font-family="Baloo 2, sans-serif" font-weight="800" font-size="22" fill="#1E2240">?</text></svg>'
+};
+
+/* =========================================================
+   Illustration kit (flat SVG, drawn in code)
+   ========================================================= */
+const r1 = n => Math.round(n * 10) / 10;
+const rays = (cx, cy, a, b, angles) => angles.map(d => { const t = d * Math.PI / 180; return `<path d="M${r1(cx + a * Math.cos(t))} ${r1(cy - a * Math.sin(t))}L${r1(cx + b * Math.cos(t))} ${r1(cy - b * Math.sin(t))}"/>`; }).join('');
+const sparkle = (cx, cy, s) => `M${cx} ${cy - s}Q${cx} ${cy} ${cx + s} ${cy}Q${cx} ${cy} ${cx} ${cy + s}Q${cx} ${cy} ${cx - s} ${cy}Q${cx} ${cy} ${cx} ${cy - s}Z`;
+const stars = (pts, r) => pts.map(([x, y], i) => `<circle cx="${x}" cy="${y}" r="${i % 2 ? r * .7 : r}" fill="#FFF6D0"/>`).join('');
+const CRESCENT = 'M51.4 28.3A34 34 0 1 0 87.5 74.8A30 30 0 0 1 51.4 28.3Z';
+
+/* Lighten (amt > 0) or darken (amt < 0) a #rrggbb colour */
+const shade = (hex, amt) => {
+  const n = parseInt(hex.slice(1), 16);
+  return '#' + [n >> 16, (n >> 8) & 255, n & 255]
+    .map(c => Math.round(amt < 0 ? c * (1 + amt) : c + (255 - c) * amt))
+    .map(c => c.toString(16).padStart(2, '0')).join('');
+};
+
+/* A person, feet at (x,y), about 115 units tall, facing right when face = 1.
+   style:  short | braid | bun | pony        outfit: tee | kurta | saree
+   wave:   raises an arm (the back arm when look = true, so they wave toward where they look)
+   look:   head turned back over the shoulder
+   Animation hooks: .leg (x2), .arm-f / .arm-b (hanging arms), .arm-w (raised arm, data-origin = shoulder) */
+function person(o) {
+  const { x = 0, y = 0, s = 1, face = 1, skin = '#B9774F', top = '#14B8A6', bottom = '#2D2A5A', hair = '#2B1B17',
+          style = 'short', outfit = 'tee', trim = '#FFB4C8', wave = false, look = false, bag = null, bagType = 'pack',
+          glasses = false, stride = 0, shoe = '#2B2D42' } = o;
+  const ink = '#1E1B2E';
+  const skinD = shade(skin, -.16), topD = shade(top, -.17), topL = shade(top, .22), botD = shade(bottom, -.32);
+  const hairL = shade(hair, .45), bagD = bag ? shade(bag, -.24) : '';
+  const sleeveEnd = outfit === 'kurta' ? -55 : -62;
+
+  const leg = (hx, deg, col) => `<g class="leg"${deg ? ` transform="rotate(${deg} ${hx} -44)"` : ''}><path d="M${hx} -44V-9" stroke="${col}" stroke-width="10" stroke-linecap="round"/><path d="M${hx - 5} -1Q${hx - 5} -9.5 ${hx + 1} -9.5Q${hx + 9} -9.5 ${hx + 10.5} -3.5V0H${hx - 5}Z" fill="${shoe}"/><rect x="${hx - 5.5}" y="-2.4" width="16.5" height="2.6" rx="1.3" fill="#EEF0F6"/></g>`;
+  const armHang = (cls, sx, sk, sl) => {
+    const d = sx < 0 ? -1 : 1, wx = sx + 2.5 * d;
+    return `<g class="${cls}"><path d="M${sx} -70L${wx} -41" stroke="${sk}" stroke-width="7" stroke-linecap="round"/><path d="M${sx} -71L${sx + .7 * d} ${sleeveEnd}" stroke="${sl}" stroke-width="10.5" stroke-linecap="round"/><circle cx="${wx + .3 * d}" cy="-38.5" r="4.8" fill="${sk}"/></g>`;
+  };
+  const armUp = (side, sk, sl) => {
+    const m = v => v * side, sl2 = outfit === 'kurta' ? [19.6, -78] : [12.8, -74];
+    return `<g class="arm-w" data-dir="${side}" data-origin="${side > 0 ? '0% 100%' : '100% 100%'}"><path d="M${m(6)} -70L${m(23)} -80L${m(30)} -97" stroke="${sk}" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M${m(6)} -71L${m(sl2[0])} ${sl2[1]}" stroke="${sl}" stroke-width="10.5" stroke-linecap="round"/><ellipse cx="${m(31)}" cy="-101.5" rx="5" ry="6" fill="${sk}"/><ellipse cx="${m(26.5)}" cy="-99" rx="2" ry="3.4" transform="rotate(${-30 * side} ${m(26.5)} -99)" fill="${sk}"/></g>`;
+  };
+
+  /* Clothes */
+  const TEE = 'M-11 -75C-15 -75 -16.5 -71 -16 -66L-15 -42C-6 -39 6 -39 15 -42L16 -66C16.5 -71 15 -75 11 -75Z';
+  const TEE_SH = 'M-11 -75C-15 -75 -16.5 -71 -16 -66L-15 -42C-12 -41 -9 -40.4 -6 -40.1L-4 -75Z';
+  const KURTA = 'M-11 -75C-15 -75 -16.5 -71 -16 -66L-19 -27C-6 -24 6 -24 19 -27L16 -66C16.5 -71 15 -75 11 -75Z';
+  const KURTA_SH = 'M-11 -75C-15 -75 -16.5 -71 -16 -66L-19 -27C-15 -26 -11 -25.4 -7 -25.2L-4 -75Z';
+  let body;
+  if (outfit === 'kurta') {
+    body = `<path d="${KURTA}" fill="${top}"/><path d="${KURTA_SH}" fill="${topD}"/><path d="M-18.6 -31C-6 -28 6 -28 18.6 -31" stroke="${trim}" stroke-width="3" fill="none"/><path d="M17.6 -40L18.8 -28" stroke="${topD}" stroke-width="1.6"/><path d="M-3 -75Q2 -66 7.5 -75" stroke="${trim}" stroke-width="2.6" fill="none" stroke-linecap="round"/><circle cx="2.5" cy="-62" r="1.3" fill="${trim}"/><circle cx="2.5" cy="-57" r="1.3" fill="${trim}"/>`;
+  } else if (outfit === 'saree') {
+    body = `<path d="M-15 -46L-18.5 -3C-6 -.5 6 -.5 18.5 -3L15 -46Z" fill="${top}"/><path d="M7 -44L8.5 -3M11.5 -44L14 -3.5" stroke="${topD}" stroke-width="1.6"/><path d="M-18.3 -6.5C-6 -4 6 -4 18.3 -6.5" stroke="${trim}" stroke-width="3" fill="none"/><path d="M-11 -75C-15 -75 -16.5 -71 -16 -66L-15.5 -44H15.5L16 -66C16.5 -71 15 -75 11 -75Z" fill="${top}"/><path d="M-11 -75C-15 -75 -16.5 -71 -16 -66L-15.5 -44H-6L-4 -75Z" fill="${topD}"/><path d="M-12 -75C-18 -70 -20.5 -56 -19.5 -42L-15 -43C-16 -56 -15 -68 -9 -74Z" fill="${topL}"/><path d="M4 -76L13 -74L-8 -40L-16 -44Z" fill="${topL}"/><path d="M13 -74L-8 -40" stroke="${trim}" stroke-width="2.4" stroke-linecap="round"/>`;
+  } else {
+    body = `<path d="${TEE}" fill="${top}"/><path d="${TEE_SH}" fill="${topD}"/><path d="M-3 -75Q2 -70 7.5 -75" stroke="${topD}" stroke-width="2.4" fill="none" stroke-linecap="round"/>`;
+  }
+
+  /* Hair that hangs behind the body (braid) and bags */
+  const braid = style === 'braid'
+    ? [[-15.5, -79], [-17, -71.5], [-18.2, -64]].map(([bx, by], i) => `<ellipse cx="${bx}" cy="${by}" rx="4.6" ry="5.3" fill="${i % 2 ? shade(hair, .14) : hair}"/>`).join('')
+      + `<rect x="-22" y="-59.5" width="7.5" height="3.4" rx="1.7" fill="${trim}"/><path d="M-21 -56.5L-23 -50L-18.6 -52.5L-16 -50L-15.6 -56.5Z" fill="${hair}"/>`
+    : '';
+  const packBehind = bag && bagType === 'pack' ? `<rect x="-26" y="-73" width="13" height="27" rx="5.5" fill="${bag}"/><rect x="-25" y="-60" width="9" height="10" rx="3" fill="${bagD}"/>` : '';
+  const packStrap = bag && bagType === 'pack' ? `<path d="M-7 -75C3 -77 9 -71 8.5 -58" stroke="${bagD}" stroke-width="3" fill="none" stroke-linecap="round"/>` : '';
+  const sling = bag && bagType === 'sling' ? `<path d="M8 -75L-12 -47" stroke="${bagD}" stroke-width="3" stroke-linecap="round"/><rect x="-27" y="-52" width="17" height="14" rx="4" fill="${bag}"/><path d="M-27 -47.5H-10" stroke="${bagD}" stroke-width="2"/><circle cx="-18.5" cy="-44" r="1.4" fill="${bagD}"/>` : '';
+
+  /* Head */
+  const capLong = 'M-17 -86C-21 -100 -12 -114 3 -113C16 -112 22 -104 20 -95C16 -101 10 -104 4 -103C2 -99 -1 -95 -5 -88C-8 -82 -13 -80 -17 -86Z';
+  const capShort = 'M-16 -85C-21 -99 -13 -114 3 -113C14 -113 21 -107 21 -98C18 -100 15 -100 12 -98C11 -102 6 -103 3 -100C1 -97 -2 -94 -6 -88C-9 -84 -12 -83 -16 -85Z';
+  const hairBack = style === 'bun' ? `<circle cx="-8" cy="-111" r="8.5" fill="${hair}"/><path d="M-14 -112Q-9 -117.5 -3 -114" stroke="${hairL}" stroke-width="1.6" fill="none" stroke-linecap="round" opacity=".6"/>`
+    : style === 'pony' ? `<path d="M-12 -102C-27 -103 -30 -86 -24 -70C-22 -80 -20 -90 -10 -95Z" fill="${hair}"/><circle cx="-13.5" cy="-100" r="2.8" fill="${trim}"/>` : '';
+  const head = `<g${look ? ' transform="scale(-1 1)"' : ''}>${hairBack}<circle cx="2" cy="-93" r="17" fill="${skin}"/>`
+    + `<path d="${style === 'short' ? capShort : capLong}" fill="${hair}"/>`
+    + (style === 'short' ? `<path d="M-1 -112Q5 -119 10 -111.5Z" fill="${hair}"/>` : '')
+    + `<path d="M-7 -108Q2 -112 11 -108.5" stroke="${hairL}" stroke-width="2" fill="none" stroke-linecap="round" opacity=".5"/>`
+    + `<ellipse cx="-2" cy="-90.5" rx="3.4" ry="4.4" fill="${skinD}"/>`
+    + `<path d="M7 -99Q10 -100.8 13.5 -99.2" stroke="${shade(hair, -.15)}" stroke-width="1.7" fill="none" stroke-linecap="round"/>`
+    + `<ellipse cx="10" cy="-93" rx="2.1" ry="2.7" fill="${ink}"/><circle cx="10.8" cy="-94" r=".85" fill="#fff"/>`
+    + `<ellipse cx="8" cy="-86.5" rx="3.2" ry="1.9" fill="#FF7A8A" opacity=".35"/>`
+    + `<path d="M18.6 -91.5Q20.8 -89.2 18.2 -88" stroke="${shade(skin, -.28)}" stroke-width="1.4" fill="none" stroke-linecap="round"/>`
+    + `<path d="M11 -84.6Q14 -82 16.6 -85" stroke="#6B2F25" stroke-width="1.7" fill="none" stroke-linecap="round"/>`
+    + (glasses ? `<circle cx="10.5" cy="-93" r="4.6" fill="none" stroke="${ink}" stroke-width="1.4"/><path d="M6 -93.5L-1 -92.5" stroke="${ink}" stroke-width="1.2"/>` : '')
+    + '</g>';
+
+  const raisedBack = wave && look, raisedFront = wave && !look;
+  return `<g class="person" transform="translate(${x} ${y}) scale(${face * s} ${s})">`
+    + `<ellipse cx="2" cy=".5" rx="17" ry="3.2" fill="#0B0E24" opacity=".18"/>`
+    + (raisedBack ? '' : armHang('arm-b', -5, skinD, topD))
+    + packBehind
+    + leg(-4, stride, botD) + leg(5, -stride, bottom)
+    + `<rect x="-3" y="-82" width="8" height="10" rx="3" fill="${skinD}"/>`
+    + body + braid + packStrap + sling + head
+    + (raisedBack ? armUp(-1, skinD, topD) : '')
+    + (raisedFront ? armUp(1, skin, top) : armHang('arm-f', 6, skin, top))
+    + '</g>';
+}
+
+/* Direction arrow (polygon so GSAP can nudge it with x) */
+function arrow(x, y, dir, len = 36, fill = '#FFFFFF') {
+  const h = 16, sw = 5.5, hw = 12;
+  const pts = [[0, -sw], [len - h, -sw], [len - h, -hw], [len, 0], [len - h, hw], [len - h, sw], [0, sw]]
+    .map(([px, py]) => `${x + dir * px},${y + py}`).join(' ');
+  return `<polygon class="dir-arrow" data-dir="${dir}" points="${pts}" fill="${fill}" stroke="#1E2240" stroke-width="3" stroke-linejoin="round"/>`;
+}
+
+/* ---- Word icons (120 x 120) ---- */
+const HAND_SHAPES = '<rect x="38" y="30" width="12" height="44" rx="6"/><rect x="51" y="22" width="12" height="50" rx="6"/><rect x="64" y="26" width="12" height="46" rx="6"/><rect x="77" y="36" width="11" height="38" rx="5.5"/><rect x="38" y="54" width="50" height="44" rx="18"/><rect x="22" y="58" width="13" height="32" rx="6.5" transform="rotate(-40 28.5 74)"/>';
+const ICON = {
+  sunrise: () => `<svg class="ico" viewBox="0 0 120 120" aria-hidden="true"><g class="i-rays" stroke="#FFAA1A" stroke-width="7" stroke-linecap="round">${rays(60, 84, 40, 52, [160, 125, 90, 55, 20])}</g><path class="i-body" d="M30 84a30 30 0 0 1 60 0z" fill="#FFC93C"/><path d="M6 90Q32 76 60 85T114 86V100Q60 112 6 100z" fill="#7FCF7A"/><path d="M6 98Q60 88 114 98V100Q60 112 6 100z" fill="#5DBB63"/></svg>`,
+  sun: () => `<svg class="ico" viewBox="0 0 120 120" aria-hidden="true"><g class="i-rays" stroke="#FFAA1A" stroke-width="7" stroke-linecap="round">${rays(60, 60, 35, 47, [0, 45, 90, 135, 180, 225, 270, 315])}</g><circle class="i-body" cx="60" cy="60" r="26" fill="#FFC93C"/><path d="M47 55a14 14 0 0 1 12-10" stroke="#FFF3C4" stroke-width="5" stroke-linecap="round" fill="none"/></svg>`,
+  moon: () => `<svg class="ico" viewBox="0 0 120 120" aria-hidden="true"><g class="i-moon"><path d="${CRESCENT}" fill="#8B7CF6"/><path d="M40 44a26 26 0 0 0 2 30" stroke="#B3A8FF" stroke-width="5" stroke-linecap="round" fill="none"/></g><g class="i-spark" fill="#FFC21A"><path d="${sparkle(90, 34, 10)}"/><path d="${sparkle(100, 62, 6)}"/></g></svg>`,
+  walker: () => `<svg class="ico" viewBox="0 0 120 120" aria-hidden="true"><g stroke="#9DC3FF" stroke-width="4" stroke-linecap="round"><path d="M12 66h12"/><path d="M8 80h14"/></g><g class="i-fig">${person({ x: 50, y: 110, s: .84, face: 1, top: '#3B8CFF', bottom: '#1E2240', skin: '#C98B5E', wave: true, look: true, stride: 16 })}</g><g class="i-arrow" fill="none" stroke="#1F66D6" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><path d="M80 70h24"/><path d="M95 61l9 9-9 9"/></g></svg>`,
+  hand: () => `<svg class="ico" viewBox="0 0 120 120" aria-hidden="true"><g class="i-waves" stroke="#3B8CFF" stroke-width="4.5" stroke-linecap="round" fill="none"><path d="M14 26Q6 38 12 50"/><path d="M24 20Q16 32 21 44"/><path d="M100 26Q108 38 102 50"/></g><g class="i-hand"><g transform="rotate(-12 62 70)"><g fill="#E39A55" stroke="#E39A55" stroke-width="6" stroke-linejoin="round">${HAND_SHAPES}</g><g fill="#FFCB91">${HAND_SHAPES}</g><path d="M50 84Q62 91 76 84" stroke="#E39A55" stroke-width="3" fill="none" stroke-linecap="round" opacity=".6"/></g></g></svg>`,
+  calendar: () => {
+    let cells = '';
+    for (let r = 0; r < 2; r++) for (let c = 0; c < 3; c++) {
+      const today = r === 0 && c === 0, next = r === 0 && c === 1;
+      cells += `<rect${next ? ' class="i-next"' : ''} x="${30 + c * 18}" y="${57 + r * 18}" width="14" height="13" rx="3.5" fill="${today ? '#B9C6DD' : next ? '#3B8CFF' : '#DCE8FF'}"/>`;
+    }
+    return `<svg class="ico" viewBox="0 0 120 120" aria-hidden="true"><rect x="18" y="26" width="76" height="72" rx="13" fill="#fff" stroke="#3B8CFF" stroke-width="5"/><path d="M18 39a13 13 0 0 1 13-13h50a13 13 0 0 1 13 13v9H18z" fill="#3B8CFF"/><rect x="35" y="16" width="8" height="20" rx="4" fill="#1E2240"/><rect x="69" y="16" width="8" height="20" rx="4" fill="#1E2240"/>${cells}<g class="i-badge"><circle cx="90" cy="88" r="19" fill="#1F66D6" stroke="#fff" stroke-width="4"/><path d="M81 88h17M92 82l6 6-6 6" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></g></svg>`;
+  }
+};
+
+/* Small reaction for each icon when its card is tapped / matched */
+/* Note: the origin goes in BOTH from- and to-vars. If only the to-vars carry it,
+   GSAP's smoothOrigin compensates for the change and the part ends up shifted. */
+const WIGGLE = {
+  sunrise: s => { gsap.fromTo($('.i-body', s), { y: 14 }, { y: 0, duration: .6, ease: 'back.out(1.6)' }); gsap.fromTo($('.i-rays', s), { scale: .5, opacity: 0, svgOrigin: '60 84' }, { scale: 1, opacity: 1, duration: .6, delay: .12, ease: 'back.out(2)', svgOrigin: '60 84' }); },
+  sun: s => { gsap.fromTo($('.i-rays', s), { rotation: 0, svgOrigin: '60 60' }, { rotation: 45, duration: .9, ease: 'power3.out', svgOrigin: '60 60' }); gsap.fromTo($('.i-body', s), { scale: .8, svgOrigin: '60 60' }, { scale: 1, duration: .7, ease: 'elastic.out(1,.4)', svgOrigin: '60 60' }); },
+  moon: s => { gsap.fromTo($('.i-moon', s), { rotation: -18, svgOrigin: '60 62' }, { rotation: 0, duration: .9, ease: 'elastic.out(1,.45)', svgOrigin: '60 62' }); gsap.fromTo($$('.i-spark path', s), { scale: 0, transformOrigin: '50% 50%' }, { scale: 1, duration: .5, stagger: .12, ease: 'back.out(3)', transformOrigin: '50% 50%' }); },
+  walker: s => { gsap.fromTo($('.i-fig', s), { x: -10 }, { x: 0, duration: .6, ease: 'power2.out' }); const arm = $('.arm-w', s); if (arm) { const o = arm.dataset.origin, d = Number(arm.dataset.dir); gsap.fromTo(arm, { rotation: 0, transformOrigin: o }, { rotation: 18 * d, duration: .18, repeat: 5, yoyo: true, ease: 'sine.inOut', transformOrigin: o }); } gsap.fromTo($('.i-arrow', s), { x: -8, opacity: .3 }, { x: 0, opacity: 1, duration: .5, ease: 'power2.out' }); },
+  hand: s => { gsap.fromTo($('.i-hand', s), { rotation: 0, svgOrigin: '62 100' }, { keyframes: { rotation: [0, 18, -12, 14, -6, 0] }, duration: 1, ease: 'sine.inOut', svgOrigin: '62 100' }); gsap.fromTo($$('.i-waves path', s), { opacity: 0, scale: .6, transformOrigin: '50% 50%' }, { opacity: 1, scale: 1, duration: .4, stagger: .08, transformOrigin: '50% 50%' }); },
+  calendar: s => { gsap.fromTo($('.i-badge', s), { scale: .3, rotation: -60, svgOrigin: '90 88' }, { scale: 1, rotation: 0, duration: .6, ease: 'back.out(2.5)', svgOrigin: '90 88' }); gsap.fromTo($('.i-next', s), { scale: .4, transformOrigin: '50% 50%' }, { scale: 1, duration: .6, ease: 'elastic.out(1,.4)', transformOrigin: '50% 50%' }); }
+};
+
+/* ---- Scenario scenes (320 x 200) ---- */
+const cloud = (x, y, s = 1) => `<g transform="translate(${x} ${y}) scale(${s})" fill="#fff" opacity=".92"><ellipse cx="0" cy="0" rx="16" ry="11"/><ellipse cx="16" cy="-6" rx="15" ry="13"/><ellipse cx="32" cy="1" rx="13" ry="10"/><rect x="-8" y="0" width="48" height="10" rx="5"/></g>`;
+function sky(t) {
+  let s = `<rect width="320" height="200" fill="url(#g-sky-${t})"/>`;
+  if (t === 'morning') s += `<circle cx="64" cy="152" r="44" fill="#FFD34D" opacity=".28"/><circle cx="64" cy="152" r="30" fill="#FFD34D"/>${cloud(118, 34)}${cloud(22, 54, .7)}`;
+  if (t === 'afternoon') s += `<circle cx="290" cy="36" r="32" fill="#FFE27A" opacity=".35"/><circle cx="290" cy="36" r="20" fill="#FFD34D"/>${cloud(58, 40)}${cloud(150, 24, .8)}`;
+  if (t === 'evening') s += `<circle cx="48" cy="156" r="42" fill="#FFB36B" opacity=".3"/><circle cx="48" cy="156" r="28" fill="#FFB36B"/>${stars([[120, 24], [196, 16], [262, 34], [88, 50]], 1.5)}`;
+  if (t === 'night') s += `<g transform="translate(262 44) scale(.55) translate(-62 -55)"><path d="${CRESCENT}" fill="#F4EBC1"/></g>${stars([[40, 30], [90, 18], [140, 40], [190, 22], [222, 66], [300, 22], [70, 64], [116, 80]], 1.8)}`;
+  return s;
+}
+function ground(t) {
+  const c = { morning: '#8FD17E', afternoon: '#7CC86B', evening: '#4E4880', night: '#232A57' }[t];
+  const p = { morning: '#C9EBB9', afternoon: '#BFE6AE', evening: '#665E9A', night: '#343C70' }[t];
+  return `<rect y="164" width="320" height="36" fill="${c}"/><rect y="174" width="320" height="14" fill="${p}" opacity=".75"/>`;
+}
+function school(x, y) {
+  return `<g transform="translate(${x} ${y})"><path d="M62 2V-24" stroke="#5A5F80" stroke-width="2.5"/><path d="M62 -24L82 -18L62 -12Z" fill="#E8476F"/><rect x="0" y="34" width="124" height="70" rx="3" fill="#FFF1DC"/><rect x="0" y="96" width="124" height="8" fill="#EBD5B8"/><path d="M-10 38L62 2L134 38Z" fill="#E8476F"/><circle cx="62" cy="24" r="7" fill="#fff"/><path d="M62 20V24L65 26" stroke="#E8476F" stroke-width="1.6" fill="none" stroke-linecap="round"/><rect x="50" y="62" width="24" height="42" rx="3" fill="#8A5634"/><rect x="14" y="50" width="24" height="20" rx="3" fill="#9ED8FF"/><rect x="86" y="50" width="24" height="20" rx="3" fill="#9ED8FF"/><path d="M26 50V70M14 60H38M98 50V70M86 60H110" stroke="#fff" stroke-width="2"/></g>`;
+}
+function stall(x, y) {
+  let stripes = '', scallops = '';
+  for (let i = 0; i < 6; i++) {
+    const col = i % 2 ? '#FFFFFF' : '#FF6B6B';
+    stripes += `<rect x="${-4 + i * 22}" y="6" width="22" height="20" fill="${col}"/>`;
+    scallops += `<circle cx="${7 + i * 22}" cy="26" r="11" fill="${col}"/>`;
+  }
+  return `<g transform="translate(${x} ${y})"><rect x="6" y="20" width="6" height="68" fill="#7A4E2D"/><rect x="112" y="20" width="6" height="68" fill="#7A4E2D"/><path d="M48 72Q48 56 62 56Q76 56 76 72Z" fill="#7C5CFF"/><circle cx="62" cy="48" r="9" fill="#A86A45"/><path d="M53 47Q53 38 62 38Q71 38 71 46Q66 42 60 43Q56 44 53 47Z" fill="#1E1B2E"/><rect x="0" y="60" width="124" height="28" rx="4" fill="#B5713F"/><rect x="0" y="60" width="124" height="6" fill="#9A5C30"/><g fill="#FF9E3D"><circle cx="16" cy="56" r="6.5"/><circle cx="29" cy="56" r="6.5"/><circle cx="22" cy="47" r="6.5"/></g><g fill="#5CC46B"><circle cx="95" cy="56" r="6.5"/><circle cx="108" cy="56" r="6.5"/><circle cx="101" cy="47" r="6.5"/></g>${scallops}${stripes}<rect x="-6" y="2" width="136" height="6" rx="3" fill="#D9474F"/></g>`;
+}
+function house(x, y) {
+  return `<g transform="translate(${x} ${y})"><rect x="82" y="6" width="12" height="26" fill="#9C4B3C"/><circle cx="23" cy="60" r="22" fill="url(#g-glow)"/><circle cx="89" cy="60" r="22" fill="url(#g-glow)"/><rect x="0" y="36" width="112" height="56" rx="2" fill="#F6E4CC"/><path d="M-10 40L56 2L122 40Z" fill="#C65D4A"/><rect x="44" y="56" width="24" height="36" rx="3" fill="#7A4E2D"/><circle cx="63" cy="75" r="1.8" fill="#FFD66B"/><rect x="12" y="50" width="22" height="20" rx="3" fill="#FFD66B"/><rect x="78" y="50" width="22" height="20" rx="3" fill="#FFD66B"/><path d="M23 50V70M12 60H34M89 50V70M78 60H100" stroke="#E9B949" stroke-width="2"/></g>`;
+}
+function lamp(x, g) {
+  return `<g><ellipse cx="${x}" cy="${g + 12}" rx="74" ry="11" fill="#FFE08A" opacity=".16"/><circle cx="${x}" cy="${g - 84}" r="46" fill="url(#g-glow)"/><rect x="${x - 2.5}" y="${g - 90}" width="5" height="102" fill="#555B85"/><path d="M${x - 11} ${g - 90}h22l-4 -7h-14z" fill="#555B85"/><circle cx="${x}" cy="${g - 84}" r="6" fill="#FFE08A"/></g>`;
+}
+const YOU = { style: 'short', outfit: 'tee', top: '#FF8A3D', bottom: '#3B3F6B', skin: '#C98B5E' };
+const FRIEND = { style: 'pony', outfit: 'kurta', top: '#E8476F', trim: '#FFD1DC', bottom: '#2D2A5A', skin: '#9C6644', hair: '#2B1D14' };
+const svg320 = (label, inner) => `<svg viewBox="0 0 320 200" role="img" aria-label="${label}">${inner}</svg>`;
+const ART = {
+  class:  () => svg320('A school in the morning. A person walks toward the door.', sky('morning') + ground('morning') + school(180, 64) + person({ x: 112, y: 182, s: .74, face: 1, stride: 14, bag: '#7C5CFF', ...YOU }) + arrow(134, 128, 1)),
+  market: () => svg320('A market stall in the evening. A person walks away and waves.', sky('evening') + ground('evening') + stall(182, 84) + person({ x: 130, y: 182, s: .74, face: -1, stride: 14, wave: true, look: true, ...YOU }) + arrow(104, 128, -1)),
+  friend: () => svg320('A street at night. Two friends meet and wave.', sky('night') + ground('night') + lamp(160, 166) + person({ x: 122, y: 182, s: .74, face: 1, wave: true, ...YOU }) + person({ x: 200, y: 182, s: .74, face: -1, wave: true, ...FRIEND })),
+  school: () => svg320('A school in the afternoon. A person walks away and waves.', sky('afternoon') + ground('afternoon') + school(180, 64) + person({ x: 130, y: 182, s: .74, face: -1, stride: 14, wave: true, look: true, bag: '#7C5CFF', ...YOU }) + arrow(104, 128, -1)),
+  home:   () => svg320('A house in the evening. A person walks toward the door.', sky('evening') + ground('evening') + house(186, 80) + person({ x: 116, y: 182, s: .74, face: 1, stride: 14, ...YOU }) + arrow(138, 128, 1))
+};
+
+/* ---- 4c: Ananya at the institute gate ----
+   gateBackdrop(w) draws the evening sky, gate and teacher; the gate sits at the right edge,
+   so a wider w just gives Ananya more road to walk on. */
+const ANANYA = { style: 'braid', outfit: 'kurta', top: '#14B8A6', trim: '#FFB4C8', bag: '#E8476F', bagType: 'sling' };
+const ananyaPose = (x, leaving) => person({ x, y: 302, s: 1.18, face: leaving ? -1 : 1, wave: leaving, look: leaving, ...ANANYA });
+
+function gateBackdrop(w = 300) {
+  const ox = w - 300;
+  const lit = [1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 1, 1];
+  let wins = '';
+  [150, 178, 206].forEach((wy, r) => [188, 214, 240, 266].forEach((wx, c) => { wins += `<rect x="${wx}" y="${wy}" width="16" height="16" rx="2" fill="${lit[r * 4 + c] ? '#FFD66B' : '#5D5396'}"/>`; }));
+  const pillar = px => `<rect x="${px}" y="150" width="22" height="122" fill="#E4DAF2"/><rect x="${px}" y="150" width="6" height="122" fill="#F5F0FC"/><rect x="${px - 4}" y="142" width="30" height="10" rx="2" fill="#F7F3FD"/>`;
+  let bars = '';
+  for (let bx = 240; bx <= 266; bx += 6) bars += `<path d="M${bx} 182V266"/>`;
+  const teacher = person({ x: 216, y: 274, s: 1.08, face: -1, style: 'bun', outfit: 'saree', top: '#8E6CF0', trim: '#E8476F', skin: '#A86A45', hair: '#B3B6C8', glasses: true });
+  const wide = ox > 0 ? stars([[200, 26], [262, 58], [318, 16], [372, 40]], 1.6) + '<path d="M130 252V232h28v-12h22v18h26v-22h30v36z" fill="#6E4C93" opacity=".55"/>' : '';
+  return `<rect width="${w}" height="340" fill="url(#g-sky-evening)"/>
+    ${stars([[26, 30], [96, 18], [140, 52], [60, 74], [124, 96]], 1.7)}${wide}
+    <circle cx="56" cy="244" r="50" fill="#FFB36B" opacity=".22"/><circle cx="56" cy="244" r="32" fill="#FFB36B"/>
+    <path d="M0 252V226h20v-14h22v22h24v-16h24v24h30v12z" fill="#6E4C93" opacity=".55"/>
+    <g transform="translate(${ox} 0)"><rect x="176" y="96" width="124" height="160" fill="#463C7C"/><rect x="170" y="90" width="130" height="10" fill="#5A4F92"/>${wins}</g>
+    <rect y="252" width="${w}" height="88" fill="#3A3263"/><rect y="274" width="${w}" height="32" fill="#4C437A"/>
+    <g transform="translate(${ox} 0)">${pillar(156)}${pillar(274)}
+      <g stroke="#BFB2D9" stroke-width="3" stroke-linecap="round">${bars}<path d="M238 182H268M238 266H268"/></g>
+      <rect x="154" y="110" width="144" height="32" rx="7" fill="#2A2350" stroke="#E4DAF2" stroke-width="3"/>
+      <text x="226" y="132" text-anchor="middle" font-family="Lexend, sans-serif" font-weight="600" font-size="15" letter-spacing="2" fill="#FFE7A8">INSTITUTE</text>
+      ${teacher}
+    </g>`;
+}
+
+/* Recap panels (300 x 340): identical background, only Ananya's direction changes */
+function gateScene(mode) {
+  const arrive = mode === 'arrive';
+  const label = arrive ? 'Evening at the institute gate. Ananya walks in toward her teacher.' : 'Evening at the institute gate. Ananya walks away from the gate and waves goodbye.';
+  return `<svg viewBox="0 0 300 340" role="img" aria-label="${label}">${gateBackdrop(300)}<g class="walker">${ananyaPose(arrive ? 106 : 48, !arrive)}</g>${arrive ? arrow(40, 324, 1, 112, '#FFC21A') : arrow(160, 324, -1, 112, '#3B8CFF')}</svg>`;
+}
+
+/* Story stage (440 x 340): Ananya's pose is swapped in by code */
+function storyScene() {
+  return `<svg id="story-svg" viewBox="0 0 440 340" role="img" aria-label="Evening at the institute gate. Ananya and her teacher.">${gateBackdrop(440)}<g class="walker" id="story-walker"><g class="pose"></g></g><g data-for="in">${arrow(60, 324, 1, 150, '#FFC21A')}</g><g data-for="out" opacity="0">${arrow(210, 324, -1, 150, '#3B8CFF')}</g></svg>`;
+}
+
+/* =========================================================
+   Content
+   ========================================================= */
+const WORDS = {
+  'good-morning':     { text: 'Good morning',     kind: 'sun', icon: 'sunrise',  alt: 'Picture: the sun coming up' },
+  'good-afternoon':   { text: 'Good afternoon',   kind: 'sun', icon: 'sun',      alt: 'Picture: the sun high in the sky' },
+  'good-evening':     { text: 'Good evening',     kind: 'sun', icon: 'moon',     alt: 'Picture: a moon and stars' },
+  'goodbye':          { text: 'Goodbye',          kind: 'sky', icon: 'walker',   alt: 'Picture: a person walking away and waving' },
+  'see-you':          { text: 'See you',          kind: 'sky', icon: 'hand',     alt: 'Picture: a waving hand' },
+  'see-you-tomorrow': { text: 'See you tomorrow', kind: 'sky', icon: 'calendar', alt: 'Picture: a calendar with an arrow to the next day' }
+};
+const GREETINGS = ['good-morning', 'good-afternoon', 'good-evening'];
+const FAREWELLS = ['goodbye', 'see-you', 'see-you-tomorrow'];
+
+const SCENARIOS = [
+  { id: 'class',  text: 'You are arriving at class in the morning.',  options: ['good-morning', 'good-afternoon', 'good-evening', 'goodbye'],     correct: ['good-morning'],               why: 'You are arriving, and it is morning.' },
+  { id: 'market', text: 'You are leaving the market in the evening.', options: ['good-evening', 'goodbye', 'good-afternoon', 'see-you'],          correct: ['goodbye', 'see-you'],         why: 'You are leaving, so you say goodbye, even in the evening. “Goodbye” and “See you” are both right.' },
+  { id: 'friend', text: 'You are meeting a friend at night.',          options: ['good-evening', 'good-morning', 'see-you-tomorrow', 'goodbye'],  correct: ['good-evening'],               why: 'You are meeting your friend, so you greet them.', tip: true },
+  { id: 'school', text: 'You are leaving school in the afternoon.',   options: ['good-afternoon', 'see-you-tomorrow', 'good-morning', 'goodbye'], correct: ['see-you-tomorrow', 'goodbye'], why: 'You are leaving, and you will come back tomorrow. “See you tomorrow” and “Goodbye” are both right.' },
+  { id: 'home',   text: 'You are arriving home in the evening.',      options: ['good-evening', 'see-you', 'good-afternoon', 'goodbye'],          correct: ['good-evening'],               why: 'You are arriving, and it is evening.' }
+];
+
+/* =========================================================
+   Sound: recorded ElevenLabs clips in audio/<id>.mp3, made by tools/generate-audio.mjs
+   (so no API key ever ships with the page). Falls back to the browser voice for any missing clip.
+   ========================================================= */
+const Voice = {
+  missing: new Set(), voice: null, clip: null, clips: {},
+  /* Load every clip up front so the first tap plays instantly */
+  preload(ids) {
+    ids.forEach(id => {
+      const a = new Audio();
+      a.preload = 'auto';
+      a.addEventListener('error', () => this.missing.add(id), { once: true });
+      a.src = `audio/${id}.mp3`;
+      this.clips[id] = a;
+    });
+  },
+  init() {
+    this.preload(Object.keys(WORDS));
+    if (!('speechSynthesis' in window)) return;
+    const pick = () => {
+      const vs = speechSynthesis.getVoices();
+      this.voice = vs.find(v => /en[-_]IN/i.test(v.lang)) || vs.find(v => /en[-_]GB/i.test(v.lang)) || vs.find(v => /^en/i.test(v.lang)) || null;
+    };
+    pick();
+    speechSynthesis.addEventListener && speechSynthesis.addEventListener('voiceschanged', pick);
+  },
+  play(id, text) {
+    this.stop();
+    const a = id && !this.missing.has(id) ? this.clips[id] : null;
+    if (a) {
+      this.clip = a;
+      a.currentTime = 0;
+      a.play().catch(err => {
+        // A blocked autoplay is not a missing file; only remember real load failures
+        if (err && err.name !== 'NotAllowedError' && err.name !== 'AbortError') this.missing.add(id);
+        if (this.clip === a) this.say(text);
+      });
+      return;
+    }
+    this.say(text);
+  },
+  say(text) {
+    if (!('speechSynthesis' in window)) return;
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    if (this.voice) { u.voice = this.voice; u.lang = this.voice.lang; } else u.lang = 'en-IN';
+    u.rate = .85;
+    speechSynthesis.speak(u);
+  },
+  stop() {
+    if (this.clip) { this.clip.pause(); this.clip.currentTime = 0; this.clip = null; }
+    if ('speechSynthesis' in window) speechSynthesis.cancel();
+  }
+};
+
+const SFX = (() => {
+  let ctx = null;
+  const ensure = () => {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return null;
+    if (!ctx) ctx = new AC();
+    if (ctx.state === 'suspended') ctx.resume();
+    return ctx;
+  };
+  const note = (f, at, dur, type = 'sine', vol = .07) => {
+    const c = ensure(); if (!c) return;
+    const o = c.createOscillator(), g = c.createGain(), t = c.currentTime + at;
+    o.type = type; o.frequency.value = f;
+    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + .015); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+    o.connect(g).connect(c.destination); o.start(t); o.stop(t + dur + .05);
+  };
+  return {
+    good() { note(784, 0, .16); note(1175, .08, .3); },
+    bad()  { note(240, 0, .14, 'triangle', .05); note(200, .07, .2, 'triangle', .045); },
+    flip() { note(560, 0, .07, 'triangle', .025); },
+    star() { note(988, 0, .12, 'sine', .06); note(1319, .07, .16, 'sine', .06); note(1568, .14, .26, 'sine', .05); },
+    win()  { [659, 784, 988, 1319].forEach((f, i) => note(f, i * .09, .3, 'sine', .06)); }
+  };
+})();
+
+/* =========================================================
+   Overlays
+   ========================================================= */
+const Modal = {
+  onClose: null,
+  open({ icon = '', title, text, button, onClose }) {
+    const m = $('#modal');
+    $('#modal-icon').innerHTML = icon; $('#modal-title').textContent = title; $('#modal-text').textContent = text;
+    $('#modal-btn').textContent = button;
+    this.onClose = onClose;
+    m.hidden = false;
+    gsap.fromTo(m, { autoAlpha: 0 }, { autoAlpha: 1, duration: .2 });
+    gsap.fromTo('#modal .modal-card', { scale: .85, y: 24 }, { scale: 1, y: 0, duration: .45, ease: 'back.out(1.8)' });
+    setTimeout(() => $('#modal-btn').focus(), 60);
+  },
+  close() {
+    const m = $('#modal');
+    gsap.to(m, { autoAlpha: 0, duration: .18, onComplete: () => { m.hidden = true; const f = this.onClose; this.onClose = null; if (f) f(); } });
+  }
+};
+
+const Sheet = {
+  show({ first, why, tip }) {
+    const el = $('#sheet');
+    $('#sheet-star').hidden = !first;
+    $('#sheet-note').hidden = first;
+    $('#sheet-why').textContent = why;
+    $('#sheet-tip').hidden = !tip;
+    el.hidden = false;
+    document.body.classList.add('has-sheet');
+    gsap.fromTo(el, { yPercent: 100 }, { yPercent: 0, duration: .42, ease: 'power3.out' });
+    gsap.fromTo('#sheet .sheet-badge', { scale: 0, rotation: -90 }, { scale: 1, rotation: 0, duration: .5, ease: 'back.out(2.5)', delay: .15 });
+    if (tip) gsap.fromTo('#sheet-tip', { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: .4, delay: .35 });
+    setTimeout(() => $('#sheet-btn').focus({ preventScroll: true }), 80);
+  },
+  hide(instant) {
+    const el = $('#sheet');
+    if (el.hidden) return;
+    document.body.classList.remove('has-sheet');
+    if (instant) { gsap.killTweensOf(el); el.hidden = true; return; }
+    gsap.to(el, { yPercent: 100, duration: .25, ease: 'power2.in', onComplete: () => { el.hidden = true; } });
+  }
+};
+
+function confetti() {
+  if (RM) return;
+  const colors = ['#FFC21A', '#3B8CFF', '#1FB866', '#FF5C64', '#8B7CF6'];
+  const layer = document.createElement('div');
+  layer.className = 'confetti';
+  document.body.appendChild(layer);
+  const ox = innerWidth / 2, oy = innerHeight * .3, R = gsap.utils.random;
+  for (let i = 0; i < 70; i++) {
+    const p = document.createElement('i');
+    p.style.background = colors[i % colors.length];
+    layer.appendChild(p);
+    gsap.set(p, { x: ox, y: oy, width: R(6, 11), height: R(8, 16), rotation: R(0, 360) });
+    gsap.timeline()
+      .to(p, { x: ox + R(-innerWidth * .48, innerWidth * .48), y: oy + R(-240, -40), rotation: '+=' + R(180, 540), duration: R(.5, .8), ease: 'power2.out' })
+      .to(p, { y: innerHeight + 40, rotation: '+=' + R(200, 700), duration: R(1.4, 2.4), ease: 'power1.in' });
+  }
+  setTimeout(() => layer.remove(), 3600);
+}
+
+/* =========================================================
+   Navigation
+   ========================================================= */
+const ORDER = ['welcome', 'greetings', 'farewells', 'compare', 'match', 'sprint', 'end'];
+const STEP = { welcome: 0, greetings: 1, farewells: 2, compare: 3, match: 4, sprint: 5, end: 5 };
+const screenEl = n => $(`[data-screen="${n}"]`);
+let cur = 'welcome', busy = false;
+
+function setTop(name) {
+  $('#topbar').hidden = name === 'welcome';
+  const step = STEP[name];
+  $$('#progress i').forEach((bar, i) => gsap.to(bar, { scaleX: i < step ? 1 : 0, duration: .55, ease: 'power3.out' }));
+  $('#progress').setAttribute('aria-valuenow', step);
+}
+
+function show(name, dir = 1) {
+  if (busy || name === cur) return;
+  busy = true;
+  const from = screenEl(cur), to = screenEl(name);
+  leave(cur);
+  cur = name;
+  setTop(name);
+  gsap.to(from, {
+    x: -28 * dir, autoAlpha: 0, duration: .2, ease: 'power2.in',
+    onComplete() {
+      from.hidden = true;
+      gsap.set(from, { clearProps: 'all' });
+      to.hidden = false;
+      window.scrollTo(0, 0);
+      gsap.fromTo(to, { x: 28 * dir, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: .32, ease: 'power3.out', clearProps: 'transform', onComplete: () => { busy = false; } });
+      enter(name);
+    }
+  });
+}
+const goNext = () => show(ORDER[ORDER.indexOf(cur) + 1], 1);
+const goBack = () => { const i = ORDER.indexOf(cur); if (i > 0) show(ORDER[i - 1], -1); };
+
+function enter(name) {
+  if (name === 'greetings' || name === 'farewells') {
+    dropNotes(screenEl(name));
+  }
+  if (name === 'compare') Story.start();
+  if (name === 'match') Match.start();
+  if (name === 'sprint') Sprint.start();
+  if (name === 'end') End.render();
+}
+function leave(name) {
+  Voice.stop();
+  if (name === 'compare') { Story.stop(); Compare.stop(); }
+  if (name === 'match') Match.stop();
+  if (name === 'sprint') Sprint.stop();
+}
+
+/* =========================================================
+   Welcome: the one orchestrated load moment
+   ========================================================= */
+function playWelcome() {
+  if (RM) return;
+  const tl = gsap.timeline({ delay: .15 });
+  tl.fromTo('.welcome-copy > *', { y: 18, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .5, stagger: .06, ease: 'power3.out' }, 0);
+  $$('.hero-row').forEach((row, i) => {
+    const b = $('.bubble', row), dots = $('.dots', row), txt = $('.txt', row), chip = $('.hero-chip', row);
+    const at = .3 + i * 1.2;
+    gsap.set(txt, { autoAlpha: 0 }); gsap.set(dots, { autoAlpha: 1 }); gsap.set([b, chip], { autoAlpha: 0 });
+    tl.fromTo(b, { scale: .2, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, duration: .45, ease: 'back.out(2)', transformOrigin: i ? '100% 100%' : '0% 100%' }, at)
+      .fromTo($$('i', dots), { y: 0 }, { y: -6, duration: .2, repeat: 3, yoyo: true, stagger: .1, ease: 'sine.inOut' }, at + .3)
+      .to(dots, { autoAlpha: 0, duration: .15 }, at + 1)
+      .fromTo(txt, { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, duration: .3, ease: 'back.out(2)' }, at + 1.02)
+      .fromTo(chip, { autoAlpha: 0, y: 6 }, { autoAlpha: 1, y: 0, duration: .3 }, at + 1.12);
+  });
+}
+
+/* =========================================================
+   4a / 4b: tap-to-hear cards
+   ========================================================= */
+/* Sticky-note assets from Figma (yellow = greetings / arriving, blue = farewells / leaving) */
+const NOTE = {
+  sun: { paper: 'assets/sticky/paper-yellow.svg', pin: 'assets/sticky/pin-30-47.svg', pinW: 49.1693 },
+  sky: { paper: 'assets/sticky/paper-blue.svg',   pin: 'assets/sticky/pin-30-15.svg', pinW: 49.1692 }
+};
+const NOTE_W = 518.773;
+const PIN_ORIGIN = '261.7px 18.7px';   // where the pin pierces the paper, in paper-local px
+/* Scale each note's native-size layout to its card width */
+const noteSizer = new ResizeObserver(entries => entries.forEach(e => e.target.style.setProperty('--k', (e.contentRect.width / NOTE_W).toFixed(4))));
+
+/* Notes drop onto the board, the pin is pushed in, then the paper swings and settles on it */
+function dropNotes(scr) {
+  $$('.note', scr).forEach((n, i) => {
+    n.classList.remove('is-active');
+    const sheet = $('.note-sheet', n), pin = $('.note-pin', n);
+    gsap.killTweensOf([n, sheet, pin]);
+    gsap.set(sheet, { rotation: 7, transformOrigin: PIN_ORIGIN });
+    gsap.timeline({ delay: .08 + i * .16 })
+      .fromTo(n, { y: -70, rotation: gsap.utils.random(-12, 12), scale: 1.12, autoAlpha: 0 }, { y: 0, rotation: 0, scale: 1, autoAlpha: 1, duration: .5, ease: 'back.out(1.3)' }, 0)
+      .fromTo(pin, { y: -46, scale: 1.8, autoAlpha: 0, transformOrigin: '28% 73%' }, { y: 0, scale: 1, autoAlpha: 1, duration: .22, ease: 'power3.in', transformOrigin: '28% 73%' }, .3)
+      .to(pin, { scale: .84, duration: .07, yoyo: true, repeat: 1, ease: 'power1.inOut' }, .52)
+      .to(sheet, { keyframes: { rotation: [7, -4.5, 2.5, -1.2, .5, 0], easeEach: 'sine.inOut' }, duration: 1.15, ease: 'none' }, .52);
+  });
+}
+/* Tapped: the note lifts off the board and swings on its pin like a pendulum */
+function swingNote(card) {
+  const sheet = $('.note-sheet', card), pin = $('.note-pin', card);
+  gsap.fromTo(sheet, { rotation: 0, transformOrigin: PIN_ORIGIN }, { keyframes: { rotation: [0, 8, -6, 4, -2.2, 1, 0], easeEach: 'sine.inOut' }, duration: 1.35, ease: 'none', transformOrigin: PIN_ORIGIN });
+  gsap.fromTo(pin, { scale: 1, transformOrigin: '28% 73%' }, { scale: .86, duration: .09, yoyo: true, repeat: 1, transformOrigin: '28% 73%' });
+}
+/* Hover (mouse only): the paper tilts a little on its pin */
+if (window.matchMedia('(hover: hover)').matches) {
+  document.addEventListener('pointerover', e => {
+    const n = e.target.closest && e.target.closest('.note');
+    if (!n || n.contains(e.relatedTarget)) return;
+    gsap.to($('.note-sheet', n), { rotation: 2.5, duration: .35, ease: 'power2.out', transformOrigin: PIN_ORIGIN, overwrite: 'auto' });
+  });
+  document.addEventListener('pointerout', e => {
+    const n = e.target.closest && e.target.closest('.note');
+    if (!n || n.contains(e.relatedTarget)) return;
+    gsap.to($('.note-sheet', n), { rotation: 0, duration: .5, ease: 'back.out(2)', transformOrigin: PIN_ORIGIN, overwrite: 'auto' });
+  });
+}
+
+const splitChars = text => text.split(' ').map(w => `<span class="wd">${[...w].map(c => `<span class="ch">${c}</span>`).join('')}</span>`).join(' ');
+function buildWordCards() {
+  [['greetings', GREETINGS], ['farewells', FAREWELLS]].forEach(([set, ids]) => {
+    $(`[data-set="${set}"]`).innerHTML = ids.map(id => {
+      const w = WORDS[id];
+      const n = NOTE[w.kind];
+      return `<button class="wcard note ${w.kind}" data-id="${id}" aria-label="Tap to hear a word. ${w.alt}.">
+        <span class="note-inner" aria-hidden="true">
+          <span class="note-backing"></span>
+          <span class="note-paper"><span class="note-sheet">
+            <img class="note-paper-img" src="${n.paper}" width="480.192" height="436.273" alt="">
+            <span class="wcard-speak">${UI.speaker}</span>
+            ${ICON[w.icon]()}
+            <span class="wcard-word"><span class="wcard-hint">Tap to hear</span><span class="wcard-text">${splitChars(w.text)}</span></span>
+          </span></span>
+          <span class="note-pin"><img src="${n.pin}" width="${n.pinW}" height="48.6332" alt=""></span>
+          <span class="wcard-check">${UI.check}</span>
+        </span>
+      </button>`;
+    }).join('');
+    $$(`[data-set="${set}"] .note`).forEach(el => noteSizer.observe(el));
+    const scr = screenEl(set);
+    $('.heard-n', scr).textContent = '0';
+    $('[data-next]', scr).disabled = true;
+  });
+}
+function tapWord(card) {
+  const id = card.dataset.id, w = WORDS[id];
+  const set = card.parentElement, scr = card.closest('.screen');
+  $$('.wcard.is-active', set).forEach(c => { if (c !== card) { c.classList.remove('is-active'); gsap.to(c, { y: 0, scale: 1, duration: .3, ease: 'power2.out' }); } });
+  card.classList.add('is-active');
+  gsap.fromTo(card, { y: 0, scale: 1 }, { y: -8, scale: 1.04, duration: .4, ease: 'back.out(3)' });
+  swingNote(card);
+  WIGGLE[w.icon]($('svg.ico', card));
+  gsap.fromTo($('.wcard-speak', card), { scale: 1 }, { scale: 1.15, duration: .16, repeat: 5, yoyo: true, ease: 'sine.inOut' });
+  Voice.play(id, w.text);
+  if (card.classList.contains('is-heard')) return;
+  card.classList.add('is-heard');
+  card.setAttribute('aria-label', `${w.text}. Tap to hear again.`);
+  const text = $('.wcard-text', card);
+  gsap.to($('.wcard-hint', card), { autoAlpha: 0, y: -6, duration: .15 });
+  gsap.set(text, { visibility: 'visible' });
+  gsap.fromTo($$('.ch', text), { y: 16, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .4, stagger: .035, ease: 'back.out(2.2)', delay: .08 });
+  gsap.fromTo($('.wcard-check', card), { scale: 0 }, { scale: 1, duration: .45, ease: 'back.out(3)', delay: .35 });
+  const n = $$('.wcard.is-heard', set).length;
+  const nEl = $('.heard-n', scr);
+  nEl.textContent = n;
+  gsap.fromTo(nEl, { scale: 1.5 }, { scale: 1, duration: .45, ease: 'back.out(3)' });
+  if (n === 3) {
+    const btn = $('[data-next]', scr);
+    btn.disabled = false;
+    gsap.fromTo(btn, { scale: .92 }, { scale: 1, duration: .6, ease: 'elastic.out(1,.4)', clearProps: 'transform' });
+    announce('All three heard. You can continue.');
+  }
+}
+
+/* =========================================================
+   4c: arriving vs leaving
+   ========================================================= */
+/* Adds a walk cycle (legs, arms, bob) for walker group w to timeline tl */
+function walkSteps(tl, w, dur, at = 0) {
+  const n = Math.max(2, Math.round(dur / .28)), step = dur / n;
+  const legs = $$('.leg', w);
+  legs.forEach((leg, i) => tl.fromTo(leg, { rotation: i ? -20 : 20, transformOrigin: '50% 0%' }, { rotation: i ? 20 : -20, duration: step, repeat: n - 1, yoyo: true, ease: 'sine.inOut', transformOrigin: '50% 0%' }, at));
+  tl.to(legs, { rotation: 0, duration: .2, ease: 'power2.out' }, at + dur);
+  $$('.arm-f, .arm-b', w).forEach((arm, i) => {
+    tl.fromTo(arm, { rotation: i ? -16 : 16, transformOrigin: '50% 0%' }, { rotation: i ? 16 : -16, duration: step, repeat: n - 1, yoyo: true, ease: 'sine.inOut', transformOrigin: '50% 0%' }, at);
+    tl.to(arm, { rotation: 0, duration: .2 }, at + dur);
+  });
+  tl.fromTo(w, { y: 0 }, { y: -3, duration: step / 2, repeat: n * 2 - 1, yoyo: true, ease: 'sine.inOut' }, at);
+  return tl;
+}
+const waveLoop = arm => {
+  const o = arm.dataset.origin, d = Number(arm.dataset.dir);
+  return gsap.fromTo(arm, { rotation: -6 * d, transformOrigin: o }, { rotation: 14 * d, duration: .32, repeat: -1, yoyo: true, ease: 'sine.inOut', transformOrigin: o });
+};
+
+/* Recap: the two matching scenes side by side */
+const Compare = {
+  tl: null, loops: [],
+  build() {
+    $('#scene-arrive').insertAdjacentHTML('beforeend', gateScene('arrive'));
+    $('#scene-leave').insertAdjacentHTML('beforeend', gateScene('leave'));
+  },
+  play(quiet) {
+    this.stop();
+    const box = $('#recap');
+    const [inW, outW] = $$('.walker', box);
+    const says = $$('.say', box);
+    const tl = gsap.timeline({ delay: .25 });
+    tl.fromTo(inW, { x: -64 }, { x: 0, duration: 1.6, ease: 'power1.inOut' }, 0);
+    walkSteps(tl, inW, 1.6, 0);
+    tl.fromTo(outW, { x: 102 }, { x: 0, duration: 1.8, ease: 'power1.inOut' }, 0);
+    walkSteps(tl, outW, 1.8, 0);
+    tl.fromTo(says, { scale: .6, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, duration: .45, stagger: .14, ease: 'back.out(2.2)' }, 1.5);
+    if (!quiet) {
+      tl.call(() => Voice.play('good-evening', 'Good evening!'), null, 1.7);
+      tl.call(() => Voice.play('see-you', 'See you!'), null, 3.0);
+    }
+    this.tl = tl;
+    if (!RM) {
+      const wave = $('.arm-w', outW);
+      if (wave) this.loops.push(waveLoop(wave));
+      $$('.dir-arrow', box).forEach(a => this.loops.push(gsap.to(a, { x: 6 * Number(a.dataset.dir), duration: .6, repeat: -1, yoyo: true, ease: 'sine.inOut' })));
+    }
+  },
+  stop() {
+    if (this.tl) { this.tl.kill(); this.tl = null; }
+    this.loops.forEach(t => t.kill());
+    this.loops = [];
+  }
+};
+
+/* Story: Ananya arrives (question 1), then leaves (question 2), then the recap */
+const Story = {
+  W: 440, STOP_IN: 175, STOP_OUT: 80,
+  step: 0, locked: true, done: false, tl: null, loops: [], calls: [],
+  build() { $('#stage-art').insertAdjacentHTML('afterbegin', storyScene()); },
+  later(sec, fn) { this.calls.push(gsap.delayedCall(sec, fn)); },
+  stop() {
+    if (this.tl) { this.tl.kill(); this.tl = null; }
+    this.loops.forEach(t => t.kill()); this.loops = [];
+    this.calls.forEach(c => c.kill()); this.calls = [];
+  },
+  setLook(step) {
+    const leaving = step === 2, stage = $('#stage');
+    stage.classList.toggle('sun', !leaving);
+    stage.classList.toggle('sky', leaving);
+    $('#stage-tag').innerHTML = leaving ? `${UI.doorOut}Leaving` : `${UI.doorIn}Arriving`;
+    $('#stage-step').textContent = `${step} of 2`;
+  },
+  setPose(leaving) { $('#story-walker .pose').innerHTML = ananyaPose(0, leaving); },
+  setQuestion(step) {
+    $('#story-q').textContent = step === 1
+      ? 'Ananya arrives at the institute in the evening. What does she say?'
+      : 'Later that evening, Ananya leaves. What does she say now?';
+    $('#story-nudge').textContent = '';
+    $('#story-options').innerHTML = shuffle(['good-evening', 'see-you', 'goodbye'])
+      .map(id => `<button class="opt" data-id="${id}" disabled><span>${WORDS[id].text}</span></button>`).join('');
+    gsap.set('#story-options', { autoAlpha: 1 });
+    gsap.set('#story-options .opt', { autoAlpha: 0 });
+  },
+  enableOptions() {
+    const opts = $$('#story-options .opt');
+    opts.forEach(b => { b.disabled = false; });
+    gsap.fromTo(opts, { y: 12, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .35, stagger: .07, ease: 'back.out(2)' });
+    this.locked = false;
+  },
+  arrows(step) {
+    const inA = $('#story-svg [data-for="in"]'), outA = $('#story-svg [data-for="out"]');
+    gsap.to(inA, { opacity: step === 1 ? 1 : 0, duration: .3 });
+    gsap.to(outA, { opacity: step === 2 ? 1 : 0, duration: .3 });
+    if (!RM) {
+      const poly = $('.dir-arrow', step === 1 ? inA : outA);
+      this.loops.push(gsap.fromTo(poly, { x: 0 }, { x: 6 * Number(poly.dataset.dir), duration: .6, repeat: -1, yoyo: true, ease: 'sine.inOut' }));
+    }
+  },
+  hideBubbles(instant) {
+    const bs = [$('#bubble-ananya'), $('#bubble-teacher')];
+    gsap.killTweensOf(bs);
+    if (instant) gsap.set(bs, { autoAlpha: 0 });
+    else gsap.to(bs, { autoAlpha: 0, scale: .8, duration: .2 });
+  },
+  /* Pop a speech bubble above a head. svgX / svgTop are scene coordinates; align = where the tail sits (0..1). */
+  say(el, text, kind, svgX, svgTop, align) {
+    const art = $('#stage-art'), cw = art.clientWidth, ch = art.clientHeight;
+    el.textContent = text;
+    el.className = `say-bubble ${kind}`;
+    gsap.killTweensOf(el);
+    gsap.set(el, { autoAlpha: 0, scale: 1, y: 0 });
+    const bw = el.offsetWidth, ax = svgX / this.W * cw;
+    const left = Math.max(8, Math.min(cw - bw - 8, ax - bw * align));
+    el.style.left = `${left}px`;
+    el.style.bottom = `${(340 - svgTop) / 340 * ch}px`;
+    const tail = Math.max(16, Math.min(bw - 16, ax - left));
+    el.style.setProperty('--tail', `${tail}px`);
+    if (el.id === 'bubble-teacher') {            // keep clear of Ananya's bubble
+      const a = $('#bubble-ananya'), cs = getComputedStyle(a);
+      if (cs.visibility !== 'hidden' && Number(cs.opacity) > 0) {
+        const r1 = a.getBoundingClientRect(), r2 = el.getBoundingClientRect();
+        if (r1.right + 6 > r2.left && r2.right > r1.left && r1.bottom > r2.top && r2.bottom > r1.top) {
+          el.style.bottom = `${parseFloat(el.style.bottom) + (r2.bottom - r1.top) + 6}px`;
+        }
+      }
+    }
+    gsap.fromTo(el, { autoAlpha: 0, scale: .4, y: 10 }, { autoAlpha: 1, scale: 1, y: 0, duration: .45, ease: 'back.out(2.4)', transformOrigin: `${tail}px 100%` });
+  },
+  start() {
+    this.stop();
+    $('#recap').hidden = true;
+    $('#story').hidden = false;
+    $('#compare-lede').textContent = 'Watch Ananya at the institute. Pick what she says.';
+    $('[data-next]', screenEl('compare')).disabled = !this.done;
+    this.step = 1; this.locked = true;
+    this.setLook(1);
+    this.setPose(false);
+    this.setQuestion(1);
+    this.hideBubbles(true);
+    this.arrows(1);
+    const w = $('#story-walker');
+    gsap.set($('.pose', w), { clearProps: 'transform' });
+    const tl = gsap.timeline({ delay: .3, onComplete: () => this.enableOptions() });
+    tl.fromTo(w, { x: -40 }, { x: this.STOP_IN, duration: 2.2, ease: 'power1.inOut' }, 0);
+    walkSteps(tl, w, 2.2, 0);
+    this.tl = tl;
+  },
+  answer(btn) {
+    if (btn.disabled || this.locked) return;
+    const id = btn.dataset.id;
+    const ok = this.step === 1 ? id === 'good-evening' : id !== 'good-evening';
+    if (!ok) {
+      btn.classList.add('is-wrong');
+      btn.disabled = true;
+      SFX.bad();
+      shake(btn, 8);
+      const n = $('#story-nudge');
+      n.textContent = this.step === 1
+        ? 'Not this one. She is arriving, so she greets her teacher.'
+        : 'Not this one. It is still evening, but she is leaving now.';
+      gsap.fromTo(n, { autoAlpha: 0, y: -4 }, { autoAlpha: 1, y: 0, duration: .25 });
+      return;
+    }
+    this.locked = true;
+    btn.classList.add('is-right');
+    btn.insertAdjacentHTML('afterbegin', `<span class="ok" aria-hidden="true">${UI.check}</span>`);
+    $$('#story-options .opt').forEach(b => { b.disabled = true; });
+    gsap.fromTo(btn, { scale: 1 }, { scale: 1.06, duration: .15, yoyo: true, repeat: 1 });
+    $('#story-nudge').textContent = '';
+    SFX.good();
+    const line = `${WORDS[id].text}!`;
+    Voice.play(id, line);
+    const x = this.step === 1 ? this.STOP_IN + 2 : this.STOP_OUT;
+    this.say($('#bubble-ananya'), line, this.step === 1 ? 'sun' : 'sky', x, 153, .5);
+    announce(`Ananya says: ${line}`);
+    const reply = this.step === 1 ? 'Good evening!' : 'See you tomorrow!';
+    this.later(1.1, () => { this.say($('#bubble-teacher'), reply, 'plain', 354, 137, .5); announce(`Her teacher says: ${reply}`); });
+    this.later(2.9, () => (this.step === 1 ? this.toLeave() : this.toRecap()));
+  },
+  toLeave() {
+    this.step = 2; this.locked = true;
+    this.hideBubbles();
+    const w = $('#story-walker'), pose = $('.pose', w);
+    const tl = gsap.timeline({ onComplete: () => this.enableOptions() });
+    tl.to(['#story-q', '#story-options'], { autoAlpha: 0, duration: .2 }, 0)
+      .call(() => this.setQuestion(2), null, .22)
+      .to('#story-q', { autoAlpha: 1, duration: .3 }, .25)
+      .call(() => { this.setLook(2); this.arrows(2); gsap.fromTo('#stage-tag', { scale: .6 }, { scale: 1, duration: .45, ease: 'back.out(2.5)' }); }, null, .3)
+      // Ananya turns around...
+      .to(pose, { scaleX: 0, duration: .16, ease: 'power2.in', transformOrigin: '50% 50%' }, .35)
+      .call(() => { this.setPose(true); const arm = $('.arm-w', w); if (arm && !RM) this.loops.push(waveLoop(arm)); }, null, .51)
+      .to(pose, { scaleX: 1, duration: .18, ease: 'power2.out', transformOrigin: '50% 50%' }, .52)
+      // ...and walks away, waving back at her teacher
+      .fromTo(w, { x: this.STOP_IN }, { x: this.STOP_OUT, duration: 1.9, ease: 'power1.inOut' }, .8)
+      .call(() => this.loops.push(walkSteps(gsap.timeline(), w, 1.9, 0)), null, .8);
+    this.tl = tl;
+  },
+  toRecap() {
+    this.locked = true;
+    this.done = true;
+    const story = $('#story'), recap = $('#recap');
+    gsap.to(story, {
+      autoAlpha: 0, y: -10, duration: .3, ease: 'power2.in',
+      onComplete: () => {
+        this.stop();
+        story.hidden = true;
+        gsap.set(story, { clearProps: 'all' });
+        recap.hidden = false;
+        $('#compare-lede').textContent = 'Same evening. Same gate. Only the direction changes.';
+        gsap.fromTo(recap, { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: .4, ease: 'power3.out', clearProps: 'transform' });
+        Compare.play(true);
+        const btn = $('[data-next]', screenEl('compare'));
+        btn.disabled = false;
+        gsap.fromTo(btn, { scale: .92 }, { scale: 1, duration: .6, ease: 'elastic.out(1,.4)', delay: .6, clearProps: 'transform' });
+        announce('Both right. Compare the two pictures, then tap I understand.');
+      }
+    });
+  }
+};
+
+/* =========================================================
+   Hanging game timer (counts down; the game's own setTimeout ends the game at 00:00)
+   ========================================================= */
+function makeClock(el, seconds) {
+  const digits = $('.timer-time', el), swing = $('.timer-swing', el);
+  let t0 = 0, iv = null, last = -1;
+  const fmt = n => `${String(Math.floor(n / 60)).padStart(2, '0')}:${String(n % 60).padStart(2, '0')}`;
+  const sway = (amp, dur) => gsap.fromTo(swing, { rotation: 0, transformOrigin: '50% 0%' }, { keyframes: { rotation: [0, amp, -amp * .7, amp * .4, -amp * .15, 0], easeEach: 'sine.inOut' }, duration: dur, ease: 'none', transformOrigin: '50% 0%' });
+  const show = n => {
+    if (n === last) return;
+    last = n;
+    digits.textContent = fmt(n);
+    el.setAttribute('aria-label', `Time left ${Math.floor(n / 60)} minutes ${n % 60} seconds`);
+    el.classList.toggle('is-low', n > 0 && n <= 30);
+    if (!iv) return;
+    if (n === 60) announce('One minute left.');
+    if (n === 30) { announce('30 seconds left.'); sway(6, 1.2); }
+    if (n > 0 && n <= 10) gsap.fromTo(digits, { scale: 1.12 }, { scale: 1, duration: .35, ease: 'power2.out' });
+  };
+  return {
+    start() {
+      this.stop();
+      el.classList.remove('is-done', 'is-up');
+      last = -1;
+      show(seconds);
+      t0 = Date.now();
+      iv = setInterval(() => show(Math.max(0, Math.ceil(seconds - (Date.now() - t0) / 1000))), 200);
+      // Drops in and swings on its rod
+      gsap.fromTo(swing, { y: -40, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .45, ease: 'back.out(1.6)' });
+      gsap.delayedCall(.3, () => sway(10, 1.4));
+    },
+    stop(state) {
+      clearInterval(iv);
+      iv = null;
+      if (state === 'is-up') { show(0); el.classList.add('is-up'); sway(14, 1.3); }
+      if (state === 'is-done') { el.classList.add('is-done'); sway(5, 1); }
+    }
+  };
+}
+let matchClock, sprintClock;
+
+/* =========================================================
+   4d: Word Match (max 4 minutes, no visible countdown)
+   ========================================================= */
+const Match = {
+  LIMIT: 4 * 60 * 1000,
+  open: [], lock: false, n: 0, timer: null,
+  start() {
+    this.stop();
+    this.open = []; this.lock = false; this.n = 0;
+    this.tally(false);
+    $('[data-next]', screenEl('match')).disabled = true;
+    const deck = shuffle(Object.keys(WORDS).flatMap(id => [{ id, face: 'icon' }, { id, face: 'word' }]));
+    const grid = $('#match-grid');
+    grid.innerHTML = deck.map((c, i) => {
+      const w = WORDS[c.id];
+      const front = c.face === 'icon' ? ICON[w.icon]() : `<span class="mword">${w.text}</span>`;
+      return `<button class="mcard" data-id="${c.id}" data-face="${c.face}" aria-label="Card ${i + 1}, face down">
+        <span class="mcard-inner">
+          <span class="mcard-face mcard-back" aria-hidden="true">${UI.cardBack}</span>
+          <span class="mcard-face mcard-front ${w.kind}" aria-hidden="true">${front}<span class="mcard-check">${UI.check}</span></span>
+        </span>
+      </button>`;
+    }).join('');
+    gsap.fromTo(grid.children, { scale: .7, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, duration: .4, ease: 'back.out(1.8)', stagger: { each: .035, from: 'random' } });
+    this.timer = setTimeout(() => this.timeUp(), this.LIMIT);
+    matchClock.start();
+  },
+  stop() {
+    clearTimeout(this.timer); this.timer = null;
+    matchClock.stop();
+    const grid = $('#match-grid');
+    gsap.killTweensOf($$('.mcard, .mcard-inner', grid));
+  },
+  tap(card) {
+    if (this.lock || card.classList.contains('is-up')) return;
+    this.flip(card, true);
+    this.open.push(card);
+    if (this.open.length < 2) return;
+    this.lock = true;
+    const [a, b] = this.open;
+    if (a.dataset.id === b.dataset.id) setTimeout(() => this.hit(a, b), 420);
+    else setTimeout(() => this.miss(a, b), 700);
+  },
+  flip(card, up) {
+    card.classList.toggle('is-up', up);
+    gsap.to($('.mcard-inner', card), { rotationY: up ? 180 : 0, duration: up ? .5 : .42, ease: 'power2.inOut' });
+    if (up) {
+      SFX.flip();
+      gsap.fromTo(card, { y: 0 }, { y: -5, duration: .22, yoyo: true, repeat: 1, ease: 'power1.out' });
+      const w = WORDS[card.dataset.id];
+      card.setAttribute('aria-label', card.dataset.face === 'icon' ? w.alt : `Word: ${w.text}`);
+    } else {
+      card.setAttribute('aria-label', 'Card, face down');
+    }
+  },
+  hit(a, b) {
+    const w = WORDS[a.dataset.id];
+    [a, b].forEach(c => { c.classList.add('is-matched'); c.setAttribute('aria-disabled', 'true'); });
+    SFX.good();
+    Voice.play(a.dataset.id, w.text);
+    gsap.fromTo([a, b], { scale: 1 }, { scale: 1.08, duration: .18, yoyo: true, repeat: 1, ease: 'power2.out' });
+    gsap.fromTo([a, b].map(c => $('.mcard-check', c)), { scale: 0 }, { scale: 1, duration: .45, ease: 'back.out(3)', delay: .15 });
+    const iconCard = a.dataset.face === 'icon' ? a : b;
+    WIGGLE[w.icon]($('svg.ico', iconCard));
+    this.open = []; this.lock = false;
+    this.n++;
+    this.tally(true);
+    announce(`Match: ${w.text}. Matched ${this.n} of 6.`);
+    if (this.n === 6) this.win();
+  },
+  miss(a, b) {
+    SFX.bad();
+    announce('Not a pair. Try again.');
+    shake([a, b]).eventCallback('onComplete', () => {
+      this.flip(a, false); this.flip(b, false);
+      setTimeout(() => { this.open = []; this.lock = false; }, 300);
+    });
+  },
+  tally(bump) {
+    $('#tally-n').textContent = this.n;
+    if (bump) gsap.fromTo('#tally', { scale: 1.14 }, { scale: 1, duration: .55, ease: 'elastic.out(1,.4)' });
+  },
+  win() {
+    clearTimeout(this.timer); this.timer = null;
+    matchClock.stop('is-done');
+    setTimeout(() => SFX.win(), 350);
+    gsap.to($$('#match-grid .mcard'), { y: -10, duration: .2, yoyo: true, repeat: 1, ease: 'power2.out', stagger: .05, delay: .5 });
+    const btn = $('[data-next]', screenEl('match'));
+    btn.disabled = false;
+    gsap.fromTo(btn, { scale: .92 }, { scale: 1, duration: .6, ease: 'elastic.out(1,.4)', delay: .9, clearProps: 'transform' });
+    announce('All 6 matched. You can continue.');
+  },
+  timeUp() {
+    this.lock = true;
+    matchClock.stop('is-up');
+    Voice.stop();
+    Modal.open({ icon: UI.hourglass, title: 'Time’s up', text: 'Word Match starts again from the beginning. You have 4 minutes.', button: 'Play again', onClose: () => this.start() });
+  }
+};
+
+/* =========================================================
+   4e: Scenario Sprint (max 5 minutes; only first tries earn stars)
+   ========================================================= */
+const Sprint = {
+  LIMIT: 5 * 60 * 1000,
+  i: 0, stars: 0, wrong: false, answered: false, timer: null, loops: [],
+  start() {
+    this.stop();
+    this.i = 0; this.stars = 0;
+    $('#stars').innerHTML = Array.from({ length: 5 }, () => `<span class="star">${UI.star}</span>`).join('');
+    this.label();
+    this.render(true);
+    this.timer = setTimeout(() => this.timeUp(), this.LIMIT);
+    sprintClock.start();
+  },
+  stop() {
+    clearTimeout(this.timer); this.timer = null;
+    sprintClock.stop();
+    Sheet.hide(true);
+    this.loops.forEach(t => t.kill()); this.loops = [];
+  },
+  label() { $('#stars').setAttribute('aria-label', `${this.stars} of 5 stars`); },
+  render(first) {
+    const sc = SCENARIOS[this.i];
+    this.wrong = false; this.answered = false;
+    this.loops.forEach(t => t.kill()); this.loops = [];
+    const wrap = $('#sprint-card');
+    const build = () => {
+      wrap.innerHTML = `
+        <div class="sprint-art">${ART[sc.id]()}<span class="sprint-count">${this.i + 1} of 5</span></div>
+        <div>
+          <p class="sprint-q" id="sprint-q">${sc.text}</p>
+          <p class="nudge" id="nudge" aria-live="polite"></p>
+          <div class="options" role="group" aria-labelledby="sprint-q">
+            ${shuffle(sc.options).map(id => `<button class="opt" data-id="${id}"><span>${WORDS[id].text}</span></button>`).join('')}
+          </div>
+        </div>`;
+      if (!RM) $$('.dir-arrow', wrap).forEach(a => this.loops.push(gsap.to(a, { x: 5 * Number(a.dataset.dir), duration: .6, repeat: -1, yoyo: true, ease: 'sine.inOut' })));
+    };
+    if (first) {
+      build();
+      gsap.fromTo($$('.sprint-art, .sprint-q, .opt', wrap), { y: 16, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .38, stagger: .05, ease: 'power2.out' });
+    } else {
+      gsap.to(wrap, {
+        x: -30, autoAlpha: 0, duration: .2, ease: 'power2.in',
+        onComplete: () => { build(); gsap.fromTo(wrap, { x: 30, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: .32, ease: 'power3.out', clearProps: 'transform' }); }
+      });
+    }
+  },
+  answer(btn) {
+    if (btn.disabled || this.answered) return;
+    const sc = SCENARIOS[this.i], id = btn.dataset.id, w = WORDS[id];
+    if (sc.correct.includes(id)) {
+      this.answered = true;
+      btn.classList.add('is-right');
+      btn.insertAdjacentHTML('afterbegin', `<span class="ok" aria-hidden="true">${UI.check}</span>`);
+      $$('#sprint-card .opt').forEach(b => { b.disabled = true; });
+      gsap.fromTo(btn, { scale: 1 }, { scale: 1.06, duration: .15, yoyo: true, repeat: 1 });
+      SFX.good();
+      Voice.play(id, w.text);
+      const first = !this.wrong;
+      if (first) { this.stars++; this.fly(btn); }
+      $('#nudge').textContent = '';
+      Sheet.show({ first, why: sc.why, tip: sc.tip });
+    } else {
+      this.wrong = true;
+      btn.classList.add('is-wrong');
+      btn.disabled = true;
+      btn.setAttribute('aria-label', `${w.text}: not this one`);
+      SFX.bad();
+      shake(btn, 8);
+      const n = $('#nudge');
+      n.textContent = 'Not this one. Are you arriving or leaving? Try again.';
+      gsap.fromTo(n, { autoAlpha: 0, y: -4 }, { autoAlpha: 1, y: 0, duration: .25 });
+    }
+  },
+  fly(btn) {
+    const slot = $$('#stars .star')[this.stars - 1];
+    if (!slot) return;
+    const b = btn.getBoundingClientRect(), s = slot.getBoundingClientRect(), size = 34;
+    const bx = b.left + b.width / 2, by = b.top + b.height / 2;
+    const el = document.createElement('div');
+    el.className = 'fly-star';
+    el.innerHTML = UI.star;
+    document.body.appendChild(el);
+    gsap.set(el, { left: bx - size / 2, top: by - size / 2, width: size, height: size });
+    gsap.timeline({ onComplete: () => {
+      el.remove();
+      slot.classList.add('is-on');
+      gsap.fromTo(slot, { scale: .4, rotation: -30 }, { scale: 1, rotation: 0, duration: .6, ease: 'elastic.out(1,.45)' });
+      SFX.star();
+      this.label();
+    } })
+      .fromTo(el, { scale: .3 }, { scale: 1.4, duration: .25, ease: 'back.out(2)' })
+      .to(el, { x: s.left + s.width / 2 - bx, y: s.top + s.height / 2 - by, scale: .8, rotation: 220, duration: .6, ease: 'power2.inOut' });
+  },
+  next() {
+    if (!this.answered || cur !== 'sprint') return;
+    this.answered = false;
+    Sheet.hide();
+    this.i++;
+    if (this.i >= SCENARIOS.length) { clearTimeout(this.timer); this.timer = null; sprintClock.stop('is-done'); show('end'); }
+    else this.render(false);
+  },
+  timeUp() {
+    sprintClock.stop('is-up');
+    Sheet.hide(true);
+    Voice.stop();
+    $$('#sprint-card .opt').forEach(b => { b.disabled = true; });
+    Modal.open({ icon: UI.hourglass, title: 'Time’s up', text: 'Scenario Sprint starts again from the first situation. You have 5 minutes.', button: 'Start again', onClose: () => this.start() });
+  }
+};
+
+/* =========================================================
+   End screen
+   ========================================================= */
+const End = {
+  buildRecap() {
+    const item = id => `<li><button class="recap-word" data-id="${id}">${WORDS[id].text}${UI.speaker}</button></li>`;
+    $('#recap-sun').innerHTML = GREETINGS.map(item).join('');
+    $('#recap-sky').innerHTML = FAREWELLS.map(item).join('');
+  },
+  render() {
+    const n = Sprint.stars;
+    $('#end-title').textContent = `You matched ${n} out of 5!`;
+    $('#end-note').textContent = n === 5 ? 'All five right on the first try.'
+      : n >= 3 ? 'Nice work. Only first tries count. Play again to get all five.'
+      : 'Only first tries count. Play again and you will get more.';
+    const box = $('#end-stars');
+    box.innerHTML = Array.from({ length: 5 }, () => `<span class="star">${UI.star}</span>`).join('');
+    box.setAttribute('aria-label', `${n} of 5 stars`);
+    gsap.fromTo(box.children, { scale: 0, rotation: -40 }, { scale: 1, rotation: 0, duration: .5, stagger: .08, ease: 'back.out(2)' });
+    Array.from(box.children).slice(0, n).forEach((s, i) => gsap.delayedCall(.45 + i * .15, () => {
+      s.classList.add('is-on');
+      gsap.fromTo(s, { scale: 1.35 }, { scale: 1, duration: .4, ease: 'back.out(3)' });
+    }));
+    if (n) gsap.delayedCall(.45 + n * .15, () => SFX.star());
+    gsap.fromTo(['#end-title', '#end-note', '.recap'], { y: 16, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .4, stagger: .08, delay: .2 });
+    gsap.delayedCall(.5, confetti);
+  }
+};
+
+function finish() {
+  try { if (window.parent !== window) window.parent.postMessage({ type: 'stage-complete', stage: 4, score: Sprint.stars, outOf: 5 }, '*'); } catch (e) { /* not embedded */ }
+  Modal.open({
+    icon: UI.trophyBig, title: 'Stage 4 complete',
+    text: 'You know three greetings and three farewells, and when to use each one.',
+    button: 'Back to start',
+    onClose: () => { buildWordCards(); Story.done = false; show('welcome', -1); }
+  });
+}
+
+/* =========================================================
+   Wiring
+   ========================================================= */
+function init() {
+  $$('[data-ui]').forEach(el => { el.outerHTML = UI[el.dataset.ui] || ''; });
+  matchClock = makeClock($('#match-timer'), Match.LIMIT / 1000);
+  sprintClock = makeClock($('#sprint-timer'), Sprint.LIMIT / 1000);
+  buildWordCards();
+  Compare.build();
+  Story.build();
+  End.buildRecap();
+  Voice.init();
+
+  document.addEventListener('click', e => {
+    const t = e.target.closest('button');
+    if (!t || t.disabled) return;
+    if (t.id === 'start') return show('greetings');
+    if (t.id === 'back') return goBack();
+    if (t.hasAttribute('data-next')) return goNext();
+    if (t.classList.contains('wcard')) return tapWord(t);
+    if (t.classList.contains('say')) { gsap.fromTo(t, { scale: .94 }, { scale: 1, duration: .4, ease: 'back.out(3)' }); return Voice.play(t.dataset.id, t.dataset.text); }
+    if (t.id === 'replay-compare') return Story.start();
+    if (t.classList.contains('mcard')) return t.getAttribute('aria-disabled') ? null : Match.tap(t);
+    if (t.closest('#story-options')) return Story.answer(t);
+    if (t.classList.contains('opt')) return Sprint.answer(t);
+    if (t.id === 'sheet-btn') return Sprint.next();
+    if (t.id === 'modal-btn') return Modal.close();
+    if (t.dataset.action === 'replay') return show('sprint', -1);
+    if (t.dataset.action === 'finish') return finish();
+    if (t.classList.contains('recap-word')) { gsap.fromTo(t, { scale: .96 }, { scale: 1, duration: .35, ease: 'back.out(3)' }); return Voice.play(t.dataset.id, WORDS[t.dataset.id].text); }
+  });
+
+  // Number keys 1-4 pick an answer in Scenario Sprint
+  document.addEventListener('keydown', e => {
+    if (cur === 'compare' && !$('#story').hidden) {   // 1-3 answer the story question
+      const k = Number(e.key);
+      if (k >= 1 && k <= 3) { const b = $$('#story-options .opt')[k - 1]; if (b && !b.disabled) { b.focus(); b.click(); } }
+      return;
+    }
+    if (cur !== 'sprint' || !$('#modal').hidden || !$('#sheet').hidden) return;
+    const k = Number(e.key);
+    if (k >= 1 && k <= 4) { const b = $$('#sprint-card .opt')[k - 1]; if (b && !b.disabled) { b.focus(); b.click(); } }
+  });
+
+  playWelcome();
+}
+
+init();
+})();
+</script>
+</body>
+</html>
