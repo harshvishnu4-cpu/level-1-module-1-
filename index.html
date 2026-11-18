@@ -3,118 +3,81 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#F4F6FB">
+<meta name="theme-color" content="#000000">
 <title>Key Words</title>
+<link rel="stylesheet" href="css/base.css">
+<!-- Timer digits only (Figma timer); falls back to a monospace font offline -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Chakra+Petch:wght@700&family=Lexend:wght@400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@700&display=swap" rel="stylesheet">
+<script src="lib/gsap.min.js"></script>
+<script src="js/motion.js" defer></script>
+<script src="kit/commkit.js"></script>
 <style>
-/* ---------- Tokens ----------
-   Colour code for the whole stage:
-   sun (warm yellow) = arriving / greetings
-   sky (cool blue)   = leaving  / farewells
-   leaf (green)      = correct / progress
------------------------------------------------- */
+/* Stage 4 · Key Words, built on the Communicate course look (css/base.css, unchanged).
+   Only game-specific parts live here, and they use the base.css tokens.
+   Colour code for the whole stage: butter = arriving / greetings, sky = leaving / farewells.
+   Stage-only tokens are prefixed so they never override the course tokens. */
 :root{
-  --ink:#1E2240; --ink-2:#555B7F; --ink-3:#8D93B0; --ink-edge:#0B0E24;
-  --line:#E3E6F0; --line-2:#CDD2E2; --paper:#F4F6FB; --card:#FFFFFF;
-  --sun:#FFC21A; --sun-edge:#E2A100; --sun-tint:#FFF5D6; --sun-ink:#6E4600;
-  --sky:#3B8CFF; --sky-edge:#1F66D6; --sky-tint:#E6F0FF; --sky-ink:#14469A;
-  --leaf:#1FB866; --leaf-edge:#128A4A; --leaf-tint:#E2F8EC; --leaf-ink:#0B6334;
-  --coral:#FF5C64; --coral-tint:#FFEDEE; --coral-ink:#B0252D;
-  --display:"Baloo 2", ui-rounded, system-ui, sans-serif;
-  --text:"Lexend", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --r-lg:24px; --r-md:18px;
-  color-scheme: light;
+  --kw-arrive:var(--butter); --kw-arrive-strong:#E2A53A; --kw-arrive-ink:#7A4B06;
+  --kw-leave:var(--sky);     --kw-leave-strong:#3A8FC4;  --kw-leave-ink:#11577E;
+  --kw-tip-soft:#f4eaf8;
 }
-.sun{--c:var(--sun);--c-edge:var(--sun-edge);--c-tint:var(--sun-tint);--c-ink:var(--sun-ink);--c-on:#4A2F00}
-.sky{--c:var(--sky);--c-edge:var(--sky-edge);--c-tint:var(--sky-tint);--c-ink:var(--sky-ink);--c-on:#FFFFFF}
+.sun{--c:var(--kw-arrive);--c-strong:var(--kw-arrive-strong);--c-ink:var(--kw-arrive-ink)}
+.sky{--c:var(--kw-leave);--c-strong:var(--kw-leave-strong);--c-ink:var(--kw-leave-ink)}
 
-*,*::before,*::after{box-sizing:border-box}
-[hidden]{display:none!important}
-html{-webkit-text-size-adjust:100%}
-body{margin:0;background:var(--paper);color:var(--ink);font:400 16px/1.5 var(--text);-webkit-font-smoothing:antialiased;overflow-x:hidden}
-button{font:inherit;color:inherit;-webkit-tap-highlight-color:transparent}
-h1,h2,p{margin:0}
-:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
-.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-
-/* ---------- Shell ---------- */
-.app{max-width:860px;margin:0 auto;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}
-main{flex:1;display:flex;flex-direction:column}
-.screen{flex:1;display:flex;flex-direction:column}
-.screen-body{flex:1;padding:8px 16px 28px}
-body.has-sheet .screen-body{padding-bottom:300px}
-
-.topbar{display:flex;align-items:center;gap:14px;padding:14px 16px 6px}
-.icon-btn{flex:none;width:44px;height:44px;border-radius:14px;border:2px solid var(--line);background:var(--card);color:var(--ink-2);display:grid;place-items:center;cursor:pointer;box-shadow:0 3px 0 var(--line)}
-.icon-btn:hover{color:var(--ink);border-color:var(--line-2)}
-.icon-btn:active{transform:translateY(3px);box-shadow:none}
-.progress{flex:1;display:flex;gap:6px}
-.progress>span{flex:1;height:12px;border-radius:99px;background:var(--line);overflow:hidden}
-.progress>span>i{display:block;height:100%;border-radius:inherit;background:var(--leaf);transform-origin:left center;transform:scaleX(0);box-shadow:inset 0 -3px 0 rgba(0,0,0,.12)}
-
-/* ---------- Buttons ---------- */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:54px;padding:0 28px;border:0;border-radius:16px;background:var(--ink);color:#fff;font:600 17px/1 var(--text);cursor:pointer;box-shadow:0 5px 0 var(--ink-edge);transition:transform .08s ease,box-shadow .08s ease,background-color .2s}
-.btn:hover{background:#2B3058}
-.btn:active{transform:translateY(5px);box-shadow:0 0 0 var(--ink-edge)}
-.btn:disabled{background:var(--line);color:var(--ink-3);box-shadow:0 5px 0 var(--line-2);cursor:not-allowed;transform:none}
-.btn-leaf{background:var(--leaf);box-shadow:0 5px 0 var(--leaf-edge)}
-.btn-leaf:hover{background:#22C56F}
-.btn-leaf:active{box-shadow:0 0 0 var(--leaf-edge)}
-.btn-quiet{background:var(--card);color:var(--ink);box-shadow:0 0 0 2px var(--line) inset,0 5px 0 var(--line)}
-.btn-quiet:hover{background:#FAFBFE}
-.btn-quiet:active{box-shadow:0 0 0 2px var(--line) inset,0 0 0 var(--line)}
-.btn-lg{min-height:58px;padding:0 44px;font-size:18px}
-.footer{position:sticky;bottom:0;z-index:5;display:flex;justify-content:flex-end;gap:12px;padding:14px 16px calc(14px + env(safe-area-inset-bottom));border-top:2px solid var(--line);background:rgba(244,246,251,.92);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
-@media (max-width:600px){.footer .btn{flex:1;padding:0 16px}}
-
-/* ---------- Type ---------- */
-.head{margin:10px 0 18px}
-.h1,.head h1{font:800 clamp(30px,6.4vw,42px)/1.02 var(--display);letter-spacing:-.01em}
-.head .tag+h1{margin-top:10px}
-.lede{color:var(--ink-2);font-size:17px;margin-top:6px;max-width:54ch}
-.center{text-align:center}
-.center .lede{margin-left:auto;margin-right:auto}
-.tag{display:inline-flex;align-items:center;gap:6px;padding:5px 12px 5px 9px;border-radius:99px;background:var(--c-tint);color:var(--c-ink);box-shadow:inset 0 0 0 2px var(--c);font:600 14px/1.2 var(--text)}
-.tag svg{width:18px;height:18px;flex:none}
+/* ---------- Shell additions ---------- */
+.screen{display:block}
+.pagehead{flex-wrap:nowrap;align-items:flex-start}
+.pagehead > div:first-child{min-width:0}
+.title-tools{flex:none}
+.steps{flex-wrap:nowrap}
+@media (max-width:30em){.steps li + li::before{width:12px}}
+.actionbar .grow b{color:#fff}
+.kind{display:inline-flex;align-items:center;gap:6px;padding:4px 12px 4px 9px;border-radius:99px;background:var(--c);color:var(--c-ink);font-size:.8125rem;font-weight:700;line-height:1.4}
+.kind svg{width:17px;height:17px;flex:none}
+.chip-soft{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:99px;background:var(--soft);color:var(--muted);font-size:.8125rem;font-weight:600;white-space:nowrap}
+.chip-soft svg{flex:none}
+.instr{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px}
+.instr p{margin:0}
+.question{margin:4px 0 0;font-size:1.1875rem;line-height:1.5}
+.tipbox{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:var(--r-md);background:var(--kw-tip-soft);color:var(--text)}
+.tipbox p{margin:0}
+.tip-icon{display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:#fff;color:var(--tip);flex:none}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px}
+.btn svg{flex:none}
 
 /* ---------- Welcome ---------- */
-.welcome{flex:1;display:grid;gap:28px;align-content:center;padding:24px 16px 36px}
-@media (min-width:780px){.welcome{grid-template-columns:1.05fr 1fr;gap:52px;align-items:center;padding:48px 24px}}
-.hero-art{position:relative;display:flex;flex-direction:column;gap:22px;padding:62px 22px 30px;border-radius:32px;background-color:var(--card);background-image:radial-gradient(circle at 1px 1px,#E6E9F3 1.3px,transparent 0);background-size:18px 18px;box-shadow:0 0 0 2px var(--line) inset,0 8px 0 var(--line)}
-.hero-time{position:absolute;top:18px;left:50%;transform:translateX(-50%);display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:99px;background:var(--paper);color:var(--ink-2);font:600 14px/1.2 var(--text);white-space:nowrap}
-.hero-row{display:flex;flex-direction:column;gap:9px}
+.welcome{grid-template-columns:minmax(0,1fr)}
+@media (min-width:56.25em){.welcome{grid-template-columns:1.1fr 1fr;align-items:stretch}}
+.hero{position:relative;display:flex;flex-direction:column;justify-content:center;gap:20px;padding:58px 22px 28px}
+.hero-time{position:absolute;top:18px;left:50%;transform:translateX(-50%)}
+.hero-row{display:flex;flex-direction:column;gap:8px}
 .hero-row.arrive{align-items:flex-start}
 .hero-row.leave{align-items:flex-end}
-.bubble{position:relative;padding:14px 24px 11px;border-radius:26px;font:800 clamp(28px,6.4vw,40px)/1.05 var(--display)}
-.bubble.sun{background:var(--sun);color:#3D2800;border-bottom-left-radius:8px;box-shadow:0 6px 0 var(--sun-edge)}
-.bubble.sky{background:var(--sky);color:#fff;border-bottom-right-radius:8px;box-shadow:0 6px 0 var(--sky-edge)}
+.bubble{position:relative;padding:14px 22px 13px;border-radius:24px;font-size:clamp(1.625rem,1.2rem + 2vw,2.25rem);font-weight:750;line-height:1.1;letter-spacing:-.025em;color:var(--text)}
+.bubble.sun{background:var(--kw-arrive);border-bottom-left-radius:6px}
+.bubble.sky{background:var(--kw-leave);border-bottom-right-radius:6px}
 .bubble .txt{display:inline-block}
 .bubble .dots{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:7px;opacity:0}
-.bubble .dots i{width:10px;height:10px;border-radius:50%;background:currentColor;opacity:.75}
-.hero-chip{display:inline-flex;align-items:center;gap:6px;font:600 14px/1.2 var(--text);color:var(--c-ink)}
-.stage-pill{display:inline-block;padding:4px 12px;border-radius:99px;background:var(--ink);color:#fff;font:600 13px/1.4 var(--text)}
-.title{font:800 clamp(56px,12vw,88px)/.9 var(--display);letter-spacing:-.02em;margin-top:14px}
-.welcome .lede{font-size:18px;margin-top:10px}
-.plan{list-style:none;padding:0;margin:24px 0 28px;display:grid;gap:11px}
-.plan li{display:flex;align-items:center;gap:12px;font-weight:500}
-.plan em{font-style:normal;color:var(--ink-3);font-size:14px;margin-left:4px}
-.num{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font:700 14px/1 var(--text);background:var(--line);color:var(--ink)}
-.num.sun{background:var(--sun);color:#3D2800}
-.num.sky{background:var(--sky);color:#fff}
-.num.both{background:linear-gradient(90deg,var(--sun) 50%,var(--sky) 50%);color:var(--ink)}
-@media (max-width:779px){.welcome .btn-lg{width:100%}}
+.bubble .dots i{width:9px;height:9px;border-radius:50%;background:currentColor;opacity:.6}
+.hero-chip{display:inline-flex;align-items:center;gap:6px;font-size:.8125rem;font-weight:700;color:var(--c-ink)}
+.plan{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:12px}
+.plan li{display:flex;align-items:center;gap:12px;font-weight:600}
+.plan em{font-style:normal;color:var(--muted);font-size:.8125rem;font-weight:500;margin-left:2px}
+.num{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:#e3e6eb;color:var(--muted);font-size:.8125rem;font-weight:700}
+.num.sun{background:var(--kw-arrive);color:var(--kw-arrive-ink)}
+.num.sky{background:var(--kw-leave);color:var(--kw-leave-ink)}
+.num.both{background:linear-gradient(90deg,var(--kw-arrive) 50%,var(--kw-leave) 50%);color:var(--text)}
+.welcome .about{margin:16px 0 0;color:var(--muted)}
 
 /* ---------- 4a / 4b word cards: pinned sticky notes ----------
    Built from Figma moodboard nodes 30:47 (yellow backing, greetings) and 30:15 (blue backing, farewells).
-   .note-inner is laid out at the design's native 518.773 x 476 px and scaled to the card width by JS (--k),
-   so every layer keeps the design's exact proportions. */
-.word-cards{display:flex;flex-wrap:wrap;justify-content:center;gap:20px 14px;margin-top:10px}
+   .note-inner is laid out at the design's native 518.773 x 476 px and scaled to the card width by JS (--k). */
+.word-cards{display:flex;flex-wrap:wrap;justify-content:center;gap:20px 14px}
 .note{position:relative;flex:0 0 calc(50% - 7px);aspect-ratio:518.773/476;padding:0;border:0;background:none;cursor:pointer;text-align:center;--k:.33}
-@media (min-width:600px){.note{flex-basis:calc(33.333% - 10px)}}
-.note:focus-visible{outline:3px solid var(--ink);outline-offset:6px;border-radius:6px}
+@media (min-width:37.5em){.note{flex-basis:calc(33.333% - 10px)}}
+.note:focus-visible{outline:3px solid var(--accent);outline-offset:6px;border-radius:8px}
 .note-inner{position:absolute;left:0;top:0;width:518.773px;height:476px;transform:scale(var(--k));transform-origin:0 0}
 .note-backing{position:absolute;left:26.608px;top:19.158px;width:465.106px;height:436.369px}
 .note.sun .note-backing{background:#FDD25F}
@@ -125,63 +88,73 @@ body.has-sheet .screen-body{padding-bottom:300px}
 .note-pin{position:absolute;left:246.223px;top:0;width:57.223px;height:56.794px;display:flex;align-items:center;justify-content:center}
 .note-pin img{display:block;max-width:none;flex:none;transform:rotate(10.52deg)}
 /* Content written on the paper (paper-local px; the fold sits bottom-right, the pin top-centre) */
-.wcard-speak{position:absolute;left:30px;top:28px;display:grid;place-items:center;width:104px;height:70px;border-radius:99px;background:var(--c);color:var(--c-on);box-shadow:0 7px 0 var(--c-edge)}
+.wcard-speak{position:absolute;left:30px;top:28px;display:grid;place-items:center;width:104px;height:70px;border-radius:99px;background:var(--frame);color:#fff}
 .wcard-speak svg{width:42px;height:42px}
 .note .ico{position:absolute;left:143px;top:66px;width:190px;height:190px;overflow:visible}
 .wcard-word{position:absolute;left:40px;top:262px;width:396px;height:120px;display:grid;place-items:center}
 .wcard-word>*{grid-area:1/1}
-.wcard-hint{font:500 38px/1.2 var(--text);color:var(--ink-3)}
-.wcard-text{visibility:hidden;font:600 56px/1.08 var(--text);color:var(--ink)}
+.wcard-hint{font-size:38px;font-weight:500;line-height:1.2;color:var(--muted)}
+.wcard-text{visibility:hidden;font-size:56px;font-weight:750;line-height:1.08;letter-spacing:-.02em;color:var(--text)}
 .wd{display:inline-block;white-space:nowrap}
 .ch{display:inline-block}
-.wcard-check{position:absolute;left:432px;top:-4px;width:86px;height:86px;border-radius:50%;background:var(--leaf);color:#fff;display:grid;place-items:center;box-shadow:0 0 0 8px var(--paper);transform:scale(0)}
-.wcard-check svg{width:46px;height:46px}
-.heard{margin-top:24px;text-align:center;color:var(--ink-2);font-weight:500}
-.heard b{color:var(--ink)}
+.wcard-check{position:absolute;left:432px;top:-4px;width:84px;height:84px;border-radius:50%;background:var(--mint);color:var(--mint-ink);display:grid;place-items:center;box-shadow:0 0 0 8px var(--bg);transform:scale(0)}
+.wcard-check svg{width:44px;height:44px}
 
-/* ---------- 4c compare ---------- */
-.time-chip{display:flex;width:max-content;align-items:center;gap:7px;margin:0 auto;padding:6px 14px;border-radius:99px;background:var(--card);box-shadow:inset 0 0 0 2px var(--line);font:600 14px/1.2 var(--text);color:var(--ink-2)}
-.compare{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(10px,2.6vw,22px);max-width:600px;margin:16px auto 0}
-.takeaway{max-width:600px;margin-left:auto;margin-right:auto}
-.scene{margin:0;display:flex;flex-direction:column;align-items:center;gap:14px}
-.scene-art{position:relative;width:100%;aspect-ratio:300/340;border-radius:var(--r-lg);overflow:hidden;border:4px solid var(--c);box-shadow:0 6px 0 var(--c-edge);background:#3E3A8E}
-.scene-art>svg{display:block;width:100%;height:100%}
-.scene-art .tag{position:absolute;top:10px;left:10px;background:var(--c);color:var(--c-on);box-shadow:0 3px 0 var(--c-edge)}
-.says{display:flex;flex-direction:column;align-items:stretch;gap:10px;width:100%}
-.say{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:11px 8px;border-radius:16px;border:2px solid var(--c);background:var(--c-tint);color:var(--c-ink);box-shadow:0 4px 0 var(--c-edge);font:600 clamp(14px,3.6vw,18px)/1.15 var(--text);text-align:center;cursor:pointer}
-.say:active{transform:translateY(4px);box-shadow:none}
-.say svg{flex:none}
-.takeaway{display:flex;gap:12px;align-items:center;margin-top:24px;padding:14px 16px;border-radius:var(--r-md);background:var(--card);box-shadow:inset 0 0 0 2px var(--line)}
-.takeaway p{font-weight:500}
-.takeaway .tip-icon{flex:none}
-.text-btn{display:inline-flex;align-items:center;gap:6px;margin:16px auto 0;padding:8px 12px;border:0;border-radius:12px;background:none;color:var(--ink-2);font-weight:600;font-size:15px;cursor:pointer}
-.text-btn:hover{background:var(--card);color:var(--ink)}
-
-/* 4c story stage */
-.story{display:grid;gap:14px;margin-top:4px}
-@media (min-width:760px){.story{grid-template-columns:1.3fr 1fr;align-items:center;gap:28px}}
+/* ---------- 4c arriving or leaving ---------- */
+.story{display:grid;gap:18px}
+@media (min-width:48em){.story{grid-template-columns:1.25fr 1fr;align-items:start}}
 .stage{margin:0}
-.stage-art{position:relative;aspect-ratio:440/340;border-radius:var(--r-lg);overflow:hidden;border:4px solid var(--c);box-shadow:0 6px 0 var(--c-edge);background:#3E3A8E;transition:border-color .45s ease,box-shadow .45s ease}
-.stage-art>svg{display:block;width:100%;height:100%}
-.stage-art .tag{position:absolute;top:10px;left:10px;z-index:2;background:var(--c);color:var(--c-on);box-shadow:0 3px 0 var(--c-edge);transition:background-color .45s,color .45s}
-.stage-step{position:absolute;top:10px;right:10px;z-index:2;padding:4px 11px;border-radius:99px;background:rgba(255,255,255,.92);font:600 13px/1.3 var(--text)}
-.say-bubble{position:absolute;left:0;bottom:0;z-index:3;padding:8px 14px 6px;border-radius:16px;font:800 clamp(15px,3.9vw,20px)/1.1 var(--display);white-space:nowrap;visibility:hidden;box-shadow:0 4px 0 rgba(11,14,36,.22);--tail:50%}
-.say-bubble::after{content:"";position:absolute;top:calc(100% - 1px);left:var(--tail);width:16px;height:11px;margin-left:-8px;background:inherit;clip-path:polygon(0 0,100% 0,50% 100%)}
-.say-bubble.sun{background:var(--sun);color:#3D2800}
-.say-bubble.sky{background:var(--sky);color:#fff}
-.say-bubble.plain{background:#fff;color:var(--ink)}
-.story-time{margin-bottom:10px}
-.story-time svg{flex:none}
-.options.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.stage-art,.scene-art{position:relative;overflow:hidden;border-radius:var(--r-lg);border:6px solid var(--c);background:#3E3A8E;box-shadow:var(--shadow);transition:border-color .45s ease}
+.stage-art{aspect-ratio:440/340}
+.scene-art{width:100%;aspect-ratio:300/340}
+.stage-art>svg,.scene-art>svg{display:block;width:100%;height:100%}
+.stage-art .kind,.scene-art .kind{position:absolute;top:10px;left:10px;z-index:2;box-shadow:0 2px 8px rgba(0,0,0,.18);transition:background-color .45s,color .45s}
+.stage-step{position:absolute;bottom:10px;right:10px;z-index:2;padding:3px 10px;border-radius:99px;background:rgba(255,255,255,.92);font-size:.75rem;font-weight:700}
+.say-bubble{position:absolute;left:0;bottom:0;z-index:3;padding:8px 14px 7px;border-radius:14px;font-size:clamp(.9375rem,.8rem + .6vw,1.125rem);font-weight:750;line-height:1.15;letter-spacing:-.01em;white-space:nowrap;visibility:hidden;color:var(--text);box-shadow:0 4px 14px rgba(0,0,0,.25);--tail:50%}
+.say-bubble::after{content:"";position:absolute;top:calc(100% - 1px);left:var(--tail);width:14px;height:9px;margin-left:-7px;background:inherit;clip-path:polygon(0 0,100% 0,50% 100%)}
+.say-bubble.sun{background:var(--kw-arrive)}
+.say-bubble.sky{background:var(--kw-leave)}
+.say-bubble.plain{background:#fff}
+.qcard .chip-soft{margin-bottom:10px}
+.qcard{scroll-margin-bottom:100px}
+.stage{scroll-margin-top:12px}
+.nudge{min-height:1.4em;margin:8px 0 10px;color:var(--fix);font-size:.875rem;font-weight:600}
+.compare{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(10px,2.6vw,22px);width:100%;max-width:640px;margin:0 auto}
+.scene{margin:0;display:grid;gap:12px}
+.says{display:grid;gap:8px}
+.say{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;min-height:44px;padding:10px 8px;border:0;border-radius:99px;background:var(--c);color:var(--c-ink);font-weight:700;font-size:clamp(.875rem,.8rem + .4vw,1rem);cursor:pointer}
+.say:hover{box-shadow:inset 0 0 0 2px var(--c-strong)}
+.recap-top{display:flex;justify-content:center}
+#recap{display:grid;gap:18px}
+#recap[hidden]{display:none}
+.recap-actions{display:flex;justify-content:center}
+
+/* ---------- Answer options (quiz rows, as in the course) ---------- */
+.options{display:grid;gap:10px}
+.opt{display:flex;align-items:center;gap:12px;width:100%;min-height:52px;padding:12px 14px;border:1px solid var(--line);border-radius:var(--r-md);background:var(--card);font-size:1rem;font-weight:600;text-align:left;cursor:pointer;transition:border-color .15s,background-color .15s}
+.opt::before{content:"";flex:none;width:20px;height:20px;border-radius:50%;box-shadow:inset 0 0 0 2px #c4c9d4;background:#fff;display:grid;place-items:center;font-size:14px;line-height:1;font-weight:800;color:#fff}
+.opt:hover:not(:disabled){border-color:#c4c9d4}
+.opt:disabled{cursor:default}
+.opt.is-right{border-color:var(--good);background:var(--good-soft);color:var(--good)}
+.opt.is-right::before{display:none}
+.opt .ok{flex:none;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;background:var(--good);color:#fff}
+.opt .ok svg{width:13px;height:13px}
+.opt.is-wrong{border-color:var(--fix);background:var(--fix-soft);color:var(--fix)}
+.opt.is-wrong::before{content:"×";background:var(--fix);box-shadow:none}
 
 /* ---------- Games shared ---------- */
-.game-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin:8px 0 4px}
-.game-head-main{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:10px}
+.game-row{display:flex;align-items:center;justify-content:space-between;gap:10px 16px;flex-wrap:wrap}
+.score{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.score-label{font-size:.8125rem;color:var(--muted);font-weight:600;white-space:nowrap}
+.pips{display:flex;gap:6px}
+.pip{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:#e3e6eb;color:transparent;transition:background-color .2s,color .2s}
+.pip svg{width:13px;height:13px}
+.pip.is-on{background:var(--mint);color:var(--mint-ink)}
 
 /* Hanging game timer: Figma moodboard node 34:84 (Engineering / Display / Timer, 209 x 115).
-   .timer-inner keeps the design's native geometry and is scaled by --ts. */
-.timer{--ts:.58;position:relative;flex:none;width:calc(209px * var(--ts));height:calc(115px * var(--ts));margin-top:-16px}
-@media (min-width:600px){.timer{--ts:.74;margin-top:-18px}}
+   It hangs from the top edge of the panel; .timer-inner keeps the design's native geometry, scaled by --ts. */
+.timer{--ts:.58;position:relative;flex:none;width:calc(209px * var(--ts));height:calc(115px * var(--ts));margin-top:-26px}
+@media (min-width:37.5em){.timer{--ts:.74}}
 .timer-inner{position:absolute;left:0;top:0;width:209px;height:115px;transform:scale(var(--ts));transform-origin:0 0}
 .timer-swing{position:absolute;inset:0}
 .timer-rod{position:absolute;top:0;right:49.28%;bottom:72.17%;left:48.33%;background-image:linear-gradient(90deg,#326FC6 0%,#326FC6 100%),linear-gradient(90deg,#D9D9D9 0%,#D9D9D9 100%);box-shadow:inset 0 2px 4px 0 #67B9F9}
@@ -190,90 +163,111 @@ body.has-sheet .screen-body{padding-bottom:300px}
 .timer-time{position:absolute;top:36.52%;right:16.27%;bottom:6.96%;left:15.31%;display:flex;flex-direction:column;justify-content:center;font:700 50px/normal "Chakra Petch",ui-monospace,monospace;font-variant-numeric:tabular-nums;color:#154879;text-align:center;white-space:nowrap;transition:color .3s}
 .timer.is-low .timer-time,.timer.is-up .timer-time{color:#C2272F}
 .timer.is-done .timer-time{color:#0B7A3E}
-.game-title{display:flex;align-items:center;gap:10px;font:800 clamp(28px,6vw,38px)/1 var(--display)}
-.game-title svg{flex:none}
-.pill{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:99px;background:var(--card);box-shadow:inset 0 0 0 2px var(--line);font-weight:500;font-size:15px;white-space:nowrap}
-.pill b{font-weight:700}
-.star svg{display:block;width:28px;height:28px}
-.star path{fill:var(--line);stroke:var(--line-2)}
-.star.is-on path{fill:#FFC21A;stroke:#E2A100}
-.stars{display:flex;gap:4px}
 
 /* ---------- 4d Word Match ---------- */
-.mgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:18px}
-@media (min-width:600px){.mgrid{grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}}
-.mcard{display:block;aspect-ratio:1/1;padding:0;border:0;background:none;cursor:pointer;perspective:900px;border-radius:18px}
+.mgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;width:100%;max-width:600px;margin:0 auto}
+@media (min-width:37.5em){.mgrid{grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}}
+.mcard{display:block;aspect-ratio:1/1;padding:0;border:0;background:none;cursor:pointer;perspective:900px;border-radius:var(--r-lg)}
 .mcard-inner{position:relative;display:block;width:100%;height:100%;transform-style:preserve-3d}
-.mcard-face{position:absolute;inset:0;display:grid;place-items:center;border-radius:18px;-webkit-backface-visibility:hidden;backface-visibility:hidden}
-.mcard-back{background-color:var(--ink);border-bottom:6px solid var(--ink-edge);background-image:radial-gradient(circle at 18% 22%,rgba(255,255,255,.07) 0 16%,transparent 17%),radial-gradient(circle at 84% 82%,rgba(255,255,255,.06) 0 22%,transparent 23%);transition:background-color .2s}
-.mcard:not(.is-up):hover .mcard-back{background-color:#2D3260}
-.mcard-back svg{width:44%;height:auto}
-.mcard-front{transform:rotateY(180deg);background:var(--card);border:3px solid var(--c);border-bottom-width:6px}
-.mcard-front svg.ico{width:74%;height:74%;overflow:visible}
-.mword{padding:6px;font:600 clamp(14px,3.5vw,19px)/1.15 var(--text);text-align:center}
+.mcard-face{position:absolute;inset:0;display:grid;place-items:center;border-radius:var(--r-lg);-webkit-backface-visibility:hidden;backface-visibility:hidden}
+.mcard-back{background-color:var(--text);background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.045) 0 6px,transparent 6px 12px);box-shadow:var(--shadow);transition:background-color .2s}
+.mcard:not(.is-up):hover .mcard-back{background-color:#2a2d35}
+.mcard-back svg{width:36%;height:auto}
+.mcard-front{transform:rotateY(180deg);background:var(--card);box-shadow:var(--shadow),inset 0 0 0 3px var(--c-strong)}
+.mcard-front svg.ico{width:72%;height:72%;overflow:visible}
+.mword{padding:6px;font-size:clamp(.875rem,.75rem + .6vw,1.125rem);font-weight:700;line-height:1.2;text-align:center}
 .mcard.is-matched{cursor:default}
-.mcard.is-matched .mcard-front{background:var(--c-tint)}
-.mcard-check{position:absolute;top:6px;right:6px;width:24px;height:24px;border-radius:50%;background:var(--leaf);color:#fff;display:grid;place-items:center;transform:scale(0)}
+.mcard.is-matched .mcard-front{background:var(--c)}
+.mcard-check{position:absolute;top:8px;right:8px;width:22px;height:22px;border-radius:50%;background:var(--mint);color:var(--mint-ink);display:grid;place-items:center;transform:scale(0)}
 
 /* ---------- 4e Scenario Sprint ---------- */
-#sprint-card{display:grid;gap:16px;margin-top:16px}
-@media (min-width:760px){#sprint-card{grid-template-columns:1.15fr 1fr;align-items:start;gap:26px}}
-.sprint-art{position:relative;border-radius:var(--r-lg);overflow:hidden;aspect-ratio:320/200;background:#DDEBFF;box-shadow:0 0 0 2px var(--line),0 6px 0 var(--line)}
+.sprint{display:grid;gap:18px}
+@media (min-width:48em){.sprint{grid-template-columns:1.15fr 1fr;align-items:start}}
+.sprint-art{position:relative;border-radius:var(--r-lg);overflow:hidden;aspect-ratio:320/200;box-shadow:var(--shadow)}
 .sprint-art svg{display:block;width:100%;height:100%}
-.sprint-count{position:absolute;top:10px;left:10px;padding:4px 11px;border-radius:99px;background:rgba(255,255,255,.92);color:var(--ink);font:600 13px/1.3 var(--text)}
-.sprint-q{font:700 clamp(23px,5vw,29px)/1.15 var(--display)}
-.nudge{min-height:1.5em;margin:6px 0 10px;color:var(--coral-ink);font-weight:500;font-size:15px}
-.options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.opt{display:flex;align-items:center;justify-content:center;gap:8px;min-height:62px;padding:10px 12px;border:0;border-radius:16px;background:var(--card);box-shadow:inset 0 0 0 2px var(--line),0 4px 0 var(--line);font:600 clamp(15px,3.8vw,17px)/1.2 var(--text);text-align:center;cursor:pointer;transition:background-color .15s}
-.opt:hover:not(:disabled){background:#F7F8FD}
-.opt:active:not(:disabled){transform:translateY(4px);box-shadow:inset 0 0 0 2px var(--line)}
-.opt:disabled{cursor:default}
-.opt.is-right{background:var(--leaf-tint);color:var(--leaf-ink);box-shadow:inset 0 0 0 2px var(--leaf),0 4px 0 var(--leaf-edge)}
-.opt.is-wrong{background:var(--coral-tint);color:var(--coral-ink);box-shadow:inset 0 0 0 2px var(--coral),0 4px 0 #F3B3B7}
-.opt .ok{display:grid;place-items:center;flex:none;width:24px;height:24px;border-radius:50%;background:var(--leaf);color:#fff}
-
-/* Feedback sheet (slides up after a correct answer) */
-.sheet{position:fixed;left:0;right:0;bottom:0;z-index:40;background:var(--leaf-tint);box-shadow:0 -2px 0 #BDEBD0;padding:18px 16px calc(18px + env(safe-area-inset-bottom))}
-.sheet-inner{max-width:828px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:16px 24px}
-.sheet-msg{flex:1 1 340px;display:flex;gap:14px;align-items:flex-start}
-.sheet-badge{flex:none;width:52px;height:52px;border-radius:50%;background:#fff;color:var(--leaf);display:grid;place-items:center}
-.sheet-title{display:flex;align-items:center;flex-wrap:wrap;gap:6px 10px;font:800 26px/1.1 var(--display);color:var(--leaf-ink)}
-.star-pill{display:inline-flex;align-items:center;gap:5px;padding:3px 10px 3px 7px;border-radius:99px;background:#fff;color:#7A5200;font:600 13px/1.4 var(--text)}
-.star-pill svg{width:16px;height:16px}
-.star-pill path{fill:#FFC21A;stroke:#E2A100}
-.sheet-why{margin-top:4px;color:var(--leaf-ink);font-weight:500}
-.sheet-note{margin-top:2px;color:var(--leaf-ink);opacity:.8;font-size:14px}
-.sheet .btn{flex:0 0 auto;min-width:180px}
-@media (max-width:600px){.sheet .btn{flex:1 1 100%}}
-.tip{display:flex;gap:12px;align-items:flex-start;margin-top:12px;padding:12px 14px;border-radius:14px;background:#fff;box-shadow:inset 4px 0 0 var(--sun)}
-.tip p{font-size:15px;color:var(--ink)}
-.tip-icon{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--sun-tint);color:var(--sun-ink);flex:none}
+.sprint-count{position:absolute;top:10px;left:10px;padding:3px 10px;border-radius:99px;background:rgba(255,255,255,.92);font-size:.75rem;font-weight:700}
+.fb{scroll-margin-bottom:100px}
+.result-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.result-top h2{margin:0}
+.ok-dot{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--good-soft);color:var(--good)}
+.result p{margin:10px 0 0}
+.result .note{color:var(--muted);font-size:.875rem;margin-top:4px}
+.result .tipbox{margin-top:14px}
 
 /* ---------- End ---------- */
-.end{display:flex;flex-direction:column;align-items:center;text-align:center;padding-top:24px}
-.end-stars{display:flex;gap:8px;margin-bottom:18px}
-.end-stars .star svg{width:clamp(44px,11vw,62px);height:auto}
-.recap{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;width:100%;max-width:580px;margin-top:28px;text-align:left}
-.recap-col{padding:14px;border-radius:var(--r-md);background:var(--card);border:3px solid var(--c);box-shadow:0 5px 0 var(--c-edge)}
+.scorecard{display:grid;grid-template-columns:auto minmax(0,1fr);gap:18px;align-items:center}
+.lvl{margin:0;font-size:1.375rem;font-weight:750;letter-spacing:-.02em;color:var(--ink)}
+.scorecard p{margin:4px 0 0}
+.scorecard .sub{color:var(--muted);font-size:.9375rem}
+.recap{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
 .recap-col ul{list-style:none;padding:0;margin:12px 0 0;display:grid;gap:8px}
-.recap-word{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;padding:10px 12px;border:0;border-radius:12px;background:var(--c-tint);font-weight:600;font-size:15px;line-height:1.2;text-align:left;cursor:pointer}
+.recap-word{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;min-height:44px;padding:10px 14px;border:0;border-radius:var(--r-md);background:var(--c);color:var(--text);font-weight:600;line-height:1.25;text-align:left;cursor:pointer}
 .recap-word svg{flex:none;color:var(--c-ink)}
 
-/* ---------- Overlays ---------- */
-.modal{position:fixed;inset:0;z-index:80;display:grid;place-items:center;padding:16px;background:rgba(30,34,64,.45);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
-.modal-card{width:min(400px,100%);padding:28px 24px 22px;border-radius:28px;background:var(--card);text-align:center;box-shadow:0 10px 0 rgba(11,14,36,.12)}
-.modal-icon{width:76px;height:76px;margin:0 auto 14px;border-radius:50%;display:grid;place-items:center;background:var(--sun-tint)}
-.modal-card h2{font:800 30px/1.05 var(--display)}
-.modal-card p{color:var(--ink-2);margin:8px 0 22px}
+/* ---------- Dialog ---------- */
+.modal{position:fixed;inset:0;z-index:80;display:grid;place-items:center;padding:16px;background:rgba(15,23,42,.35)}
+.modal-card{width:min(420px,100%);padding:28px 24px 22px;border-radius:var(--r-xl);background:var(--card);text-align:center;box-shadow:0 30px 60px -20px rgba(0,0,0,.35)}
+.modal-icon{width:64px;height:64px;margin:0 auto 14px;border-radius:50%;display:grid;place-items:center;background:var(--soft)}
+.modal-card h2{margin:0;font-size:1.5rem;font-weight:750;letter-spacing:-.02em}
+.modal-card p{margin:8px 0 22px;color:var(--muted)}
 .modal-card .btn{width:100%}
-.fly-star{position:fixed;left:0;top:0;z-index:60;pointer-events:none}
-.fly-star svg{width:100%;height:100%}
-.fly-star path{fill:#FFC21A;stroke:#E2A100}
-.confetti{position:fixed;inset:0;z-index:70;pointer-events:none;overflow:hidden}
-.confetti i{position:absolute;left:0;top:0;border-radius:2px}
+
+/* ---------- Read aloud, Practice / Test, speaking, hints, results, report ---------- */
+.read-btn{flex:none;display:inline-grid;place-items:center;width:44px;height:44px;border:0;border-radius:50%;background:var(--soft);color:var(--text);cursor:pointer;vertical-align:middle}
+.read-btn:hover{background:#e3e6eb}
+.read-btn.is-playing{background:var(--frame);color:#fff}
+.read-btn svg{width:20px;height:20px}
+.about .read-btn{margin-left:4px}
+.q-row{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.tipbox .read-btn{margin-left:auto;background:#fff}
+/* the course's segmented control */
+.modes{display:inline-flex;padding:3px;border-radius:99px;background:var(--soft)}
+.modes button{min-height:38px;padding:0 14px;border:0;border-radius:99px;background:none;color:var(--muted);font-size:.875rem;font-weight:700;cursor:pointer}
+.modes button[aria-pressed="true"]{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(16,24,40,.14)}
+.ctrls{display:flex;gap:8px;flex-wrap:wrap}
+.game-row p{flex:1 1 220px}
+.mode-row{margin-top:18px;padding-top:16px;border-top:1px solid var(--line);display:grid;gap:8px;justify-items:start}
+.mode-row .eyebrow{margin:0}
+.mode-note{margin:0;font-size:.875rem;color:var(--muted)}
+/* speaking: a black "Say it" pill (rust while listening, halo follows the voice) */
+.speak-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.mic-pill{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 18px 0 14px;border:0;border-radius:99px;color:#fff;font-weight:700;cursor:pointer}
+.mic-pill svg{width:20px;height:20px;flex:none}
+.mic-pill.recording{background:var(--rec);box-shadow:0 0 0 calc(6px + var(--level, 0) * 16px) rgba(180,83,42,.18)}
+.mic-pill:disabled{background:#aab3c3;box-shadow:none;cursor:default}
+.mic-pill:not(.recording):not(:disabled){box-shadow:0 0 0 calc(var(--level, 0) * 14px) rgba(0,0,0,.1)}
+.speak-msg{margin:0;flex:1 1 160px;font-size:.875rem;color:var(--muted)}
+.speak-msg.ok{color:var(--good);font-weight:600}
+.speak-msg.fix{color:var(--fix);font-weight:600}
+.note-wrap{flex:0 0 calc(50% - 7px);display:grid;gap:8px;justify-items:center;align-content:start}
+@media (min-width:37.5em){.note-wrap{flex-basis:calc(33.333% - 10px)}}
+.note-wrap .note{flex:none;width:100%}
+.note-wrap .speak-msg{flex:none;min-height:1.4em;text-align:center}
+.note-wrap.is-said .mic-pill:not(.recording):not(:disabled){background:var(--good)}
+/* practice hint */
+.opt.is-hint{border:2px dashed var(--good);background:#f2fbf5}
+/* Word Match, sound cards */
+.sound-face{display:grid;justify-items:center;gap:6px;color:var(--c-ink);font-size:.875rem;font-weight:700}
+.sound-face svg{width:40px;height:40px}
+/* results lists (course style) */
+.list{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.list li{display:grid;grid-template-columns:24px minmax(0,1fr);gap:10px;align-items:start}
+.list .dot{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:.75rem;font-weight:800}
+.list.good .dot{background:var(--good-soft);color:var(--good)}
+.list.fix .dot{background:var(--fix-soft);color:var(--fix)}
+.list p{margin:0}
+.q{padding:0 6px;border-radius:6px;background:var(--fix-soft);color:#8f5508;font-weight:600}
+.b{padding:0 6px;border-radius:6px;background:var(--soft);color:var(--ink);font-weight:600}
+/* session report */
+details.more{padding:0}
+details.more summary{cursor:pointer;padding:16px 20px;color:var(--accent);font-weight:600}
+details.more[open]{padding-bottom:18px}
+.report{margin:0 20px 12px;padding:14px;border-radius:var(--r-md);background:var(--soft-2);font:.8125rem/1.6 ui-monospace,Menlo,Consolas,monospace;white-space:pre-wrap;overflow-wrap:anywhere}
+details.more .btn{margin-left:20px}
+.copy-msg{margin:8px 20px 0;font-size:.8125rem;color:var(--muted)}
 </style>
 </head>
-<body>
+<body data-kind="speak">
 
 <!-- Shared SVG paint (kept out of display:none so every scene can use it) -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -286,20 +280,54 @@ body.has-sheet .screen-body{padding-bottom:300px}
   </defs>
 </svg>
 
-<div class="app">
-  <header class="topbar" id="topbar" hidden>
-    <button class="icon-btn" id="back" aria-label="Go back"><i data-ui="back"></i></button>
-    <div class="progress" id="progress" role="progressbar" aria-label="Stage progress" aria-valuemin="0" aria-valuemax="5" aria-valuenow="0">
-      <span><i></i></span><span><i></i></span><span><i></i></span><span><i></i></span><span><i></i></span>
-    </div>
-  </header>
+<header class="topbar" id="topbar">
+  <span class="brand">Communicate<small>English course</small></span>
+  <nav class="nav" aria-label="Main">
+    <a href="#main" aria-current="page" title="Key Words"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5h16a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1h-9l-4.5 3.5V16.5H4a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1z"/><path d="M7.5 10h9M7.5 13h6"/></svg><span class="lbl">Key Words</span></a>
+  </nav>
+  <div class="me" id="me" role="img" aria-label="0 of 5 parts done">
+    <svg class="ring" viewBox="0 0 96 96" aria-hidden="true"><circle class="bg" cx="48" cy="48" r="40" fill="none" stroke-width="10"/><circle class="fg" id="me-fg" cx="48" cy="48" r="40" fill="none" stroke-width="10" stroke-linecap="round" stroke-dasharray="0 251.3" transform="rotate(-90 48 48)"/><text x="48" y="57" text-anchor="middle" font-weight="700" id="me-n">0</text></svg>
+    <div><b id="me-text">0 of 5 parts</b><span>Stage 4 · Key Words</span></div>
+  </div>
+</header>
 
-  <main>
+<div class="panel">
+  <div class="pagehead">
+    <div><p class="crumb" id="crumb">Communication Skills · Stage 4</p><h1 id="page-title">Key Words</h1></div>
+    <div class="title-tools">
+      <div class="timer" id="match-timer" role="timer" aria-label="Time left" hidden>
+        <div class="timer-inner"><div class="timer-swing">
+          <span class="timer-rod"></span>
+          <span class="timer-mount"></span>
+          <img class="timer-body" src="assets/timer/timer-body.svg" width="209" height="81" alt="">
+          <span class="timer-time">04:00</span>
+        </div></div>
+      </div>
+      <div class="timer" id="sprint-timer" role="timer" aria-label="Time left" hidden>
+        <div class="timer-inner"><div class="timer-swing">
+          <span class="timer-rod"></span>
+          <span class="timer-mount"></span>
+          <img class="timer-body" src="assets/timer/timer-body.svg" width="209" height="81" alt="">
+          <span class="timer-time">05:00</span>
+        </div></div>
+      </div>
+    </div>
+  </div>
+
+  <main id="main">
+    <ol class="steps" id="steps" aria-label="Steps" hidden>
+      <li data-step="greetings"><span class="n">1</span><span class="lb">Greetings</span></li>
+      <li data-step="farewells"><span class="n">2</span><span class="lb">Farewells</span></li>
+      <li data-step="compare"><span class="n">3</span><span class="lb">Arrive or leave</span></li>
+      <li data-step="match"><span class="n">4</span><span class="lb">Word Match</span></li>
+      <li data-step="sprint"><span class="n">5</span><span class="lb">Scenario Sprint</span></li>
+    </ol>
+
     <!-- Welcome -->
     <section class="screen" data-screen="welcome">
-      <div class="welcome">
-        <div class="hero-art" aria-hidden="true">
-          <span class="hero-time"><i data-ui="clock"></i>6:30 pm</span>
+      <div class="work welcome">
+        <section class="card hero" aria-hidden="true">
+          <span class="chip-soft hero-time"><i data-ui="clock"></i>6:30 pm</span>
           <div class="hero-row arrive sun">
             <div class="bubble sun"><span class="dots"><i></i><i></i><i></i></span><span class="txt">Good evening!</span></div>
             <span class="hero-chip"><i data-ui="doorIn"></i>Arriving</span>
@@ -308,11 +336,9 @@ body.has-sheet .screen-body{padding-bottom:300px}
             <div class="bubble sky"><span class="dots"><i></i><i></i><i></i></span><span class="txt">See you!</span></div>
             <span class="hero-chip"><i data-ui="doorOut"></i>Leaving</span>
           </div>
-        </div>
-        <div class="welcome-copy">
-          <span class="stage-pill">Stage 4</span>
-          <h1 class="title">Key Words</h1>
-          <p class="lede">Learn what to say when you arrive and when you leave.</p>
+        </section>
+        <section class="card">
+          <p class="eyebrow">What you'll do</p>
           <ol class="plan">
             <li><span class="num sun">1</span><span>Hear three greetings</span></li>
             <li><span class="num sky">2</span><span>Hear three farewells</span></li>
@@ -320,181 +346,200 @@ body.has-sheet .screen-body{padding-bottom:300px}
             <li><span class="num">4</span><span>Play Word Match <em>up to 4 min</em></span></li>
             <li><span class="num">5</span><span>Play Scenario Sprint <em>up to 5 min</em></span></li>
           </ol>
-          <button class="btn btn-lg" id="start">Start</button>
-        </div>
+          <p class="about">Learn what to say when you arrive and when you leave, at work and in daily life. <button type="button" class="read-btn" data-read="ins-welcome" data-text="Learn what to say when you arrive and when you leave, at work and in daily life." aria-label="Read this aloud"><i data-ui="speaker"></i></button></p>
+          <div class="mode-row">
+            <p class="eyebrow">How do you want to play the games?</p>
+            <div class="modes" role="group" aria-label="Practice or test" data-kind="mode"><button type="button" data-value="practice" aria-pressed="false">Practice</button><button type="button" data-value="test" aria-pressed="true">Test</button></div>
+            <p class="mode-note" id="mode-note">Test: timed games, and your first tries are scored.</p>
+          </div>
+        </section>
       </div>
+      <div class="actionbar"><div class="actionbar-in">
+        <span class="grow" id="welcome-status">5 parts · 2 short games</span>
+        <button type="button" class="btn secondary" id="restart" hidden>Start over</button>
+        <button type="button" class="btn primary" id="resume" hidden>Continue</button>
+        <button type="button" class="btn primary" id="start">Start</button>
+      </div></div>
     </section>
 
     <!-- 4a Greetings -->
     <section class="screen" data-screen="greetings" hidden>
-      <div class="screen-body">
-        <div class="head sun">
-          <span class="tag"><i data-ui="doorIn"></i>Arriving</span>
-          <h1>Greetings</h1>
-          <p class="lede">Say these when you arrive. Tap each card to hear it.</p>
-        </div>
+      <div class="work">
+        <div class="instr sun"><span class="kind"><i data-ui="doorIn"></i>Arriving</span><p>Say these when you arrive. Tap a card to hear it, then tap Say it and say it yourself.</p><button type="button" class="read-btn" data-read="ins-greetings" data-text="Say these when you arrive. Tap a card to hear it, then tap Say it and say it yourself." aria-label="Read the instructions aloud"><i data-ui="speaker"></i></button></div>
         <div class="word-cards" data-set="greetings"></div>
-        <p class="heard"><b class="heard-n">0</b> of 3 heard</p>
       </div>
-      <div class="footer"><button class="btn" data-next disabled>Continue</button></div>
+      <div class="actionbar"><div class="actionbar-in">
+        <span class="grow"><b class="heard-n">0</b> of 3 heard</span>
+        <button type="button" class="btn secondary" data-back>Back</button>
+        <button type="button" class="btn primary" data-next disabled>Continue</button>
+      </div></div>
     </section>
 
     <!-- 4b Farewells -->
     <section class="screen" data-screen="farewells" hidden>
-      <div class="screen-body">
-        <div class="head sky">
-          <span class="tag"><i data-ui="doorOut"></i>Leaving</span>
-          <h1>Farewells</h1>
-          <p class="lede">Say these when you leave. Tap each card to hear it.</p>
-        </div>
+      <div class="work">
+        <div class="instr sky"><span class="kind"><i data-ui="doorOut"></i>Leaving</span><p>Say these when you leave. Tap a card to hear it, then tap Say it and say it yourself.</p><button type="button" class="read-btn" data-read="ins-farewells" data-text="Say these when you leave. Tap a card to hear it, then tap Say it and say it yourself." aria-label="Read the instructions aloud"><i data-ui="speaker"></i></button></div>
         <div class="word-cards" data-set="farewells"></div>
-        <p class="heard"><b class="heard-n">0</b> of 3 heard</p>
       </div>
-      <div class="footer"><button class="btn" data-next disabled>Continue</button></div>
+      <div class="actionbar"><div class="actionbar-in">
+        <span class="grow"><b class="heard-n">0</b> of 3 heard</span>
+        <button type="button" class="btn secondary" data-back>Back</button>
+        <button type="button" class="btn primary" data-next disabled>Continue</button>
+      </div></div>
     </section>
 
     <!-- 4c Arrive vs leave: a two-step story, then the side-by-side recap -->
     <section class="screen" data-screen="compare" hidden>
-      <div class="screen-body">
-        <div class="head center">
-          <h1>Arriving or leaving?</h1>
-          <p class="lede" id="compare-lede">Watch Ananya at the institute. Pick what she says.</p>
-        </div>
-
+      <div class="work">
         <div class="story" id="story">
           <figure class="stage sun" id="stage">
             <div class="stage-art" id="stage-art">
-              <span class="tag" id="stage-tag"></span>
+              <span class="kind" id="stage-tag"></span>
               <span class="stage-step" id="stage-step">1 of 2</span>
               <div class="say-bubble" id="bubble-ananya" aria-hidden="true"></div>
               <div class="say-bubble plain" id="bubble-teacher" aria-hidden="true"></div>
             </div>
           </figure>
-          <div class="story-side">
-            <span class="pill story-time"><i data-ui="moon"></i>Evening</span>
-            <p class="sprint-q" id="story-q"></p>
+          <section class="card qcard">
+            <span class="chip-soft story-time"><i data-ui="moon"></i>Evening</span>
+            <p class="eyebrow" id="compare-lede">Watch Ananya at the office. Pick what she says.</p>
+            <div class="q-row"><p class="question" id="story-q"></p><button type="button" class="read-btn" id="story-read" data-read="ins-story-1" data-text="" aria-label="Read the question aloud"><i data-ui="speaker"></i></button></div>
             <p class="nudge" id="story-nudge" aria-live="polite"></p>
-            <div class="options three" id="story-options" role="group" aria-labelledby="story-q"></div>
-          </div>
+            <div class="options" id="story-options" role="group" aria-labelledby="story-q"></div>
+            <div class="speak-row">
+              <button type="button" class="mic mic-pill" id="story-mic" disabled><i data-ui="mic"></i><span>Say it</span></button>
+              <p class="speak-msg" id="story-say-msg" aria-live="polite">Or say your answer out loud.</p>
+            </div>
+          </section>
         </div>
 
         <div id="recap" hidden>
-          <span class="time-chip"><i data-ui="moon"></i>Evening in both pictures</span>
+          <div class="instr"><p>Same evening. Same office. Only the direction changes.</p><span class="chip-soft"><i data-ui="moon"></i>Evening in both pictures</span><button type="button" class="read-btn" data-read="ins-recap" data-text="Same evening. Same office. Only the direction changes. Even in the evening, say Goodbye or See you when you leave." aria-label="Read the instructions aloud"><i data-ui="speaker"></i></button></div>
           <div class="compare">
             <figure class="scene sun">
-              <div class="scene-art" id="scene-arrive"><span class="tag"><i data-ui="doorIn"></i>Arriving</span></div>
+              <div class="scene-art" id="scene-arrive"><span class="kind"><i data-ui="doorIn"></i>Arriving</span></div>
               <div class="says">
-                <button class="say" data-id="good-evening" data-text="Good evening!"><i data-ui="speaker"></i>“Good evening!”</button>
+                <button type="button" class="say" data-id="good-evening" data-text="Good evening!"><i data-ui="speaker"></i>“Good evening!”</button>
               </div>
             </figure>
             <figure class="scene sky">
-              <div class="scene-art" id="scene-leave"><span class="tag"><i data-ui="doorOut"></i>Leaving</span></div>
+              <div class="scene-art" id="scene-leave"><span class="kind"><i data-ui="doorOut"></i>Leaving</span></div>
               <div class="says">
-                <button class="say" data-id="see-you" data-text="See you!"><i data-ui="speaker"></i>“See you!”</button>
-                <button class="say" data-id="goodbye" data-text="Goodbye!"><i data-ui="speaker"></i>“Goodbye!”</button>
+                <button type="button" class="say" data-id="see-you" data-text="See you!"><i data-ui="speaker"></i>“See you!”</button>
+                <button type="button" class="say" data-id="goodbye" data-text="Goodbye!"><i data-ui="speaker"></i>“Goodbye!”</button>
               </div>
             </figure>
           </div>
-          <div class="takeaway">
+          <div class="tipbox">
             <span class="tip-icon"><i data-ui="bulb"></i></span>
             <p>Even in the evening, say “Goodbye” or “See you” when you leave.</p>
           </div>
-          <div class="center"><button class="text-btn" id="replay-compare"><i data-ui="replay"></i>Watch the story again</button></div>
+          <div class="recap-actions"><button type="button" class="btn secondary" id="replay-compare"><i data-ui="replay"></i>Watch the story again</button></div>
         </div>
       </div>
-      <div class="footer"><button class="btn" data-next disabled>I understand</button></div>
+      <div class="actionbar"><div class="actionbar-in">
+        <span class="grow" id="compare-status">Answer both questions</span>
+        <button type="button" class="btn secondary" data-back>Back</button>
+        <button type="button" class="btn primary" data-next disabled>I understand</button>
+      </div></div>
     </section>
 
     <!-- 4d Word Match -->
     <section class="screen" data-screen="match" hidden>
-      <div class="screen-body">
-        <div class="game-head">
-          <div class="game-head-main">
-            <h1 class="game-title"><i data-ui="pad"></i>Word Match</h1>
-            <div class="pill" id="tally"><i data-ui="trophy"></i><span>Matched <b id="tally-n">0</b> of 6</span></div>
-          </div>
-          <div class="timer" id="match-timer" role="timer" aria-label="Time left">
-            <div class="timer-inner"><div class="timer-swing">
-              <span class="timer-rod"></span>
-              <span class="timer-mount"></span>
-              <img class="timer-body" src="assets/timer/timer-body.svg" width="209" height="81" alt="">
-              <span class="timer-time">04:00</span>
-            </div></div>
+      <div class="work">
+        <div class="instr game-row">
+          <p><span id="match-text">Find each word and its picture.</span> <span class="limit-note">You have 4 minutes.</span></p>
+          <button type="button" class="read-btn" id="match-read" data-read="ins-match" data-text="Find each word and its picture." aria-label="Read the instructions aloud"><i data-ui="speaker"></i></button>
+          <div class="ctrls">
+            <div class="modes" role="group" aria-label="Show words or sounds" data-kind="show"><button type="button" data-value="words" aria-pressed="true">Words</button><button type="button" data-value="sounds" aria-pressed="false">Sounds</button></div>
+            <div class="modes" role="group" aria-label="Practice or test" data-kind="mode"><button type="button" data-value="practice" aria-pressed="false">Practice</button><button type="button" data-value="test" aria-pressed="true">Test</button></div>
           </div>
         </div>
-        <p class="lede">Find each word and its picture. You have 4 minutes.</p>
         <div class="mgrid" id="match-grid"></div>
       </div>
-      <div class="footer"><button class="btn" data-next disabled>Continue</button></div>
+      <div class="actionbar"><div class="actionbar-in">
+        <span class="grow" id="tally">Matched <b id="tally-n">0</b> of 6</span>
+        <button type="button" class="btn secondary" data-back>Back</button>
+        <button type="button" class="btn primary" data-next disabled>Continue</button>
+      </div></div>
     </section>
 
     <!-- 4e Scenario Sprint -->
     <section class="screen" data-screen="sprint" hidden>
-      <div class="screen-body">
-        <div class="game-head">
-          <div class="game-head-main">
-            <h1 class="game-title"><i data-ui="pad"></i>Scenario Sprint</h1>
-            <div class="stars" id="stars" role="img" aria-label="0 of 5 stars"></div>
-          </div>
-          <div class="timer" id="sprint-timer" role="timer" aria-label="Time left">
-            <div class="timer-inner"><div class="timer-swing">
-              <span class="timer-rod"></span>
-              <span class="timer-mount"></span>
-              <img class="timer-body" src="assets/timer/timer-body.svg" width="209" height="81" alt="">
-              <span class="timer-time">05:00</span>
-            </div></div>
-          </div>
+      <div class="work">
+        <div class="instr game-row">
+          <p>Pick what you would say, or say it out loud. <span class="limit-note">You have 5 minutes.</span></p>
+          <button type="button" class="read-btn" data-read="ins-sprint" data-text="Pick what you would say, or say it out loud." aria-label="Read the instructions aloud"><i data-ui="speaker"></i></button>
+          <div class="ctrls"><div class="modes" role="group" aria-label="Practice or test" data-kind="mode"><button type="button" data-value="practice" aria-pressed="false">Practice</button><button type="button" data-value="test" aria-pressed="true">Test</button></div></div>
+          <div class="score"><div class="pips" id="pips" role="img" aria-label="First-try score: 0 of 5"></div><span class="score-label">First-try score</span></div>
         </div>
-        <p class="lede">Pick what you would say. You have 5 minutes.</p>
-        <div id="sprint-card"></div>
+        <div class="sprint" id="sprint-card"></div>
+        <section class="fb" id="feedback" hidden aria-live="polite">
+          <div class="card result">
+            <div class="result-top">
+              <span class="ok-dot"><i data-ui="check"></i></span>
+              <h2>Correct</h2>
+              <span class="pill done" id="fb-first">First try</span>
+            </div>
+            <p id="fb-why"></p>
+            <p class="note" id="fb-note">Right on the second try. Only first tries count toward your score.</p>
+            <div class="tipbox" id="fb-tip" hidden>
+              <span class="tip-icon"><i data-ui="bulb"></i></span>
+              <p>Tip: when you meet someone at night, say ‘Good evening.’ You’ll find out when to say ‘Good night’ later.</p>
+              <button type="button" class="read-btn" data-read="tip-night" data-text="Tip: when you meet someone at night, say Good evening. You’ll find out when to say Good night later." aria-label="Read the tip aloud"><i data-ui="speaker"></i></button>
+            </div>
+          </div>
+        </section>
       </div>
+      <div class="actionbar"><div class="actionbar-in">
+        <span class="grow" id="sprint-status">Situation 1 of 5</span>
+        <button type="button" class="btn secondary" data-back>Back</button>
+        <button type="button" class="btn primary" id="sprint-next" disabled>Next situation</button>
+      </div></div>
     </section>
 
     <!-- End -->
     <section class="screen" data-screen="end" hidden>
-      <div class="screen-body end">
-        <div class="end-stars" id="end-stars" role="img"></div>
-        <h1 class="h1" id="end-title">You matched 0 out of 5!</h1>
-        <p class="lede" id="end-note"></p>
+      <div class="work">
+        <section class="card scorecard" id="scoreCard">
+          <div id="end-ring"></div>
+          <div>
+            <p class="lvl" id="end-level">Good</p>
+            <p id="end-title">You matched 0 out of 5!</p>
+            <p class="sub" id="end-note"></p>
+          </div>
+        </section>
+        <section class="card" id="practise">
+          <h2 id="practise-title">What to practise</h2>
+          <ul class="list" id="practise-list"></ul>
+        </section>
         <div class="recap">
-          <div class="recap-col sun"><span class="tag"><i data-ui="doorIn"></i>Arriving</span><ul id="recap-sun"></ul></div>
-          <div class="recap-col sky"><span class="tag"><i data-ui="doorOut"></i>Leaving</span><ul id="recap-sky"></ul></div>
+          <section class="card recap-col sun"><span class="kind"><i data-ui="doorIn"></i>Arriving</span><ul id="recap-sun"></ul></section>
+          <section class="card recap-col sky"><span class="kind"><i data-ui="doorOut"></i>Leaving</span><ul id="recap-sky"></ul></section>
         </div>
+        <details class="card more" id="report-box">
+          <summary>Session details for testers</summary>
+          <pre class="report" id="report"></pre>
+          <button type="button" class="btn secondary" id="copy-report">Copy report</button>
+          <p class="copy-msg" id="copy-msg" aria-live="polite"></p>
+        </details>
       </div>
-      <div class="footer">
-        <button class="btn btn-quiet" data-action="replay"><i data-ui="replay"></i>Play again</button>
-        <button class="btn" data-action="finish">Finish</button>
-      </div>
+      <div class="actionbar"><div class="actionbar-in">
+        <span class="grow" id="end-status">Score</span>
+        <button type="button" class="btn secondary" data-action="replay"><i data-ui="replay"></i>Play again</button>
+        <button type="button" class="btn primary" data-action="finish">Finish</button>
+      </div></div>
     </section>
   </main>
 </div>
 
-<!-- Feedback sheet -->
-<div class="sheet" id="sheet" hidden role="status">
-  <div class="sheet-inner">
-    <div class="sheet-msg">
-      <span class="sheet-badge"><i data-ui="checkBig"></i></span>
-      <div>
-        <p class="sheet-title"><span>Correct!</span><span class="star-pill" id="sheet-star"><i data-ui="star"></i>+1 star</span></p>
-        <p class="sheet-why" id="sheet-why"></p>
-        <p class="sheet-note" id="sheet-note">No star this time. Stars are for first tries.</p>
-        <div class="tip" id="sheet-tip" hidden>
-          <span class="tip-icon"><i data-ui="bulb"></i></span>
-          <p>Tip: when you meet someone at night, say ‘Good evening.’ You’ll find out when to say ‘Good night’ later.</p>
-        </div>
-      </div>
-    </div>
-    <button class="btn btn-leaf" id="sheet-btn">Continue</button>
-  </div>
-</div>
-
-<!-- Modal -->
+<!-- Dialog -->
 <div class="modal" id="modal" hidden role="dialog" aria-modal="true" aria-labelledby="modal-title">
   <div class="modal-card">
     <div class="modal-icon" id="modal-icon"></div>
     <h2 id="modal-title"></h2>
     <p id="modal-text"></p>
-    <button class="btn" id="modal-btn"></button>
+    <button type="button" class="btn primary" id="modal-btn"></button>
   </div>
 </div>
 
@@ -530,12 +575,17 @@ const UI = {
   doorOut: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="8" height="18" rx="1.5"/><path d="M13 12h9M18.5 8.5L22 12l-3.5 3.5"/></svg>',
   bulb: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.3 1.1 2.2h5c0-.9.4-1.6 1.1-2.2A6 6 0 0 0 12 3z" fill="#FFD55C"/><path d="M9.5 19h5M10.5 22h3"/></svg>',
   moon: '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M20.5 14.6A8.5 8.5 0 0 1 9.4 3.5a8.5 8.5 0 1 0 11.1 11.1z" fill="#8B7CF6"/></svg>',
+  mic: '<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11h-2Z"/></svg>',
   replay: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4.5h4.5"/></svg>',
   trophy: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4" stroke="#C98A00" stroke-width="2"/><path d="M8 4h8v5a4 4 0 0 1-8 0z" fill="#FFC21A" stroke="#C98A00" stroke-width="2"/><path d="M12 13v3" stroke="#C98A00" stroke-width="2"/><path d="M9 20h6l-1-4h-4z" fill="#FFC21A" stroke="#C98A00" stroke-width="2"/></svg>',
   trophyBig: '<svg viewBox="0 0 24 24" width="44" height="44" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4" stroke="#C98A00" stroke-width="1.8"/><path d="M8 4h8v5a4 4 0 0 1-8 0z" fill="#FFC21A" stroke="#C98A00" stroke-width="1.8"/><path d="M12 13v3" stroke="#C98A00" stroke-width="1.8"/><path d="M9 20h6l-1-4h-4z" fill="#FFC21A" stroke="#C98A00" stroke-width="1.8"/></svg>',
   hourglass: '<svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="#B07A00" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12M6 21h12"/><path d="M7.5 3v2.5c0 2.6 4.5 4 4.5 6.5s-4.5 3.9-4.5 6.5V21M16.5 3v2.5c0 2.6-4.5 4-4.5 6.5s4.5 3.9 4.5 6.5V21"/><path d="M9 20.2h6c-.4-1.8-1.6-2.8-3-3.4-1.4.6-2.6 1.6-3 3.4z" fill="#FFC21A" stroke="none"/></svg>',
+  grid: '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg>',
+  chat: '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5h16a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1h-9l-4.5 3.5V16.5H4a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1z"/><path d="M7.5 10h9M7.5 13h6" stroke-linecap="round"/></svg>',
+  checkCircle: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="#14805A"/><path d="M8 12.3l2.7 2.7L16 9.6" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  done: '<svg viewBox="0 0 24 24" width="40" height="40" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#14805A"/><path d="M7.5 12.4l3 3L16.6 9.3" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
   pad: '<svg viewBox="0 0 32 24" width="36" height="27" aria-hidden="true"><path d="M9 3h14a8 8 0 0 1 8 8v2a6 6 0 0 1-10.6 3.9L19 15h-6l-1.4 1.9A6 6 0 0 1 1 13v-2a8 8 0 0 1 8-8z" fill="#E8476F"/><path d="M9 8v6M6 11h6" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><circle cx="22" cy="9.5" r="1.9" fill="#fff"/><circle cx="25.6" cy="13" r="1.9" fill="#fff"/></svg>',
-  cardBack: '<svg viewBox="0 0 48 44" aria-hidden="true"><path d="M8 3h32a6 6 0 0 1 6 6v18a6 6 0 0 1-6 6H22l-9 8v-8H8a6 6 0 0 1-6-6V9a6 6 0 0 1 6-6z" fill="#fff"/><text x="24" y="26.5" text-anchor="middle" font-family="Baloo 2, sans-serif" font-weight="800" font-size="22" fill="#1E2240">?</text></svg>'
+  cardBack: '<svg viewBox="0 0 48 44" aria-hidden="true"><path d="M8 3h32a6 6 0 0 1 6 6v18a6 6 0 0 1-6 6H22l-9 8v-8H8a6 6 0 0 1-6-6V9a6 6 0 0 1 6-6z" fill="#fff"/><text x="24" y="26.5" text-anchor="middle" font-family="Roboto, system-ui, sans-serif" font-weight="700" font-size="20" fill="#1F2540">?</text></svg>'
 };
 
 /* =========================================================
@@ -555,81 +605,95 @@ const shade = (hex, amt) => {
     .map(c => c.toString(16).padStart(2, '0')).join('');
 };
 
-/* A person, feet at (x,y), about 115 units tall, facing right when face = 1.
-   style:  short | braid | bun | pony        outfit: tee | kurta | saree
-   wave:   raises an arm (the back arm when look = true, so they wave toward where they look)
-   look:   head turned back over the shoulder
-   Animation hooks: .leg (x2), .arm-f / .arm-b (hanging arms), .arm-w (raised arm, data-origin = shoulder) */
+/* An adult, feet at (x,y), about 115 units tall (head ~1/7 of height), facing right when face = 1.
+   style:  short | bun | long | braid          outfit: shirt | blazer | polo | kurta
+   extras: lanyard (ID card), bag ('laptop' | 'tote' | 'pack'), wave, look (head turned back)
+   Animation hooks: .leg (x2), .arm-f / .arm-b (hanging arms), .arm-w (raised arm; data-origin, data-dir) */
 function person(o) {
-  const { x = 0, y = 0, s = 1, face = 1, skin = '#B9774F', top = '#14B8A6', bottom = '#2D2A5A', hair = '#2B1B17',
-          style = 'short', outfit = 'tee', trim = '#FFB4C8', wave = false, look = false, bag = null, bagType = 'pack',
-          glasses = false, stride = 0, shoe = '#2B2D42' } = o;
-  const ink = '#1E1B2E';
-  const skinD = shade(skin, -.16), topD = shade(top, -.17), topL = shade(top, .22), botD = shade(bottom, -.32);
-  const hairL = shade(hair, .45), bagD = bag ? shade(bag, -.24) : '';
-  const sleeveEnd = outfit === 'kurta' ? -55 : -62;
+  const { x = 0, y = 0, s = 1, face = 1, skin = '#B9774F', top = '#DCE3EC', bottom = '#2B3245', hair = '#231A15',
+          style = 'short', outfit = 'shirt', jacket = '#334155', trim = null, wave = false, look = false,
+          bag = null, bagType = 'laptop', lanyard = null, stride = 0, shoe = '#1E1E24' } = o;
+  const ink = '#1B1B22';
+  const skinD = shade(skin, -.16), topD = shade(top, -.14), botD = shade(bottom, -.3), hairL = shade(hair, .35);
+  const sleeveCol = outfit === 'blazer' ? jacket : top;
+  const sleeveColD = shade(sleeveCol, -.16);
+  // where the sleeve ends on a hanging arm (y); full sleeves cover the forearm
+  const sleeveEnd = { shirt: -56, blazer: -56, polo: -74, kurta: -63 }[outfit] ?? -60;
 
-  const leg = (hx, deg, col) => `<g class="leg"${deg ? ` transform="rotate(${deg} ${hx} -44)"` : ''}><path d="M${hx} -44V-9" stroke="${col}" stroke-width="10" stroke-linecap="round"/><path d="M${hx - 5} -1Q${hx - 5} -9.5 ${hx + 1} -9.5Q${hx + 9} -9.5 ${hx + 10.5} -3.5V0H${hx - 5}Z" fill="${shoe}"/><rect x="${hx - 5.5}" y="-2.4" width="16.5" height="2.6" rx="1.3" fill="#EEF0F6"/></g>`;
+  const leg = (hx, deg, col) => `<g class="leg"${deg ? ` transform="rotate(${deg} ${hx} -54)"` : ''}><path d="M${hx} -54V-6.5" stroke="${col}" stroke-width="8.5" stroke-linecap="round"/><path d="M${hx - 4} -1Q${hx - 4} -6.8 ${hx + 1} -6.8Q${hx + 7.5} -6.8 ${hx + 8.5} -2.6V0H${hx - 4}Z" fill="${shoe}"/></g>`;
   const armHang = (cls, sx, sk, sl) => {
-    const d = sx < 0 ? -1 : 1, wx = sx + 2.5 * d;
-    return `<g class="${cls}"><path d="M${sx} -70L${wx} -41" stroke="${sk}" stroke-width="7" stroke-linecap="round"/><path d="M${sx} -71L${sx + .7 * d} ${sleeveEnd}" stroke="${sl}" stroke-width="10.5" stroke-linecap="round"/><circle cx="${wx + .3 * d}" cy="-38.5" r="4.8" fill="${sk}"/></g>`;
+    const d = sx < 0 ? -1 : 1, wx = sx + 1.8 * d;
+    return `<g class="${cls}"><path d="M${sx} -84L${wx} -54" stroke="${sk}" stroke-width="5.6" stroke-linecap="round"/><path d="M${sx} -85L${sx + .9 * d} ${sleeveEnd}" stroke="${sl}" stroke-width="8" stroke-linecap="round"/><circle cx="${wx + .2 * d}" cy="-51.5" r="3.6" fill="${sk}"/></g>`;
   };
   const armUp = (side, sk, sl) => {
-    const m = v => v * side, sl2 = outfit === 'kurta' ? [19.6, -78] : [12.8, -74];
-    return `<g class="arm-w" data-dir="${side}" data-origin="${side > 0 ? '0% 100%' : '100% 100%'}"><path d="M${m(6)} -70L${m(23)} -80L${m(30)} -97" stroke="${sk}" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M${m(6)} -71L${m(sl2[0])} ${sl2[1]}" stroke="${sl}" stroke-width="10.5" stroke-linecap="round"/><ellipse cx="${m(31)}" cy="-101.5" rx="5" ry="6" fill="${sk}"/><ellipse cx="${m(26.5)}" cy="-99" rx="2" ry="3.4" transform="rotate(${-30 * side} ${m(26.5)} -99)" fill="${sk}"/></g>`;
+    const m = v => v * side;
+    const sleeve = outfit === 'polo' ? `M${m(5)} -86L${m(10)} -88.5` : outfit === 'kurta' ? `M${m(5)} -86L${m(17)} -91L${m(18.5)} -96` : `M${m(5)} -86L${m(17)} -91L${m(20.3)} -102`;
+    return `<g class="arm-w" data-dir="${side}" data-origin="${side > 0 ? '0% 100%' : '100% 100%'}"><path d="M${m(5)} -85L${m(17)} -91L${m(21)} -104" stroke="${sk}" stroke-width="5.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="${sleeve}" stroke="${sl}" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" fill="none"/><ellipse cx="${m(21.6)}" cy="-107" rx="3.6" ry="4.3" fill="${sk}"/><ellipse cx="${m(18.6)}" cy="-105.4" rx="1.4" ry="2.4" transform="rotate(${-30 * side} ${m(18.6)} -105.4)" fill="${sk}"/></g>`;
   };
 
-  /* Clothes */
-  const TEE = 'M-11 -75C-15 -75 -16.5 -71 -16 -66L-15 -42C-6 -39 6 -39 15 -42L16 -66C16.5 -71 15 -75 11 -75Z';
-  const TEE_SH = 'M-11 -75C-15 -75 -16.5 -71 -16 -66L-15 -42C-12 -41 -9 -40.4 -6 -40.1L-4 -75Z';
-  const KURTA = 'M-11 -75C-15 -75 -16.5 -71 -16 -66L-19 -27C-6 -24 6 -24 19 -27L16 -66C16.5 -71 15 -75 11 -75Z';
-  const KURTA_SH = 'M-11 -75C-15 -75 -16.5 -71 -16 -66L-19 -27C-15 -26 -11 -25.4 -7 -25.2L-4 -75Z';
+  /* Lower body: trousers block joining the legs */
+  const hips = `<path d="M-12 -56H12.5L12 -47H-11.5Z" fill="${bottom}"/><path d="M-12 -56H-3L-3.5 -47H-11.5Z" fill="${botD}"/>`;
+  /* Upper body */
+  const TORSO = 'M-9.5 -88C-13 -88 -14 -85.5 -14 -82L-12.5 -53H13L14.5 -82C14.5 -85.5 13.5 -88 9.5 -88Z';
+  const TORSO_SH = 'M-9.5 -88C-13 -88 -14 -85.5 -14 -82L-12.5 -53H-4.5L-3 -88Z';
   let body;
   if (outfit === 'kurta') {
-    body = `<path d="${KURTA}" fill="${top}"/><path d="${KURTA_SH}" fill="${topD}"/><path d="M-18.6 -31C-6 -28 6 -28 18.6 -31" stroke="${trim}" stroke-width="3" fill="none"/><path d="M17.6 -40L18.8 -28" stroke="${topD}" stroke-width="1.6"/><path d="M-3 -75Q2 -66 7.5 -75" stroke="${trim}" stroke-width="2.6" fill="none" stroke-linecap="round"/><circle cx="2.5" cy="-62" r="1.3" fill="${trim}"/><circle cx="2.5" cy="-57" r="1.3" fill="${trim}"/>`;
-  } else if (outfit === 'saree') {
-    body = `<path d="M-15 -46L-18.5 -3C-6 -.5 6 -.5 18.5 -3L15 -46Z" fill="${top}"/><path d="M7 -44L8.5 -3M11.5 -44L14 -3.5" stroke="${topD}" stroke-width="1.6"/><path d="M-18.3 -6.5C-6 -4 6 -4 18.3 -6.5" stroke="${trim}" stroke-width="3" fill="none"/><path d="M-11 -75C-15 -75 -16.5 -71 -16 -66L-15.5 -44H15.5L16 -66C16.5 -71 15 -75 11 -75Z" fill="${top}"/><path d="M-11 -75C-15 -75 -16.5 -71 -16 -66L-15.5 -44H-6L-4 -75Z" fill="${topD}"/><path d="M-12 -75C-18 -70 -20.5 -56 -19.5 -42L-15 -43C-16 -56 -15 -68 -9 -74Z" fill="${topL}"/><path d="M4 -76L13 -74L-8 -40L-16 -44Z" fill="${topL}"/><path d="M13 -74L-8 -40" stroke="${trim}" stroke-width="2.4" stroke-linecap="round"/>`;
+    const t = trim || shade(top, .35);
+    body = `<path d="M-9.5 -88C-13 -88 -14 -85.5 -14 -82L-15.5 -36H16L14.5 -82C14.5 -85.5 13.5 -88 9.5 -88Z" fill="${top}"/><path d="M-9.5 -88C-13 -88 -14 -85.5 -14 -82L-15.5 -36H-6L-3 -88Z" fill="${topD}"/><path d="M-1.5 -88L1.5 -80L4.5 -88" stroke="${t}" stroke-width="1.6" fill="none" stroke-linejoin="round"/><path d="M1.5 -80V-70" stroke="${t}" stroke-width="1.2"/><path d="M-15.3 -39H15.8" stroke="${t}" stroke-width="1.6"/><path d="M14.6 -46L15.4 -36" stroke="${topD}" stroke-width="1.2"/>`;
+  } else if (outfit === 'polo') {
+    body = `<path d="${TORSO}" fill="${top}"/><path d="${TORSO_SH}" fill="${topD}"/><path d="M-3 -88.5L1 -84L5 -88.5L3.5 -90H-1.5Z" fill="${shade(top, .25)}"/><path d="M1 -84V-78" stroke="${topD}" stroke-width="1.2"/><circle cx="1" cy="-80.5" r=".8" fill="${topD}"/><path d="M-12.6 -55H13.1" stroke="${botD}" stroke-width="2.4"/>`;
   } else {
-    body = `<path d="${TEE}" fill="${top}"/><path d="${TEE_SH}" fill="${topD}"/><path d="M-3 -75Q2 -70 7.5 -75" stroke="${topD}" stroke-width="2.4" fill="none" stroke-linecap="round"/>`;
+    // shirt (and the shirt under a blazer)
+    body = `<path d="${TORSO}" fill="${top}"/><path d="${TORSO_SH}" fill="${topD}"/><path d="M-2.5 -89L1 -83L4.5 -89" fill="${shade(top, .3)}" stroke="${topD}" stroke-width="1"/><path d="M1 -83V-56" stroke="${topD}" stroke-width=".9"/><path d="M-12.6 -55H13.1" stroke="${shade(bottom, -.45)}" stroke-width="2.4"/>`;
+    if (outfit === 'blazer') {
+      const jD = shade(jacket, -.2);
+      body += `<path d="M-9.5 -88C-13 -88 -14.2 -85.5 -14.2 -82L-13.4 -50H-1L1 -76L-2.5 -88Z" fill="${jacket}"/><path d="M-9.5 -88C-13 -88 -14.2 -85.5 -14.2 -82L-13.4 -50H-5.5L-4.5 -88Z" fill="${jD}"/><path d="M4.5 -88L14.5 -82L13.6 -50H6L4 -76Z" fill="${jacket}"/><path d="M-2.5 -88L1 -76L-1 -72M4.5 -88L4 -76L6 -72" stroke="${jD}" stroke-width="1" fill="none"/>`;
+    }
+  }
+  const lany = lanyard ? `<path d="M-3 -88L1.5 -74L6 -88" stroke="${lanyard}" stroke-width="1.5" fill="none"/><rect x="-1.4" y="-74.5" width="6.4" height="8.4" rx="1" fill="#FFFFFF" stroke="${shade(lanyard, -.2)}" stroke-width=".6"/><rect x="-1.4" y="-74.5" width="6.4" height="2.4" rx="1" fill="${lanyard}"/>` : '';
+
+  /* Bags */
+  const bagD = bag ? shade(bag, -.25) : '';
+  let bagBehind = '', bagFront = '';
+  if (bag && bagType === 'pack') {
+    bagBehind = `<rect x="-22" y="-86" width="10.5" height="24" rx="4.5" fill="${bag}"/><rect x="-21" y="-74" width="7.5" height="8.5" rx="2.5" fill="${bagD}"/>`;
+    bagFront = `<path d="M-6 -88C2 -90 7 -85 6.5 -73" stroke="${bagD}" stroke-width="2.4" fill="none" stroke-linecap="round"/>`;
+  } else if (bag && bagType === 'tote') {
+    bagFront = `<path d="M-3 -88C-9 -78 -12 -68 -12.5 -62M-3 -88C-5 -78 -6 -68 -6 -62" stroke="${bagD}" stroke-width="1.8" fill="none"/><path d="M-17 -63H-2L-3.5 -45H-15.5Z" fill="${bag}"/><path d="M-17 -63H-2L-2.4 -59H-16.6Z" fill="${bagD}"/>`;
+  } else if (bag) {  // laptop messenger bag
+    bagFront = `<path d="M7 -88L-11 -56" stroke="${bagD}" stroke-width="2.2" stroke-linecap="round"/><rect x="-22" y="-60" width="17" height="12.5" rx="2.2" fill="${bag}"/><path d="M-22 -55.5H-5" stroke="${bagD}" stroke-width="1.4"/>`;
   }
 
-  /* Hair that hangs behind the body (braid) and bags */
-  const braid = style === 'braid'
-    ? [[-15.5, -79], [-17, -71.5], [-18.2, -64]].map(([bx, by], i) => `<ellipse cx="${bx}" cy="${by}" rx="4.6" ry="5.3" fill="${i % 2 ? shade(hair, .14) : hair}"/>`).join('')
-      + `<rect x="-22" y="-59.5" width="7.5" height="3.4" rx="1.7" fill="${trim}"/><path d="M-21 -56.5L-23 -50L-18.6 -52.5L-16 -50L-15.6 -56.5Z" fill="${hair}"/>`
+  /* Head (facing right) */
+  const capShort = 'M-7.6 -97C-9.8 -104 -7 -113.6 2 -113.6C8.6 -113.6 11.8 -109.4 10.6 -104.8C8.6 -107.4 5.6 -108 2.6 -107C1.4 -104 -.6 -101.4 -2.8 -99.6C-4.2 -98.2 -5.8 -96.6 -7.6 -97Z';
+  const capLong = 'M-8 -97C-10.4 -105 -7 -114 2 -114C9.2 -114 12 -109 10.8 -103.6C8.6 -107.4 5.2 -108.6 2.8 -108.2C1.4 -104.6 -.8 -101.4 -3.2 -99C-4.6 -97.6 -6.4 -96.4 -8 -97Z';
+  const hairBack = style === 'bun' ? `<circle cx="-7.8" cy="-98.6" r="4.6" fill="${hair}"/>`
+    : style === 'long' ? `<path d="M-9 -102C-12 -94 -11.5 -86 -8.5 -82L-1.5 -84C-3.5 -88 -4.5 -94 -4 -100Z" fill="${hair}"/>`
     : '';
-  const packBehind = bag && bagType === 'pack' ? `<rect x="-26" y="-73" width="13" height="27" rx="5.5" fill="${bag}"/><rect x="-25" y="-60" width="9" height="10" rx="3" fill="${bagD}"/>` : '';
-  const packStrap = bag && bagType === 'pack' ? `<path d="M-7 -75C3 -77 9 -71 8.5 -58" stroke="${bagD}" stroke-width="3" fill="none" stroke-linecap="round"/>` : '';
-  const sling = bag && bagType === 'sling' ? `<path d="M8 -75L-12 -47" stroke="${bagD}" stroke-width="3" stroke-linecap="round"/><rect x="-27" y="-52" width="17" height="14" rx="4" fill="${bag}"/><path d="M-27 -47.5H-10" stroke="${bagD}" stroke-width="2"/><circle cx="-18.5" cy="-44" r="1.4" fill="${bagD}"/>` : '';
-
-  /* Head */
-  const capLong = 'M-17 -86C-21 -100 -12 -114 3 -113C16 -112 22 -104 20 -95C16 -101 10 -104 4 -103C2 -99 -1 -95 -5 -88C-8 -82 -13 -80 -17 -86Z';
-  const capShort = 'M-16 -85C-21 -99 -13 -114 3 -113C14 -113 21 -107 21 -98C18 -100 15 -100 12 -98C11 -102 6 -103 3 -100C1 -97 -2 -94 -6 -88C-9 -84 -12 -83 -16 -85Z';
-  const hairBack = style === 'bun' ? `<circle cx="-8" cy="-111" r="8.5" fill="${hair}"/><path d="M-14 -112Q-9 -117.5 -3 -114" stroke="${hairL}" stroke-width="1.6" fill="none" stroke-linecap="round" opacity=".6"/>`
-    : style === 'pony' ? `<path d="M-12 -102C-27 -103 -30 -86 -24 -70C-22 -80 -20 -90 -10 -95Z" fill="${hair}"/><circle cx="-13.5" cy="-100" r="2.8" fill="${trim}"/>` : '';
-  const head = `<g${look ? ' transform="scale(-1 1)"' : ''}>${hairBack}<circle cx="2" cy="-93" r="17" fill="${skin}"/>`
+  const braid = style === 'braid'
+    ? [[-8.6, -91.5], [-9.6, -85], [-10.4, -78.6]].map(([bx, by], i) => `<ellipse cx="${bx}" cy="${by}" rx="2.6" ry="3.6" fill="${i % 2 ? shade(hair, .15) : hair}"/>`).join('') + `<path d="M-12 -75.6L-12.6 -71.4L-10.4 -72.8L-8.6 -71.4L-8.8 -75.6Z" fill="${hair}"/>`
+    : '';
+  const head = `<g${look ? ' transform="scale(-1 1)"' : ''}>${hairBack}<ellipse cx="1.5" cy="-103" rx="8.3" ry="9.3" fill="${skin}"/>`
     + `<path d="${style === 'short' ? capShort : capLong}" fill="${hair}"/>`
-    + (style === 'short' ? `<path d="M-1 -112Q5 -119 10 -111.5Z" fill="${hair}"/>` : '')
-    + `<path d="M-7 -108Q2 -112 11 -108.5" stroke="${hairL}" stroke-width="2" fill="none" stroke-linecap="round" opacity=".5"/>`
-    + `<ellipse cx="-2" cy="-90.5" rx="3.4" ry="4.4" fill="${skinD}"/>`
-    + `<path d="M7 -99Q10 -100.8 13.5 -99.2" stroke="${shade(hair, -.15)}" stroke-width="1.7" fill="none" stroke-linecap="round"/>`
-    + `<ellipse cx="10" cy="-93" rx="2.1" ry="2.7" fill="${ink}"/><circle cx="10.8" cy="-94" r=".85" fill="#fff"/>`
-    + `<ellipse cx="8" cy="-86.5" rx="3.2" ry="1.9" fill="#FF7A8A" opacity=".35"/>`
-    + `<path d="M18.6 -91.5Q20.8 -89.2 18.2 -88" stroke="${shade(skin, -.28)}" stroke-width="1.4" fill="none" stroke-linecap="round"/>`
-    + `<path d="M11 -84.6Q14 -82 16.6 -85" stroke="#6B2F25" stroke-width="1.7" fill="none" stroke-linecap="round"/>`
-    + (glasses ? `<circle cx="10.5" cy="-93" r="4.6" fill="none" stroke="${ink}" stroke-width="1.4"/><path d="M6 -93.5L-1 -92.5" stroke="${ink}" stroke-width="1.2"/>` : '')
+    + `<path d="M-3 -111.2Q2 -113 7 -111" stroke="${hairL}" stroke-width="1.1" fill="none" stroke-linecap="round" opacity=".55"/>`
+    + `<ellipse cx="-1.6" cy="-101.6" rx="1.9" ry="2.7" fill="${skinD}"/>`
+    + `<path d="M4.3 -106.6Q6.2 -107.5 8.1 -106.7" stroke="${shade(hair, -.1)}" stroke-width="1" fill="none" stroke-linecap="round"/>`
+    + `<ellipse cx="6.3" cy="-103.4" rx=".95" ry="1.25" fill="${ink}"/>`
+    + `<path d="M9.7 -103Q11.1 -100.6 9.5 -99.8" stroke="${shade(skin, -.3)}" stroke-width=".9" fill="none" stroke-linecap="round"/>`
+    + `<path d="M5.4 -97.6Q7 -96.9 8.4 -97.8" stroke="#5E2C22" stroke-width=".95" fill="none" stroke-linecap="round"/>`
     + '</g>';
 
   const raisedBack = wave && look, raisedFront = wave && !look;
   return `<g class="person" transform="translate(${x} ${y}) scale(${face * s} ${s})">`
-    + `<ellipse cx="2" cy=".5" rx="17" ry="3.2" fill="#0B0E24" opacity=".18"/>`
-    + (raisedBack ? '' : armHang('arm-b', -5, skinD, topD))
-    + packBehind
-    + leg(-4, stride, botD) + leg(5, -stride, bottom)
-    + `<rect x="-3" y="-82" width="8" height="10" rx="3" fill="${skinD}"/>`
-    + body + braid + packStrap + sling + head
-    + (raisedBack ? armUp(-1, skinD, topD) : '')
-    + (raisedFront ? armUp(1, skin, top) : armHang('arm-f', 6, skin, top))
+    + `<ellipse cx="1" cy=".4" rx="13" ry="2.4" fill="#0B0E24" opacity=".16"/>`
+    + (raisedBack ? '' : armHang('arm-b', -5, skinD, sleeveColD))
+    + bagBehind
+    + leg(-3.5, stride, botD) + leg(4, -stride, bottom)
+    + hips
+    + `<rect x="-2.6" y="-96" width="6.2" height="9" rx="2" fill="${skinD}"/>`
+    + body + braid + lany + bagFront + head
+    + (raisedBack ? armUp(-1, skinD, sleeveColD) : '')
+    + (raisedFront ? armUp(1, skin, sleeveCol) : armHang('arm-f', 5, skin, sleeveCol))
     + '</g>';
 }
 
@@ -647,7 +711,7 @@ const ICON = {
   sunrise: () => `<svg class="ico" viewBox="0 0 120 120" aria-hidden="true"><g class="i-rays" stroke="#FFAA1A" stroke-width="7" stroke-linecap="round">${rays(60, 84, 40, 52, [160, 125, 90, 55, 20])}</g><path class="i-body" d="M30 84a30 30 0 0 1 60 0z" fill="#FFC93C"/><path d="M6 90Q32 76 60 85T114 86V100Q60 112 6 100z" fill="#7FCF7A"/><path d="M6 98Q60 88 114 98V100Q60 112 6 100z" fill="#5DBB63"/></svg>`,
   sun: () => `<svg class="ico" viewBox="0 0 120 120" aria-hidden="true"><g class="i-rays" stroke="#FFAA1A" stroke-width="7" stroke-linecap="round">${rays(60, 60, 35, 47, [0, 45, 90, 135, 180, 225, 270, 315])}</g><circle class="i-body" cx="60" cy="60" r="26" fill="#FFC93C"/><path d="M47 55a14 14 0 0 1 12-10" stroke="#FFF3C4" stroke-width="5" stroke-linecap="round" fill="none"/></svg>`,
   moon: () => `<svg class="ico" viewBox="0 0 120 120" aria-hidden="true"><g class="i-moon"><path d="${CRESCENT}" fill="#8B7CF6"/><path d="M40 44a26 26 0 0 0 2 30" stroke="#B3A8FF" stroke-width="5" stroke-linecap="round" fill="none"/></g><g class="i-spark" fill="#FFC21A"><path d="${sparkle(90, 34, 10)}"/><path d="${sparkle(100, 62, 6)}"/></g></svg>`,
-  walker: () => `<svg class="ico" viewBox="0 0 120 120" aria-hidden="true"><g stroke="#9DC3FF" stroke-width="4" stroke-linecap="round"><path d="M12 66h12"/><path d="M8 80h14"/></g><g class="i-fig">${person({ x: 50, y: 110, s: .84, face: 1, top: '#3B8CFF', bottom: '#1E2240', skin: '#C98B5E', wave: true, look: true, stride: 16 })}</g><g class="i-arrow" fill="none" stroke="#1F66D6" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><path d="M80 70h24"/><path d="M95 61l9 9-9 9"/></g></svg>`,
+  walker: () => `<svg class="ico" viewBox="0 0 120 120" aria-hidden="true"><g stroke="#9DC3FF" stroke-width="4" stroke-linecap="round"><path d="M12 66h12"/><path d="M8 80h14"/></g><g class="i-fig">${person({ x: 50, y: 110, s: .84, face: 1, top: '#4F7FD6', bottom: '#1E2240', skin: '#C98B5E', wave: true, look: true, stride: 16 })}</g><g class="i-arrow" fill="none" stroke="#1F66D6" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><path d="M80 70h24"/><path d="M95 61l9 9-9 9"/></g></svg>`,
   hand: () => `<svg class="ico" viewBox="0 0 120 120" aria-hidden="true"><g class="i-waves" stroke="#3B8CFF" stroke-width="4.5" stroke-linecap="round" fill="none"><path d="M14 26Q6 38 12 50"/><path d="M24 20Q16 32 21 44"/><path d="M100 26Q108 38 102 50"/></g><g class="i-hand"><g transform="rotate(-12 62 70)"><g fill="#E39A55" stroke="#E39A55" stroke-width="6" stroke-linejoin="round">${HAND_SHAPES}</g><g fill="#FFCB91">${HAND_SHAPES}</g><path d="M50 84Q62 91 76 84" stroke="#E39A55" stroke-width="3" fill="none" stroke-linecap="round" opacity=".6"/></g></g></svg>`,
   calendar: () => {
     let cells = '';
@@ -676,7 +740,7 @@ const cloud = (x, y, s = 1) => `<g transform="translate(${x} ${y}) scale(${s})" 
 function sky(t) {
   let s = `<rect width="320" height="200" fill="url(#g-sky-${t})"/>`;
   if (t === 'morning') s += `<circle cx="64" cy="152" r="44" fill="#FFD34D" opacity=".28"/><circle cx="64" cy="152" r="30" fill="#FFD34D"/>${cloud(118, 34)}${cloud(22, 54, .7)}`;
-  if (t === 'afternoon') s += `<circle cx="290" cy="36" r="32" fill="#FFE27A" opacity=".35"/><circle cx="290" cy="36" r="20" fill="#FFD34D"/>${cloud(58, 40)}${cloud(150, 24, .8)}`;
+  if (t === 'afternoon') s += `<circle cx="300" cy="28" r="30" fill="#FFE27A" opacity=".35"/><circle cx="300" cy="28" r="18" fill="#FFD34D"/>${cloud(58, 40)}${cloud(150, 24, .8)}`;
   if (t === 'evening') s += `<circle cx="48" cy="156" r="42" fill="#FFB36B" opacity=".3"/><circle cx="48" cy="156" r="28" fill="#FFB36B"/>${stars([[120, 24], [196, 16], [262, 34], [88, 50]], 1.5)}`;
   if (t === 'night') s += `<g transform="translate(262 44) scale(.55) translate(-62 -55)"><path d="${CRESCENT}" fill="#F4EBC1"/></g>${stars([[40, 30], [90, 18], [140, 40], [190, 22], [222, 66], [300, 22], [70, 64], [116, 80]], 1.8)}`;
   return s;
@@ -686,8 +750,10 @@ function ground(t) {
   const p = { morning: '#C9EBB9', afternoon: '#BFE6AE', evening: '#665E9A', night: '#343C70' }[t];
   return `<rect y="164" width="320" height="36" fill="${c}"/><rect y="174" width="320" height="14" fill="${p}" opacity=".75"/>`;
 }
-function school(x, y) {
-  return `<g transform="translate(${x} ${y})"><path d="M62 2V-24" stroke="#5A5F80" stroke-width="2.5"/><path d="M62 -24L82 -18L62 -12Z" fill="#E8476F"/><rect x="0" y="34" width="124" height="70" rx="3" fill="#FFF1DC"/><rect x="0" y="96" width="124" height="8" fill="#EBD5B8"/><path d="M-10 38L62 2L134 38Z" fill="#E8476F"/><circle cx="62" cy="24" r="7" fill="#fff"/><path d="M62 20V24L65 26" stroke="#E8476F" stroke-width="1.6" fill="none" stroke-linecap="round"/><rect x="50" y="62" width="24" height="42" rx="3" fill="#8A5634"/><rect x="14" y="50" width="24" height="20" rx="3" fill="#9ED8FF"/><rect x="86" y="50" width="24" height="20" rx="3" fill="#9ED8FF"/><path d="M26 50V70M14 60H38M98 50V70M86 60H110" stroke="#fff" stroke-width="2"/></g>`;
+function office(x, y, { lit = false, label = 'OFFICE' } = {}) {
+  let wins = '';
+  for (let r = 0; r < 3; r++) for (let c = 0; c < 4; c++) wins += `<rect x="${10 + c * 27}" y="${12 + r * 20}" width="20" height="13" rx="1" fill="${lit && (r + c) % 3 ? '#FFD98A' : lit ? '#6B7393' : '#A9C3E3'}"/>`;
+  return `<g transform="translate(${x} ${y})"><rect x="34" y="-17" width="56" height="12" rx="2" fill="#334155"/><text x="62" y="-8.4" text-anchor="middle" font-family="Roboto, system-ui, sans-serif" font-weight="600" font-size="${label.length > 6 ? 7 : 8}" letter-spacing="1.4" fill="#fff">${label}</text><rect x="-3" y="-5" width="130" height="7" fill="#C2CAD6"/><rect x="0" y="0" width="124" height="104" fill="${lit ? '#C9CFDC' : '#E4E8EF'}"/>${wins}<rect x="40" y="74" width="44" height="5" fill="#475569"/><rect x="45" y="79" width="34" height="25" fill="${lit ? '#E9C77A' : '#5D7690'}"/><path d="M62 79V104" stroke="${lit ? '#C9CFDC' : '#E4E8EF'}" stroke-width="1.6"/></g>`;
 }
 function stall(x, y) {
   let stripes = '', scallops = '';
@@ -698,63 +764,79 @@ function stall(x, y) {
   }
   return `<g transform="translate(${x} ${y})"><rect x="6" y="20" width="6" height="68" fill="#7A4E2D"/><rect x="112" y="20" width="6" height="68" fill="#7A4E2D"/><path d="M48 72Q48 56 62 56Q76 56 76 72Z" fill="#7C5CFF"/><circle cx="62" cy="48" r="9" fill="#A86A45"/><path d="M53 47Q53 38 62 38Q71 38 71 46Q66 42 60 43Q56 44 53 47Z" fill="#1E1B2E"/><rect x="0" y="60" width="124" height="28" rx="4" fill="#B5713F"/><rect x="0" y="60" width="124" height="6" fill="#9A5C30"/><g fill="#FF9E3D"><circle cx="16" cy="56" r="6.5"/><circle cx="29" cy="56" r="6.5"/><circle cx="22" cy="47" r="6.5"/></g><g fill="#5CC46B"><circle cx="95" cy="56" r="6.5"/><circle cx="108" cy="56" r="6.5"/><circle cx="101" cy="47" r="6.5"/></g>${scallops}${stripes}<rect x="-6" y="2" width="136" height="6" rx="3" fill="#D9474F"/></g>`;
 }
-function house(x, y) {
-  return `<g transform="translate(${x} ${y})"><rect x="82" y="6" width="12" height="26" fill="#9C4B3C"/><circle cx="23" cy="60" r="22" fill="url(#g-glow)"/><circle cx="89" cy="60" r="22" fill="url(#g-glow)"/><rect x="0" y="36" width="112" height="56" rx="2" fill="#F6E4CC"/><path d="M-10 40L56 2L122 40Z" fill="#C65D4A"/><rect x="44" y="56" width="24" height="36" rx="3" fill="#7A4E2D"/><circle cx="63" cy="75" r="1.8" fill="#FFD66B"/><rect x="12" y="50" width="22" height="20" rx="3" fill="#FFD66B"/><rect x="78" y="50" width="22" height="20" rx="3" fill="#FFD66B"/><path d="M23 50V70M12 60H34M89 50V70M78 60H100" stroke="#E9B949" stroke-width="2"/></g>`;
+function house(x, y, lit = true) {
+  const win = lit ? '#FFD66B' : '#BFD9F2', glow = lit ? '<circle cx="23" cy="60" r="22" fill="url(#g-glow)"/><circle cx="89" cy="60" r="22" fill="url(#g-glow)"/>' : '';
+  return `<g transform="translate(${x} ${y})"><rect x="82" y="6" width="12" height="26" fill="#9C4B3C"/>${glow}<rect x="0" y="36" width="112" height="56" rx="2" fill="#F6E4CC"/><path d="M-10 40L56 2L122 40Z" fill="#C65D4A"/><rect x="44" y="56" width="24" height="36" rx="3" fill="#7A4E2D"/><circle cx="63" cy="75" r="1.8" fill="#FFD66B"/><rect x="12" y="50" width="22" height="20" rx="3" fill="${win}"/><rect x="78" y="50" width="22" height="20" rx="3" fill="${win}"/><path d="M23 50V70M12 60H34M89 50V70M78 60H100" stroke="${lit ? '#E9B949' : '#fff'}" stroke-width="2"/></g>`;
 }
 function lamp(x, g) {
   return `<g><ellipse cx="${x}" cy="${g + 12}" rx="74" ry="11" fill="#FFE08A" opacity=".16"/><circle cx="${x}" cy="${g - 84}" r="46" fill="url(#g-glow)"/><rect x="${x - 2.5}" y="${g - 90}" width="5" height="102" fill="#555B85"/><path d="M${x - 11} ${g - 90}h22l-4 -7h-14z" fill="#555B85"/><circle cx="${x}" cy="${g - 84}" r="6" fill="#FFE08A"/></g>`;
 }
-const YOU = { style: 'short', outfit: 'tee', top: '#FF8A3D', bottom: '#3B3F6B', skin: '#C98B5E' };
-const FRIEND = { style: 'pony', outfit: 'kurta', top: '#E8476F', trim: '#FFD1DC', bottom: '#2D2A5A', skin: '#9C6644', hair: '#2B1D14' };
+const YOU = { style: 'short', outfit: 'shirt', top: '#D9E2EC', bottom: '#2B3245', skin: '#C98B5E' };
+const FRIEND = { style: 'long', outfit: 'kurta', top: '#9F1239', trim: '#F5D0C5', bottom: '#1F2937', skin: '#9C6644', hair: '#2B1D14' };
+const STAFF = { style: 'short', outfit: 'polo', top: '#5B6B7F', bottom: '#2B3245', skin: '#8D5A3B' };
+const STUDENT = { style: 'short', outfit: 'polo', top: '#4F7FD6', bottom: '#2B3245', skin: '#C98B5E', bag: '#475569', bagType: 'pack' };
 const svg320 = (label, inner) => `<svg viewBox="0 0 320 200" role="img" aria-label="${label}">${inner}</svg>`;
 const ART = {
-  class:  () => svg320('A school in the morning. A person walks toward the door.', sky('morning') + ground('morning') + school(180, 64) + person({ x: 112, y: 182, s: .74, face: 1, stride: 14, bag: '#7C5CFF', ...YOU }) + arrow(134, 128, 1)),
+  office: () => svg320('An office building in the morning. A person walks toward the door.', sky('morning') + ground('morning') + office(180, 62) + person({ x: 112, y: 182, s: .74, face: 1, stride: 14, bag: '#7C4A2D', ...YOU }) + arrow(134, 128, 1)),
   market: () => svg320('A market stall in the evening. A person walks away and waves.', sky('evening') + ground('evening') + stall(182, 84) + person({ x: 130, y: 182, s: .74, face: -1, stride: 14, wave: true, look: true, ...YOU }) + arrow(104, 128, -1)),
   friend: () => svg320('A street at night. Two friends meet and wave.', sky('night') + ground('night') + lamp(160, 166) + person({ x: 122, y: 182, s: .74, face: 1, wave: true, ...YOU }) + person({ x: 200, y: 182, s: .74, face: -1, wave: true, ...FRIEND })),
-  school: () => svg320('A school in the afternoon. A person walks away and waves.', sky('afternoon') + ground('afternoon') + school(180, 64) + person({ x: 130, y: 182, s: .74, face: -1, stride: 14, wave: true, look: true, bag: '#7C5CFF', ...YOU }) + arrow(104, 128, -1)),
-  home:   () => svg320('A house in the evening. A person walks toward the door.', sky('evening') + ground('evening') + house(186, 80) + person({ x: 116, y: 182, s: .74, face: 1, stride: 14, ...YOU }) + arrow(138, 128, 1))
+  work:   () => svg320('An office building in the afternoon. A person walks away and waves.', sky('afternoon') + ground('afternoon') + office(180, 62) + person({ x: 130, y: 182, s: .74, face: -1, stride: 14, wave: true, look: true, bag: '#7C4A2D', ...YOU }) + arrow(104, 128, -1)),
+  home:   () => svg320('A house in the evening. A person walks toward the door.', sky('evening') + ground('evening') + house(186, 80) + person({ x: 116, y: 182, s: .74, face: 1, stride: 14, ...YOU }) + arrow(138, 128, 1)),
+  client: () => svg320("A client's office in the afternoon. A person walks toward the door.", sky('afternoon') + ground('afternoon') + office(180, 62) + person({ x: 112, y: 182, s: .74, face: 1, stride: 14, bag: '#7C4A2D', ...YOU }) + arrow(134, 128, 1)),
+  'shop-morning': () => svg320('A shop in the morning. A person walks away and waves.', sky('morning') + ground('morning') + stall(182, 84) + person({ x: 130, y: 182, s: .74, face: -1, stride: 14, wave: true, look: true, ...STAFF }) + arrow(104, 128, -1)),
+  'market-morning': () => svg320('A market stall in the morning. A person walks toward it.', sky('morning') + ground('morning') + stall(182, 84) + person({ x: 112, y: 182, s: .74, face: 1, stride: 14, ...STAFF }) + arrow(134, 128, 1)),
+  'friend-home': () => svg320("A friend's home at night. A person walks away and waves.", sky('night') + ground('night') + house(186, 80, true) + person({ x: 130, y: 182, s: .74, face: -1, stride: 14, wave: true, look: true, ...YOU }) + arrow(104, 128, -1)),
+  college: () => svg320('A college building in the afternoon. A student walks toward the door.', sky('afternoon') + ground('afternoon') + office(180, 62, { label: 'COLLEGE' }) + person({ x: 112, y: 182, s: .74, face: 1, stride: 14, ...STUDENT }) + arrow(134, 128, 1)),
+  'office-evening': () => svg320('An office building in the evening. A person walks away and waves.', sky('evening') + ground('evening') + office(180, 62, { lit: true }) + person({ x: 130, y: 182, s: .74, face: -1, stride: 14, wave: true, look: true, bag: '#7C4A2D', ...YOU }) + arrow(104, 128, -1)),
+  'manager-morning': () => svg320('The office gate in the morning. You meet your manager and wave.', sky('morning') + ground('morning') + office(180, 62) + person({ x: 120, y: 182, s: .74, face: 1, wave: true, bag: '#7C4A2D', ...YOU }) + person({ x: 196, y: 182, s: .78, face: -1, ...MANAGER }))
 };
 
-/* ---- 4c: Ananya at the institute gate ----
-   gateBackdrop(w) draws the evening sky, gate and teacher; the gate sits at the right edge,
-   so a wider w just gives Ananya more road to walk on. */
-const ANANYA = { style: 'braid', outfit: 'kurta', top: '#14B8A6', trim: '#FFB4C8', bag: '#E8476F', bagType: 'sling' };
+/* ---- 4c: Ananya at the office entrance ----
+   gateBackdrop(w) draws the evening sky, the office entrance and her manager; the entrance sits at the
+   right edge, so a wider w just gives Ananya more pavement to walk on. */
+const ANANYA = { style: 'braid', outfit: 'kurta', top: '#0F766E', bottom: '#1F2937', bag: '#A16207', bagType: 'tote', lanyard: '#3A8FC4' };
+const MANAGER = { style: 'short', outfit: 'blazer', top: '#E5E7EB', jacket: '#334155', bottom: '#1F2937', skin: '#A86A45', hair: '#6B7280' };
 const ananyaPose = (x, leaving) => person({ x, y: 302, s: 1.18, face: leaving ? -1 : 1, wave: leaving, look: leaving, ...ANANYA });
 
 function gateBackdrop(w = 300) {
   const ox = w - 300;
-  const lit = [1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 1, 1];
+  const lit = [1, 0, 1, 1, 1, 1, 0, 1];
   let wins = '';
-  [150, 178, 206].forEach((wy, r) => [188, 214, 240, 266].forEach((wx, c) => { wins += `<rect x="${wx}" y="${wy}" width="16" height="16" rx="2" fill="${lit[r * 4 + c] ? '#FFD66B' : '#5D5396'}"/>`; }));
-  const pillar = px => `<rect x="${px}" y="150" width="22" height="122" fill="#E4DAF2"/><rect x="${px}" y="150" width="6" height="122" fill="#F5F0FC"/><rect x="${px - 4}" y="142" width="30" height="10" rx="2" fill="#F7F3FD"/>`;
-  let bars = '';
-  for (let bx = 240; bx <= 266; bx += 6) bars += `<path d="M${bx} 182V266"/>`;
-  const teacher = person({ x: 216, y: 274, s: 1.08, face: -1, style: 'bun', outfit: 'saree', top: '#8E6CF0', trim: '#E8476F', skin: '#A86A45', hair: '#B3B6C8', glasses: true });
+  [92, 118].forEach((wy, r) => [182, 210, 238, 266].forEach((wx, c) => { wins += `<rect x="${wx}" y="${wy}" width="20" height="18" rx="1.5" fill="${lit[r * 4 + c] ? '#FFD98A' : '#5B5F92'}"/>`; }));
+  const manager = person({ x: 214, y: 276, s: 1.08, face: -1, ...MANAGER });
   const wide = ox > 0 ? stars([[200, 26], [262, 58], [318, 16], [372, 40]], 1.6) + '<path d="M130 252V232h28v-12h22v18h26v-22h30v36z" fill="#6E4C93" opacity=".55"/>' : '';
   return `<rect width="${w}" height="340" fill="url(#g-sky-evening)"/>
     ${stars([[26, 30], [96, 18], [140, 52], [60, 74], [124, 96]], 1.7)}${wide}
     <circle cx="56" cy="244" r="50" fill="#FFB36B" opacity=".22"/><circle cx="56" cy="244" r="32" fill="#FFB36B"/>
     <path d="M0 252V226h20v-14h22v22h24v-16h24v24h30v12z" fill="#6E4C93" opacity=".55"/>
-    <g transform="translate(${ox} 0)"><rect x="176" y="96" width="124" height="160" fill="#463C7C"/><rect x="170" y="90" width="130" height="10" fill="#5A4F92"/>${wins}</g>
-    <rect y="252" width="${w}" height="88" fill="#3A3263"/><rect y="274" width="${w}" height="32" fill="#4C437A"/>
-    <g transform="translate(${ox} 0)">${pillar(156)}${pillar(274)}
-      <g stroke="#BFB2D9" stroke-width="3" stroke-linecap="round">${bars}<path d="M238 182H268M238 266H268"/></g>
-      <rect x="154" y="110" width="144" height="32" rx="7" fill="#2A2350" stroke="#E4DAF2" stroke-width="3"/>
-      <text x="226" y="132" text-anchor="middle" font-family="Lexend, sans-serif" font-weight="600" font-size="15" letter-spacing="2" fill="#FFE7A8">INSTITUTE</text>
-      ${teacher}
-    </g>`;
+    <rect y="252" width="${w}" height="24" fill="#3A3263"/>
+    <g transform="translate(${ox} 0)">
+      <rect x="198" y="72" width="3" height="10" fill="#C9CEDD"/><rect x="263" y="72" width="3" height="10" fill="#C9CEDD"/>
+      <rect x="188" y="50" width="88" height="23" rx="3" fill="#E8EAF2"/>
+      <text x="232" y="66.5" text-anchor="middle" font-family="Roboto, system-ui, sans-serif" font-weight="600" font-size="12" letter-spacing="3" fill="#1E2240">OFFICE</text>
+      <rect x="168" y="80" width="132" height="196" fill="#3B3D6B"/><rect x="164" y="80" width="136" height="6" fill="#4A4D82"/>
+      ${wins}
+      <rect x="176" y="146" width="104" height="12" rx="2" fill="#C9CEDD"/>
+      <rect x="186" y="158" width="84" height="118" fill="#262848"/>
+      <rect x="191" y="164" width="36" height="112" fill="#FFE2A3" opacity=".22"/><rect x="229" y="164" width="36" height="112" fill="#FFE2A3" opacity=".22"/>
+      <rect x="191" y="164" width="36" height="112" fill="none" stroke="#9AA6C8" stroke-width="2"/><rect x="229" y="164" width="36" height="112" fill="none" stroke="#9AA6C8" stroke-width="2"/>
+      <rect x="221.5" y="214" width="2.5" height="18" rx="1" fill="#E2E8F0"/><rect x="232" y="214" width="2.5" height="18" rx="1" fill="#E2E8F0"/>
+      <rect x="276" y="258" width="14" height="18" rx="2" fill="#7A5C48"/><ellipse cx="283" cy="250" rx="9" ry="12" fill="#2F6B4F"/><ellipse cx="279" cy="245" rx="5" ry="8" fill="#3C8A63"/>
+    </g>
+    <rect y="274" width="${w}" height="66" fill="#3A3263"/><rect y="274" width="${w}" height="32" fill="#4C437A"/>
+    <g transform="translate(${ox} 0)">${manager}</g>`;
 }
 
 /* Recap panels (300 x 340): identical background, only Ananya's direction changes */
 function gateScene(mode) {
   const arrive = mode === 'arrive';
-  const label = arrive ? 'Evening at the institute gate. Ananya walks in toward her teacher.' : 'Evening at the institute gate. Ananya walks away from the gate and waves goodbye.';
-  return `<svg viewBox="0 0 300 340" role="img" aria-label="${label}">${gateBackdrop(300)}<g class="walker">${ananyaPose(arrive ? 106 : 48, !arrive)}</g>${arrive ? arrow(40, 324, 1, 112, '#FFC21A') : arrow(160, 324, -1, 112, '#3B8CFF')}</svg>`;
+  const label = arrive ? 'Evening at the office entrance. Ananya walks in toward her manager.' : 'Evening at the office entrance. Ananya walks away and waves goodbye to her manager.';
+  return `<svg viewBox="0 0 300 340" role="img" aria-label="${label}">${gateBackdrop(300)}<g class="walker">${ananyaPose(arrive ? 106 : 48, !arrive)}</g>${arrive ? arrow(40, 324, 1, 112, '#E2A53A') : arrow(160, 324, -1, 112, '#3A8FC4')}</svg>`;
 }
 
 /* Story stage (440 x 340): Ananya's pose is swapped in by code */
 function storyScene() {
-  return `<svg id="story-svg" viewBox="0 0 440 340" role="img" aria-label="Evening at the institute gate. Ananya and her teacher.">${gateBackdrop(440)}<g class="walker" id="story-walker"><g class="pose"></g></g><g data-for="in">${arrow(60, 324, 1, 150, '#FFC21A')}</g><g data-for="out" opacity="0">${arrow(210, 324, -1, 150, '#3B8CFF')}</g></svg>`;
+  return `<svg id="story-svg" viewBox="0 0 440 340" role="img" aria-label="Evening at the office entrance. Ananya and her manager.">${gateBackdrop(440)}<g class="walker" id="story-walker"><g class="pose"></g></g><g data-for="in">${arrow(60, 324, 1, 150, '#E2A53A')}</g><g data-for="out" opacity="0">${arrow(210, 324, -1, 150, '#3A8FC4')}</g></svg>`;
 }
 
 /* =========================================================
@@ -771,13 +853,26 @@ const WORDS = {
 const GREETINGS = ['good-morning', 'good-afternoon', 'good-evening'];
 const FAREWELLS = ['goodbye', 'see-you', 'see-you-tomorrow'];
 
-const SCENARIOS = [
-  { id: 'class',  text: 'You are arriving at class in the morning.',  options: ['good-morning', 'good-afternoon', 'good-evening', 'goodbye'],     correct: ['good-morning'],               why: 'You are arriving, and it is morning.' },
-  { id: 'market', text: 'You are leaving the market in the evening.', options: ['good-evening', 'goodbye', 'good-afternoon', 'see-you'],          correct: ['goodbye', 'see-you'],         why: 'You are leaving, so you say goodbye, even in the evening. “Goodbye” and “See you” are both right.' },
-  { id: 'friend', text: 'You are meeting a friend at night.',          options: ['good-evening', 'good-morning', 'see-you-tomorrow', 'goodbye'],  correct: ['good-evening'],               why: 'You are meeting your friend, so you greet them.', tip: true },
-  { id: 'school', text: 'You are leaving school in the afternoon.',   options: ['good-afternoon', 'see-you-tomorrow', 'good-morning', 'goodbye'], correct: ['see-you-tomorrow', 'goodbye'], why: 'You are leaving, and you will come back tomorrow. “See you tomorrow” and “Goodbye” are both right.' },
-  { id: 'home',   text: 'You are arriving home in the evening.',      options: ['good-evening', 'see-you', 'good-afternoon', 'goodbye'],          correct: ['good-evening'],               why: 'You are arriving, and it is evening.' }
-];
+/* Scenario Sprint situations. The first play uses the spec's five (FIRST_ROUND); replays draw five from the pool:
+   the night meeting (it carries the decided tip) plus two arriving or meeting and two leaving situations.
+   kind: arrive | meet | leave · time: morning | afternoon | evening | night (used to explain mistakes).
+   No situation offers both "See you" and "See you tomorrow": the listener could stop early on "See you". */
+const POOL = {
+  office:            { text: 'You are arriving at the office in the morning.', kind: 'arrive', time: 'morning', options: ['good-morning', 'good-afternoon', 'good-evening', 'goodbye'], correct: ['good-morning'], why: 'You are arriving, and it is morning.' },
+  market:            { text: 'You are leaving the market in the evening.', kind: 'leave', time: 'evening', options: ['good-evening', 'goodbye', 'good-afternoon', 'see-you'], correct: ['goodbye', 'see-you'], why: 'You are leaving, so you say goodbye, even in the evening. “Goodbye” and “See you” are both right.' },
+  friend:            { text: 'You are meeting a friend at night.', kind: 'meet', time: 'night', options: ['good-evening', 'good-morning', 'see-you-tomorrow', 'goodbye'], correct: ['good-evening'], why: 'You are meeting your friend, so you greet them.', tip: true },
+  work:              { text: 'You are leaving work in the afternoon.', kind: 'leave', time: 'afternoon', options: ['good-afternoon', 'see-you-tomorrow', 'good-morning', 'goodbye'], correct: ['see-you-tomorrow', 'goodbye'], why: 'You are leaving, and you will come back tomorrow. “See you tomorrow” and “Goodbye” are both right.' },
+  home:              { text: 'You are arriving home in the evening.', kind: 'arrive', time: 'evening', options: ['good-evening', 'see-you', 'good-afternoon', 'goodbye'], correct: ['good-evening'], why: 'You are arriving, and it is evening.' },
+  client:            { text: 'You are arriving at a client’s office in the afternoon.', kind: 'arrive', time: 'afternoon', options: ['good-afternoon', 'good-morning', 'see-you', 'goodbye'], correct: ['good-afternoon'], why: 'You are arriving, and it is afternoon.' },
+  'shop-morning':    { text: 'You are leaving a shop in the morning.', kind: 'leave', time: 'morning', options: ['good-morning', 'goodbye', 'see-you', 'good-evening'], correct: ['goodbye', 'see-you'], why: 'You are leaving, so you say goodbye, even in the morning. “Goodbye” and “See you” are both right.' },
+  'market-morning':  { text: 'You are arriving at the market in the morning.', kind: 'arrive', time: 'morning', options: ['good-morning', 'goodbye', 'good-evening', 'see-you'], correct: ['good-morning'], why: 'You are arriving, and it is morning.' },
+  'friend-home':     { text: 'You are leaving a friend’s home at night.', kind: 'leave', time: 'night', options: ['good-evening', 'goodbye', 'see-you', 'good-morning'], correct: ['goodbye', 'see-you'], why: 'You are leaving, so you say goodbye, even at night. “Goodbye” and “See you” are both right.' },
+  college:           { text: 'You are arriving at college in the afternoon.', kind: 'arrive', time: 'afternoon', options: ['good-afternoon', 'good-evening', 'see-you-tomorrow', 'good-morning'], correct: ['good-afternoon'], why: 'You are arriving, and it is afternoon.' },
+  'office-evening':  { text: 'You are leaving the office in the evening. You will come back tomorrow.', kind: 'leave', time: 'evening', options: ['good-evening', 'see-you-tomorrow', 'goodbye', 'good-afternoon'], correct: ['see-you-tomorrow', 'goodbye'], why: 'You are leaving, and you will come back tomorrow. “See you tomorrow” and “Goodbye” are both right.' },
+  'manager-morning': { text: 'You meet your manager at the office gate in the morning.', kind: 'meet', time: 'morning', options: ['good-morning', 'goodbye', 'good-evening', 'see-you-tomorrow'], correct: ['good-morning'], why: 'You are meeting your manager, so you greet them. It is morning.' }
+};
+const FIRST_ROUND = ['office', 'market', 'friend', 'work', 'home'];
+Object.entries(POOL).forEach(([id, sc]) => { if (sc.options.includes('see-you') && sc.options.includes('see-you-tomorrow')) console.warn(`[Key Words] ${id}: avoid offering both "See you" and "See you tomorrow"`); });
 
 /* =========================================================
    Sound: recorded ElevenLabs clips in audio/<id>.mp3, made by tools/generate-audio.mjs
@@ -785,16 +880,18 @@ const SCENARIOS = [
    ========================================================= */
 const Voice = {
   missing: new Set(), voice: null, clip: null, clips: {},
-  /* Load every clip up front so the first tap plays instantly */
-  preload(ids) {
-    ids.forEach(id => {
+  clipFor(id) {
+    if (!this.clips[id]) {
       const a = new Audio();
       a.preload = 'auto';
       a.addEventListener('error', () => this.missing.add(id), { once: true });
       a.src = `audio/${id}.mp3`;
       this.clips[id] = a;
-    });
+    }
+    return this.clips[id];
   },
+  /* Load the word clips up front so the first tap plays instantly; the rest load when first used */
+  preload(ids) { ids.forEach(id => this.clipFor(id)); },
   init() {
     this.preload(Object.keys(WORDS));
     if (!('speechSynthesis' in window)) return;
@@ -805,32 +902,35 @@ const Voice = {
     pick();
     speechSynthesis.addEventListener && speechSynthesis.addEventListener('voiceschanged', pick);
   },
-  play(id, text) {
+  play(id, text, onEnd) {
     this.stop();
-    const a = id && !this.missing.has(id) ? this.clips[id] : null;
+    const a = id && !this.missing.has(id) ? this.clipFor(id) : null;
     if (a) {
       this.clip = a;
+      a.onended = () => { if (onEnd) onEnd(); };
       a.currentTime = 0;
       a.play().catch(err => {
         // A blocked autoplay is not a missing file; only remember real load failures
         if (err && err.name !== 'NotAllowedError' && err.name !== 'AbortError') this.missing.add(id);
-        if (this.clip === a) this.say(text);
+        if (this.clip === a) this.say(text, onEnd);
       });
       return;
     }
-    this.say(text);
+    this.say(text, onEnd);
   },
-  say(text) {
-    if (!('speechSynthesis' in window)) return;
+  say(text, onEnd) {
+    if (!('speechSynthesis' in window) || !text) { if (onEnd) onEnd(); return; }
     speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text);
     if (this.voice) { u.voice = this.voice; u.lang = this.voice.lang; } else u.lang = 'en-IN';
     u.rate = .85;
+    if (onEnd) u.onend = onEnd;
     speechSynthesis.speak(u);
   },
   stop() {
-    if (this.clip) { this.clip.pause(); this.clip.currentTime = 0; this.clip = null; }
+    if (this.clip) { this.clip.onended = null; this.clip.pause(); this.clip.currentTime = 0; this.clip = null; }
     if ('speechSynthesis' in window) speechSynthesis.cancel();
+    $$('.read-btn.is-playing').forEach(b => b.classList.remove('is-playing'));
   }
 };
 
@@ -880,46 +980,182 @@ const Modal = {
   }
 };
 
+/* Scenario Sprint result: a card under the question (#feedback, which motion.js animates in)
+   and "Next situation" in the action bar */
 const Sheet = {
-  show({ first, why, tip }) {
-    const el = $('#sheet');
-    $('#sheet-star').hidden = !first;
-    $('#sheet-note').hidden = first;
-    $('#sheet-why').textContent = why;
-    $('#sheet-tip').hidden = !tip;
-    el.hidden = false;
-    document.body.classList.add('has-sheet');
-    gsap.fromTo(el, { yPercent: 100 }, { yPercent: 0, duration: .42, ease: 'power3.out' });
-    gsap.fromTo('#sheet .sheet-badge', { scale: 0, rotation: -90 }, { scale: 1, rotation: 0, duration: .5, ease: 'back.out(2.5)', delay: .15 });
-    if (tip) gsap.fromTo('#sheet-tip', { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: .4, delay: .35 });
-    setTimeout(() => $('#sheet-btn').focus({ preventScroll: true }), 80);
+  show({ first, why, tip, last }) {
+    $('#fb-first').hidden = !first;
+    $('#fb-note').hidden = first;
+    $('#fb-why').textContent = why;
+    $('#fb-tip').hidden = !tip;
+    const fb = $('#feedback'), next = $('#sprint-next');
+    fb.hidden = false;
+    next.disabled = false;
+    next.textContent = last ? 'See my score' : 'Next situation';
+    gsap.fromTo(next, { scale: .92 }, { scale: 1, duration: .5, ease: 'back.out(2)', clearProps: 'transform' });
+    setTimeout(() => { fb.scrollIntoView({ behavior: RM ? 'auto' : 'smooth', block: 'nearest' }); next.focus({ preventScroll: true }); }, 120);
   },
-  hide(instant) {
-    const el = $('#sheet');
-    if (el.hidden) return;
-    document.body.classList.remove('has-sheet');
-    if (instant) { gsap.killTweensOf(el); el.hidden = true; return; }
-    gsap.to(el, { yPercent: 100, duration: .25, ease: 'power2.in', onComplete: () => { el.hidden = true; } });
+  hide() {
+    $('#feedback').hidden = true;
+    const next = $('#sprint-next');
+    next.disabled = true;
+    next.textContent = 'Next situation';
   }
 };
 
-function confetti() {
-  if (RM) return;
-  const colors = ['#FFC21A', '#3B8CFF', '#1FB866', '#FF5C64', '#8B7CF6'];
-  const layer = document.createElement('div');
-  layer.className = 'confetti';
-  document.body.appendChild(layer);
-  const ox = innerWidth / 2, oy = innerHeight * .3, R = gsap.utils.random;
-  for (let i = 0; i < 70; i++) {
-    const p = document.createElement('i');
-    p.style.background = colors[i % colors.length];
-    layer.appendChild(p);
-    gsap.set(p, { x: ox, y: oy, width: R(6, 11), height: R(8, 16), rotation: R(0, 360) });
-    gsap.timeline()
-      .to(p, { x: ox + R(-innerWidth * .48, innerWidth * .48), y: oy + R(-240, -40), rotation: '+=' + R(180, 540), duration: R(.5, .8), ease: 'power2.out' })
-      .to(p, { y: innerHeight + 40, rotation: '+=' + R(200, 700), duration: R(1.4, 2.4), ease: 'power1.in' });
+/* =========================================================
+   Saved progress (this device only; the page works the same if storage is blocked)
+   ========================================================= */
+const Store = {
+  KEY: 'kw-stage4-progress-v1',
+  get() { try { return JSON.parse(localStorage.getItem(this.KEY)) || {}; } catch (e) { return {}; } },
+  set(patch) { try { localStorage.setItem(this.KEY, JSON.stringify({ ...this.get(), ...patch, updated: Date.now() })); } catch (e) { /* storage blocked */ } },
+  clear() { const d = this.get(), keep = {}; ['mode', 'show', 'best'].forEach(k => { if (d[k] !== undefined) keep[k] = d[k]; }); try { localStorage.setItem(this.KEY, JSON.stringify(keep)); } catch (e) { /* storage blocked */ } }
+};
+
+/* Practice / Test (both games) and Words / Sounds (Word Match) */
+let MODE = Store.get().mode === 'practice' ? 'practice' : 'test';
+let SHOW = Store.get().show === 'sounds' ? 'sounds' : 'words';
+function syncChoices() {
+  $$('.modes[data-kind="mode"] button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.value === MODE)));
+  $$('.modes[data-kind="show"] button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.value === SHOW)));
+  $$('.limit-note').forEach(n => { n.hidden = MODE !== 'test'; });
+  $('#mode-note').textContent = MODE === 'test' ? 'Test: timed games, and your first tries are scored.' : 'Practice: no timer, and you get a hint after a wrong answer.';
+}
+function setChoice(kind, value) {
+  if (kind === 'mode') { if (MODE === value) return; MODE = value; Store.set({ mode: MODE }); }
+  else { if (SHOW === value) return; SHOW = value; Store.set({ show: SHOW }); }
+  syncChoices();
+  updateTimers(cur);
+  if (cur === 'match') Match.start();
+  if (cur === 'sprint' && kind === 'mode') Sprint.start(false);
+  announce(kind === 'mode' ? `${MODE === 'test' ? 'Test' : 'Practice'} mode.` : `Word Match shows ${SHOW}.`);
+}
+function updateTimers(name) {
+  $('#match-timer').hidden = !(name === 'match' && MODE === 'test');
+  $('#sprint-timer').hidden = !(name === 'sprint' && MODE === 'test');
+}
+
+/* =========================================================
+   Session log: what each learner picked, how long each part took, time-outs and speaking tries.
+   Sent to a parent page (postMessage) when embedded, and shown as a report for testers on the end screen.
+   ========================================================= */
+const mmss = ms => { const t = Math.round(ms / 1000); return `${Math.floor(t / 60)}:${String(t % 60).padStart(2, '0')}`; };
+const Log = {
+  s: null, at: 0, part: null,
+  begin() { this.s = { started: new Date(), parts: {}, answers: [], speaking: [], timeouts: {}, match: [] }; },
+  ensure() { if (!this.s) this.begin(); return this.s; },
+  enter(name) { this.ensure(); this.part = name; this.at = performance.now(); },
+  leave(name) { if (!this.s || this.part !== name || !this.at) return; this.s.parts[name] = (this.s.parts[name] || 0) + (performance.now() - this.at); this.at = 0; },
+  answer(a) { this.ensure().answers.push({ ...a, mode: MODE }); this.emit('answer', { ...a, mode: MODE }); },
+  speak(a) { this.ensure().speaking.push(a); this.emit('speak', a); },
+  timeout(game) { const s = this.ensure(); s.timeouts[game] = (s.timeouts[game] || 0) + 1; this.emit('timeout', { game }); },
+  matchDone(m) { this.ensure().match.push(m); this.emit('match', m); },
+  emit(type, detail) { try { if (window.parent !== window) window.parent.postMessage({ type: `kw-${type}`, stage: 4, detail }, '*'); } catch (e) { /* not embedded */ } },
+  /* The mistakes that matter, one of each kind: a greeting when leaving, a farewell when arriving, the wrong time of day */
+  confusions() {
+    const seen = new Map();
+    this.ensure().answers.filter(a => !a.correct).forEach(a => {
+      const picked = WORDS[a.picked];
+      const key = a.kind === 'leave' ? (picked.kind === 'sun' ? 'greet-when-leaving' : 'farewell') : (picked.kind === 'sky' ? 'bye-when-arriving' : 'time');
+      if (!seen.has(key)) seen.set(key, a);
+    });
+    return [...seen.entries()];
+  },
+  report() {
+    const s = this.ensure(), name = { greetings: 'Greetings', farewells: 'Farewells', compare: 'Arriving or leaving', match: 'Word Match', sprint: 'Scenario Sprint' };
+    const total = Object.values(s.parts).reduce((t, v) => t + v, 0);
+    const lines = ['Key Words (Stage 4): session report', `Started: ${s.started.toLocaleString()}`, `Mode at the end: ${MODE === 'test' ? 'Test' : 'Practice'}`, '', 'Time per part:'];
+    Object.keys(name).forEach(k => { if (s.parts[k]) lines.push(`  ${name[k]}: ${mmss(s.parts[k])}`); });
+    lines.push(`  Total: ${mmss(total)}`, '', `Scenario Sprint first-try score: ${Sprint.stars} of ${Sprint.list ? Sprint.list.length : 5}`, '', 'Answers:');
+    s.answers.forEach(a => lines.push(`  ${a.part} ${a.item} (${a.kind}, ${a.time}): ${WORDS[a.picked].text}, ${a.correct ? 'right' : 'wrong'}${a.correct && a.first ? ', first try' : ''}, ${a.via === 'voice' ? 'said' : 'tapped'}, ${a.mode}`));
+    if (!s.answers.length) lines.push('  none');
+    s.match.forEach(m => lines.push('', `Word Match: ${m.misses} misses, ${mmss(m.ms)}, ${m.show}, ${m.mode}`));
+    const outs = Object.entries(s.timeouts).map(([g, n]) => `${g === 'match' ? 'Word Match' : 'Scenario Sprint'} ${n}`);
+    lines.push('', `Time-outs: ${outs.length ? outs.join(', ') : 'none'}`);
+    const tries = s.speaking.filter(x => !x.error), ok = tries.filter(x => x.ok).length, other = tries.filter(x => !x.ok && x.matched).length;
+    lines.push(`Speaking: ${tries.length} tries, ${ok} said the right phrase, ${other} another phrase, ${tries.length - ok - other} not heard${s.speaking.some(x => x.error) ? `, ${s.speaking.filter(x => x.error).length} could not start` : ''}`);
+    return lines.join('\n');
   }
-  setTimeout(() => layer.remove(), 3600);
+};
+
+/* =========================================================
+   Speaking (CommKit, the course's offline speech checker). It only listens for the given phrases.
+   Needs the page to be served over http(s); a second tap stops listening.
+   ========================================================= */
+const Speak = {
+  busy: false,
+  VARIANTS: { goodbye: ['goodbye', 'good bye'] },
+  served: () => /^https?:$/.test(location.protocol),
+  phrases(ids) {
+    return ids.flatMap(id => (this.VARIANTS[id] || [WORDS[id].text.toLowerCase()]).map(say => ({ id, say })))
+      .sort((a, b) => b.say.length - a.say.length);   // longer phrases first, so "see you tomorrow" wins over "see you"
+  },
+  msg(el, text, tone = '') { if (!el) return; el.textContent = text; el.className = `speak-msg${tone ? ` ${tone}` : ''}`; },
+  warm() { if (window.CommKit && this.served()) CommKit.ready(); },
+  stop() { if (this.busy && window.CommKit) CommKit.stop(); },
+  async listen(btn, ids, msgEl) {
+    if (this.busy) { this.stop(); return null; }
+    if (!window.CommKit) { this.msg(msgEl, 'Speaking practice is not available on this page.', 'fix'); return null; }
+    if (!this.served()) { this.msg(msgEl, 'Speaking works when this page is opened from a web address (http or https), not as a file.', 'fix'); return null; }
+    Voice.stop();
+    const list = this.phrases(ids), label = $('span', btn), was = label ? label.textContent : '';
+    this.busy = true;
+    btn.classList.add('recording');
+    btn.setAttribute('aria-pressed', 'true');
+    if (label) label.textContent = 'Listening…';
+    try {
+      if (!CommKit.isReady) {
+        this.msg(msgEl, 'Getting the listener ready…');
+        if (!(await CommKit.ready())) throw Object.assign(new Error('load'), { code: 'load' });
+      }
+      this.msg(msgEl, 'Listening… say it now.');
+      const r = await CommKit.hear(list.map(x => x.say), { timeout: 6000, onLevel: v => btn.style.setProperty('--level', v.toFixed(2)) });
+      const hit = r.word ? list.find(x => x.say === r.word) : null;
+      return { id: hit ? hit.id : null, heard: r.heard, confidence: r.confidence };
+    } catch (e) {
+      this.msg(msgEl, e.code === 'mic-blocked' ? 'The microphone is blocked. Allow microphone access for this page, then tap again.' : 'The listener could not start. Check your connection, then tap again.', 'fix');
+      Log.speak({ part: cur, error: e.code || 'error' });
+      return null;
+    } finally {
+      this.busy = false;
+      btn.classList.remove('recording');
+      btn.removeAttribute('aria-pressed');
+      btn.style.removeProperty('--level');
+      if (label) label.textContent = was;
+    }
+  }
+};
+/* "Say it" under a sticky note: listen for all six phrases (except a shorter phrase the target starts with) */
+async function sayWord(btn) {
+  const id = btn.dataset.id, w = WORDS[id], msg = $('.speak-msg', btn.parentElement);
+  const ids = Object.keys(WORDS).filter(k => k === id || !w.text.toLowerCase().startsWith(`${WORDS[k].text.toLowerCase()} `));
+  const r = await Speak.listen(btn, ids, msg);
+  if (!r) return;
+  Log.speak({ part: cur, target: id, heard: r.heard, matched: r.id, ok: r.id === id });
+  if (r.id === id) { Speak.msg(msg, 'Well said.', 'ok'); SFX.good(); btn.parentElement.classList.add('is-said'); }
+  else if (r.id) { Speak.msg(msg, `We heard “${WORDS[r.id].text}”. Try “${w.text}”.`, 'fix'); SFX.bad(); }
+  else Speak.msg(msg, 'I could not hear it clearly. Tap Say it and try again.');
+}
+/* Say an answer instead of tapping it: listen for the options on screen, then answer with the matching one */
+async function sayAnswer(btn, optSel, msgSel, answer) {
+  const opts = $$(optSel), msg = $(msgSel);
+  const r = await Speak.listen(btn, opts.map(b => b.dataset.id), msg);
+  if (!r) return;
+  Log.speak({ part: cur, heard: r.heard, matched: r.id, ok: !!r.id });
+  if (!r.id) return Speak.msg(msg, 'I could not hear it clearly. Tap Say it and try again.');
+  const b = opts.find(o => o.dataset.id === r.id);
+  if (!b || b.disabled) return Speak.msg(msg, `We heard “${WORDS[r.id].text}” again. Try a different answer.`, 'fix');
+  Speak.msg(msg, `We heard “${WORDS[r.id].text}”.`);
+  answer(b);
+}
+function readAloud(btn) {
+  const playing = btn.classList.contains('is-playing');
+  Voice.stop();
+  if (playing) return;
+  let ended = false;   // Voice.play() first stops other audio (which clears every playing button), so mark this one after it
+  Voice.play(btn.dataset.read, btn.dataset.text, () => { ended = true; btn.classList.remove('is-playing'); });
+  if (!ended) btn.classList.add('is-playing');
 }
 
 /* =========================================================
@@ -930,11 +1166,23 @@ const STEP = { welcome: 0, greetings: 1, farewells: 2, compare: 3, match: 4, spr
 const screenEl = n => $(`[data-screen="${n}"]`);
 let cur = 'welcome', busy = false;
 
+const TITLES = { welcome: 'Key Words', greetings: 'Greetings', farewells: 'Farewells', compare: 'Arriving or leaving?', match: 'Word Match', sprint: 'Scenario Sprint', end: 'Your result' };
 function setTop(name) {
-  $('#topbar').hidden = name === 'welcome';
-  const step = STEP[name];
-  $$('#progress i').forEach((bar, i) => gsap.to(bar, { scaleX: i < step ? 1 : 0, duration: .55, ease: 'power3.out' }));
-  $('#progress').setAttribute('aria-valuenow', step);
+  const step = STEP[name], done = name === 'end' ? 5 : Math.max(0, step - 1);
+  $('#page-title').textContent = TITLES[name];
+  $('#crumb').textContent = name === 'welcome' ? 'Communication Skills · Stage 4' : 'Communication Skills · Key Words';
+  $('#steps').hidden = name === 'welcome';
+  $$('#steps li').forEach((li, i) => {
+    const n = i + 1, on = n === step && name !== 'end';
+    li.classList.toggle('past', n < step || name === 'end');
+    li.classList.toggle('on', on);   // motion.js pops the number when a step turns on
+    if (on) li.setAttribute('aria-current', 'step'); else li.removeAttribute('aria-current');
+  });
+  updateTimers(name);
+  gsap.to('#me-fg', { attr: { 'stroke-dasharray': `${(251.3 * done / 5).toFixed(1)} 251.3` }, duration: .6, ease: 'power3.out' });
+  $('#me-n').textContent = done;
+  $('#me-text').textContent = `${done} of 5 parts`;
+  $('#me').setAttribute('aria-label', `${done} of 5 parts done`);
 }
 
 function show(name, dir = 1) {
@@ -945,14 +1193,20 @@ function show(name, dir = 1) {
   cur = name;
   setTop(name);
   gsap.to(from, {
-    x: -28 * dir, autoAlpha: 0, duration: .2, ease: 'power2.in',
+    autoAlpha: 0, duration: .15, ease: 'power1.in',
     onComplete() {
       from.hidden = true;
       gsap.set(from, { clearProps: 'all' });
       to.hidden = false;
       window.scrollTo(0, 0);
-      gsap.fromTo(to, { x: 28 * dir, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: .32, ease: 'power3.out', clearProps: 'transform', onComplete: () => { busy = false; } });
+      if (!RM) {
+        gsap.fromTo('#page-title', { y: 10, opacity: 0 }, { y: 0, opacity: 1, duration: .45, ease: 'power3.out', clearProps: 'transform,opacity' });
+        gsap.fromTo($$(':scope > .work > *', to), { y: 22, opacity: 0 }, { y: 0, opacity: 1, duration: .55, ease: 'power3.out', stagger: .06, clearProps: 'transform,opacity' });
+        const bar = $(':scope > .actionbar', to);
+        if (bar) gsap.fromTo(bar, { y: 90, opacity: 0 }, { y: 0, opacity: 1, duration: .5, ease: 'back.out(1.4)', clearProps: 'transform,opacity' });
+      }
       enter(name);
+      gsap.delayedCall(.3, () => { busy = false; });
     }
   });
 }
@@ -960,6 +1214,8 @@ const goNext = () => show(ORDER[ORDER.indexOf(cur) + 1], 1);
 const goBack = () => { const i = ORDER.indexOf(cur); if (i > 0) show(ORDER[i - 1], -1); };
 
 function enter(name) {
+  Log.enter(name);
+  if (name !== 'end') Store.set({ screen: name });
   if (name === 'greetings' || name === 'farewells') {
     dropNotes(screenEl(name));
   }
@@ -969,7 +1225,9 @@ function enter(name) {
   if (name === 'end') End.render();
 }
 function leave(name) {
+  Log.leave(name);
   Voice.stop();
+  Speak.stop();
   if (name === 'compare') { Story.stop(); Compare.stop(); }
   if (name === 'match') Match.stop();
   if (name === 'sprint') Sprint.stop();
@@ -981,7 +1239,6 @@ function leave(name) {
 function playWelcome() {
   if (RM) return;
   const tl = gsap.timeline({ delay: .15 });
-  tl.fromTo('.welcome-copy > *', { y: 18, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .5, stagger: .06, ease: 'power3.out' }, 0);
   $$('.hero-row').forEach((row, i) => {
     const b = $('.bubble', row), dots = $('.dots', row), txt = $('.txt', row), chip = $('.hero-chip', row);
     const at = .3 + i * 1.2;
@@ -1047,7 +1304,7 @@ function buildWordCards() {
     $(`[data-set="${set}"]`).innerHTML = ids.map(id => {
       const w = WORDS[id];
       const n = NOTE[w.kind];
-      return `<button class="wcard note ${w.kind}" data-id="${id}" aria-label="Tap to hear a word. ${w.alt}.">
+      return `<div class="note-wrap"><button class="wcard note ${w.kind}" data-id="${id}" aria-label="Tap to hear a word. ${w.alt}.">
         <span class="note-inner" aria-hidden="true">
           <span class="note-backing"></span>
           <span class="note-paper"><span class="note-sheet">
@@ -1059,7 +1316,9 @@ function buildWordCards() {
           <span class="note-pin"><img src="${n.pin}" width="${n.pinW}" height="48.6332" alt=""></span>
           <span class="wcard-check">${UI.check}</span>
         </span>
-      </button>`;
+      </button>
+      <button type="button" class="mic mic-pill say-word" data-id="${id}" aria-label="Say ${w.text}">${UI.mic}<span>Say it</span></button>
+      <p class="speak-msg" aria-live="polite"></p></div>`;
     }).join('');
     $$(`[data-set="${set}"] .note`).forEach(el => noteSizer.observe(el));
     const scr = screenEl(set);
@@ -1069,7 +1328,7 @@ function buildWordCards() {
 }
 function tapWord(card) {
   const id = card.dataset.id, w = WORDS[id];
-  const set = card.parentElement, scr = card.closest('.screen');
+  const set = card.closest('.word-cards'), scr = card.closest('.screen');
   $$('.wcard.is-active', set).forEach(c => { if (c !== card) { c.classList.remove('is-active'); gsap.to(c, { y: 0, scale: 1, duration: .3, ease: 'power2.out' }); } });
   card.classList.add('is-active');
   gsap.fromTo(card, { y: 0, scale: 1 }, { y: -8, scale: 1.04, duration: .4, ease: 'back.out(3)' });
@@ -1085,6 +1344,7 @@ function tapWord(card) {
   gsap.set(text, { visibility: 'visible' });
   gsap.fromTo($$('.ch', text), { y: 16, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .4, stagger: .035, ease: 'back.out(2.2)', delay: .08 });
   gsap.fromTo($('.wcard-check', card), { scale: 0 }, { scale: 1, duration: .45, ease: 'back.out(3)', delay: .35 });
+  saveHeard();
   const n = $$('.wcard.is-heard', set).length;
   const nEl = $('.heard-n', scr);
   nEl.textContent = n;
@@ -1095,6 +1355,29 @@ function tapWord(card) {
     gsap.fromTo(btn, { scale: .92 }, { scale: 1, duration: .6, ease: 'elastic.out(1,.4)', clearProps: 'transform' });
     announce('All three heard. You can continue.');
   }
+}
+
+function saveHeard() {
+  const heard = {};
+  ['greetings', 'farewells'].forEach(set => { heard[set] = $$(`[data-set="${set}"] .wcard.is-heard`).map(c => c.dataset.id); });
+  Store.set({ heard });
+}
+/* Put back cards heard in an earlier visit (no animation) */
+function restoreHeard(heard) {
+  ['greetings', 'farewells'].forEach(set => {
+    (heard[set] || []).forEach(id => {
+      const card = $(`[data-set="${set}"] .wcard[data-id="${id}"]`);
+      if (!card) return;
+      card.classList.add('is-heard');
+      card.setAttribute('aria-label', `${WORDS[id].text}. Tap to hear again.`);
+      gsap.set($('.wcard-hint', card), { autoAlpha: 0 });
+      gsap.set($('.wcard-text', card), { visibility: 'visible' });
+      gsap.set($('.wcard-check', card), { scale: 1 });
+    });
+    const scr = screenEl(set), n = $$(`[data-set="${set}"] .wcard.is-heard`).length;
+    $('.heard-n', scr).textContent = n;
+    $('[data-next]', scr).disabled = n < 3;
+  });
 }
 
 /* =========================================================
@@ -1171,12 +1454,16 @@ const Story = {
     stage.classList.toggle('sky', leaving);
     $('#stage-tag').innerHTML = leaving ? `${UI.doorOut}Leaving` : `${UI.doorIn}Arriving`;
     $('#stage-step').textContent = `${step} of 2`;
+    $('#compare-status').textContent = `Question ${step} of 2`;
   },
   setPose(leaving) { $('#story-walker .pose').innerHTML = ananyaPose(0, leaving); },
   setQuestion(step) {
-    $('#story-q').textContent = step === 1
-      ? 'Ananya arrives at the institute in the evening. What does she say?'
-      : 'Later that evening, Ananya leaves. What does she say now?';
+    const q = step === 1 ? 'Ananya arrives at the office in the evening. What does she say?' : 'Later that evening, Ananya leaves. What does she say now?';
+    $('#story-q').textContent = q;
+    Object.assign($('#story-read').dataset, { read: `ins-story-${step}`, text: q });
+    this.wrongNow = false;
+    $('#story-mic').disabled = true;
+    Speak.msg($('#story-say-msg'), 'Or say your answer out loud.');
     $('#story-nudge').textContent = '';
     $('#story-options').innerHTML = shuffle(['good-evening', 'see-you', 'goodbye'])
       .map(id => `<button class="opt" data-id="${id}" disabled><span>${WORDS[id].text}</span></button>`).join('');
@@ -1188,6 +1475,9 @@ const Story = {
     opts.forEach(b => { b.disabled = false; });
     gsap.fromTo(opts, { y: 12, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .35, stagger: .07, ease: 'back.out(2)' });
     this.locked = false;
+    $('#story-mic').disabled = false;
+    const q = $('#story .qcard');
+    if (q.getBoundingClientRect().bottom > innerHeight - 90) q.scrollIntoView({ behavior: RM ? 'auto' : 'smooth', block: 'end' });
   },
   arrows(step) {
     const inA = $('#story-svg [data-for="in"]'), outA = $('#story-svg [data-for="out"]');
@@ -1232,7 +1522,7 @@ const Story = {
     this.stop();
     $('#recap').hidden = true;
     $('#story').hidden = false;
-    $('#compare-lede').textContent = 'Watch Ananya at the institute. Pick what she says.';
+    $('#compare-lede').textContent = 'Watch Ananya at the office. Pick what she says.';
     $('[data-next]', screenEl('compare')).disabled = !this.done;
     this.step = 1; this.locked = true;
     this.setLook(1);
@@ -1247,24 +1537,32 @@ const Story = {
     walkSteps(tl, w, 2.2, 0);
     this.tl = tl;
   },
-  answer(btn) {
+  answer(btn, via = 'tap') {
     if (btn.disabled || this.locked) return;
     const id = btn.dataset.id;
     const ok = this.step === 1 ? id === 'good-evening' : id !== 'good-evening';
+    Log.answer({ part: 'story', item: `question-${this.step}`, kind: this.step === 1 ? 'arrive' : 'leave', time: 'evening', picked: id, correct: ok, first: !this.wrongNow, via });
     if (!ok) {
+      this.wrongNow = true;
       btn.classList.add('is-wrong');
       btn.disabled = true;
       SFX.bad();
       shake(btn, 8);
       const n = $('#story-nudge');
-      n.textContent = this.step === 1
-        ? 'Not this one. She is arriving, so she greets her teacher.'
-        : 'Not this one. It is still evening, but she is leaving now.';
+      n.textContent = (this.step === 1
+        ? 'Not this one. She is arriving, so she greets her manager.'
+        : 'Not this one. It is still evening, but she is leaving now.') + (MODE === 'practice' ? ' Listen to the right answer.' : '');
       gsap.fromTo(n, { autoAlpha: 0, y: -4 }, { autoAlpha: 1, y: 0, duration: .25 });
+      if (MODE === 'practice') {
+        const right = $$('#story-options .opt').find(b => !b.disabled && (this.step === 1 ? b.dataset.id === 'good-evening' : b.dataset.id !== 'good-evening'));
+        if (right) { right.classList.add('is-hint'); setTimeout(() => Voice.play(right.dataset.id, WORDS[right.dataset.id].text), 450); }
+      }
       return;
     }
+    $('#story-mic').disabled = true;
     this.locked = true;
     btn.classList.add('is-right');
+    if ($('#stage').getBoundingClientRect().top < 0) $('#stage').scrollIntoView({ behavior: RM ? 'auto' : 'smooth', block: 'start' });
     btn.insertAdjacentHTML('afterbegin', `<span class="ok" aria-hidden="true">${UI.check}</span>`);
     $$('#story-options .opt').forEach(b => { b.disabled = true; });
     gsap.fromTo(btn, { scale: 1 }, { scale: 1.06, duration: .15, yoyo: true, repeat: 1 });
@@ -1276,7 +1574,11 @@ const Story = {
     this.say($('#bubble-ananya'), line, this.step === 1 ? 'sun' : 'sky', x, 153, .5);
     announce(`Ananya says: ${line}`);
     const reply = this.step === 1 ? 'Good evening!' : 'See you tomorrow!';
-    this.later(1.1, () => { this.say($('#bubble-teacher'), reply, 'plain', 354, 137, .5); announce(`Her teacher says: ${reply}`); });
+    this.later(1.1, () => {
+      this.say($('#bubble-teacher'), reply, 'plain', 354, 137, .5);
+      Voice.play(this.step === 1 ? 'mgr-good-evening' : 'mgr-see-you-tomorrow', reply);   // the manager's own voice
+      announce(`Her manager says: ${reply}`);
+    });
     this.later(2.9, () => (this.step === 1 ? this.toLeave() : this.toRecap()));
   },
   toLeave() {
@@ -1292,7 +1594,7 @@ const Story = {
       .to(pose, { scaleX: 0, duration: .16, ease: 'power2.in', transformOrigin: '50% 50%' }, .35)
       .call(() => { this.setPose(true); const arm = $('.arm-w', w); if (arm && !RM) this.loops.push(waveLoop(arm)); }, null, .51)
       .to(pose, { scaleX: 1, duration: .18, ease: 'power2.out', transformOrigin: '50% 50%' }, .52)
-      // ...and walks away, waving back at her teacher
+      // ...and walks away, waving back at her manager
       .fromTo(w, { x: this.STOP_IN }, { x: this.STOP_OUT, duration: 1.9, ease: 'power1.inOut' }, .8)
       .call(() => this.loops.push(walkSteps(gsap.timeline(), w, 1.9, 0)), null, .8);
     this.tl = tl;
@@ -1308,7 +1610,9 @@ const Story = {
         story.hidden = true;
         gsap.set(story, { clearProps: 'all' });
         recap.hidden = false;
-        $('#compare-lede').textContent = 'Same evening. Same gate. Only the direction changes.';
+        $('#compare-lede').textContent = 'Same evening. Same office. Only the direction changes.';
+        $('#compare-status').textContent = 'Both answered';
+        Store.set({ storyDone: true });
         gsap.fromTo(recap, { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: .4, ease: 'power3.out', clearProps: 'transform' });
         Compare.play(true);
         const btn = $('[data-next]', screenEl('compare'));
@@ -1369,14 +1673,17 @@ const Match = {
   open: [], lock: false, n: 0, timer: null,
   start() {
     this.stop();
-    this.open = []; this.lock = false; this.n = 0;
+    this.open = []; this.lock = false; this.n = 0; this.misses = 0; this.t0 = performance.now();
+    const sounds = SHOW === 'sounds', text = sounds ? 'Listen to each card and find its picture.' : 'Find each word and its picture.';
+    $('#match-text').textContent = text;
+    Object.assign($('#match-read').dataset, { read: sounds ? 'ins-match-sounds' : 'ins-match', text });
     this.tally(false);
     $('[data-next]', screenEl('match')).disabled = true;
     const deck = shuffle(Object.keys(WORDS).flatMap(id => [{ id, face: 'icon' }, { id, face: 'word' }]));
     const grid = $('#match-grid');
     grid.innerHTML = deck.map((c, i) => {
       const w = WORDS[c.id];
-      const front = c.face === 'icon' ? ICON[w.icon]() : `<span class="mword">${w.text}</span>`;
+      const front = c.face === 'icon' ? ICON[w.icon]() : sounds ? `<span class="sound-face">${UI.speaker}<span>Listen</span></span>` : `<span class="mword">${w.text}</span>`;
       return `<button class="mcard" data-id="${c.id}" data-face="${c.face}" aria-label="Card ${i + 1}, face down">
         <span class="mcard-inner">
           <span class="mcard-face mcard-back" aria-hidden="true">${UI.cardBack}</span>
@@ -1385,8 +1692,7 @@ const Match = {
       </button>`;
     }).join('');
     gsap.fromTo(grid.children, { scale: .7, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, duration: .4, ease: 'back.out(1.8)', stagger: { each: .035, from: 'random' } });
-    this.timer = setTimeout(() => this.timeUp(), this.LIMIT);
-    matchClock.start();
+    if (MODE === 'test') { this.timer = setTimeout(() => this.timeUp(), this.LIMIT); matchClock.start(); }
   },
   stop() {
     clearTimeout(this.timer); this.timer = null;
@@ -1395,8 +1701,11 @@ const Match = {
     gsap.killTweensOf($$('.mcard, .mcard-inner', grid));
   },
   tap(card) {
-    if (this.lock || card.classList.contains('is-up')) return;
+    const sound = SHOW === 'sounds' && card.dataset.face === 'word', w = WORDS[card.dataset.id];
+    if (card.classList.contains('is-up')) { if (sound) Voice.play(card.dataset.id, w.text); return; }   // hear a sound card again
+    if (this.lock) return;
     this.flip(card, true);
+    if (sound) Voice.play(card.dataset.id, w.text);
     this.open.push(card);
     if (this.open.length < 2) return;
     this.lock = true;
@@ -1411,7 +1720,7 @@ const Match = {
       SFX.flip();
       gsap.fromTo(card, { y: 0 }, { y: -5, duration: .22, yoyo: true, repeat: 1, ease: 'power1.out' });
       const w = WORDS[card.dataset.id];
-      card.setAttribute('aria-label', card.dataset.face === 'icon' ? w.alt : `Word: ${w.text}`);
+      card.setAttribute('aria-label', card.dataset.face === 'icon' ? w.alt : SHOW === 'sounds' ? 'Sound card. Tap to hear it again.' : `Word: ${w.text}`);
     } else {
       card.setAttribute('aria-label', 'Card, face down');
     }
@@ -1432,6 +1741,7 @@ const Match = {
     if (this.n === 6) this.win();
   },
   miss(a, b) {
+    this.misses++;
     SFX.bad();
     announce('Not a pair. Try again.');
     shake([a, b]).eventCallback('onComplete', () => {
@@ -1446,6 +1756,7 @@ const Match = {
   win() {
     clearTimeout(this.timer); this.timer = null;
     matchClock.stop('is-done');
+    Log.matchDone({ misses: this.misses, ms: performance.now() - this.t0, show: SHOW, mode: MODE });
     setTimeout(() => SFX.win(), 350);
     gsap.to($$('#match-grid .mcard'), { y: -10, duration: .2, yoyo: true, repeat: 1, ease: 'power2.out', stagger: .05, delay: .5 });
     const btn = $('[data-next]', screenEl('match'));
@@ -1456,25 +1767,34 @@ const Match = {
   timeUp() {
     this.lock = true;
     matchClock.stop('is-up');
+    Log.timeout('match');
     Voice.stop();
     Modal.open({ icon: UI.hourglass, title: 'Time’s up', text: 'Word Match starts again from the beginning. You have 4 minutes.', button: 'Play again', onClose: () => this.start() });
   }
 };
 
 /* =========================================================
-   4e: Scenario Sprint (max 5 minutes; only first tries earn stars)
+   4e: Scenario Sprint (max 5 minutes; only first tries count toward the score)
    ========================================================= */
 const Sprint = {
   LIMIT: 5 * 60 * 1000,
-  i: 0, stars: 0, wrong: false, answered: false, timer: null, loops: [],
-  start() {
+  i: 0, stars: 0, wrong: false, answered: false, timer: null, loops: [], list: null, rounds: 0,
+  /* First play: the spec's five. Replays: the night meeting plus two arriving or meeting and two leaving situations. */
+  pick() {
+    const ids = this.rounds++ === 0 ? FIRST_ROUND : (() => {
+      const rest = Object.keys(POOL).filter(id => id !== 'friend');
+      return shuffle(['friend', ...shuffle(rest.filter(id => POOL[id].kind !== 'leave')).slice(0, 2), ...shuffle(rest.filter(id => POOL[id].kind === 'leave')).slice(0, 2)]);
+    })();
+    return ids.map(id => ({ id, ...POOL[id] }));
+  },
+  start(fresh = true) {
     this.stop();
+    if (fresh || !this.list) this.list = this.pick();
     this.i = 0; this.stars = 0;
-    $('#stars').innerHTML = Array.from({ length: 5 }, () => `<span class="star">${UI.star}</span>`).join('');
+    $('#pips').innerHTML = Array.from({ length: 5 }, () => `<span class="pip">${UI.check}</span>`).join('');
     this.label();
     this.render(true);
-    this.timer = setTimeout(() => this.timeUp(), this.LIMIT);
-    sprintClock.start();
+    if (MODE === 'test') { this.timer = setTimeout(() => this.timeUp(), this.LIMIT); sprintClock.start(); }
   },
   stop() {
     clearTimeout(this.timer); this.timer = null;
@@ -1482,27 +1802,33 @@ const Sprint = {
     Sheet.hide(true);
     this.loops.forEach(t => t.kill()); this.loops = [];
   },
-  label() { $('#stars').setAttribute('aria-label', `${this.stars} of 5 stars`); },
+  label() { $('#pips').setAttribute('aria-label', `First-try score: ${this.stars} of 5`); },
   render(first) {
-    const sc = SCENARIOS[this.i];
+    const sc = this.list[this.i];
     this.wrong = false; this.answered = false;
     this.loops.forEach(t => t.kill()); this.loops = [];
     const wrap = $('#sprint-card');
     const build = () => {
       wrap.innerHTML = `
         <div class="sprint-art">${ART[sc.id]()}<span class="sprint-count">${this.i + 1} of 5</span></div>
-        <div>
-          <p class="sprint-q" id="sprint-q">${sc.text}</p>
+        <section class="card qcard">
+          <p class="eyebrow">Situation ${this.i + 1} of 5</p>
+          <div class="q-row"><p class="question" id="sprint-q">${sc.text}</p><button type="button" class="read-btn" data-read="sit-${sc.id}" data-text="${sc.text}" aria-label="Read the situation aloud">${UI.speaker}</button></div>
           <p class="nudge" id="nudge" aria-live="polite"></p>
           <div class="options" role="group" aria-labelledby="sprint-q">
-            ${shuffle(sc.options).map(id => `<button class="opt" data-id="${id}"><span>${WORDS[id].text}</span></button>`).join('')}
+            ${shuffle(sc.options).map(id => `<button type="button" class="opt" data-id="${id}"><span>${WORDS[id].text}</span></button>`).join('')}
           </div>
-        </div>`;
+          <div class="speak-row">
+            <button type="button" class="mic mic-pill" id="sprint-mic">${UI.mic}<span>Say it</span></button>
+            <p class="speak-msg" id="sprint-say-msg" aria-live="polite">Or say your answer out loud.</p>
+          </div>
+        </section>`;
+      $('#sprint-status').textContent = `Situation ${this.i + 1} of 5`;
       if (!RM) $$('.dir-arrow', wrap).forEach(a => this.loops.push(gsap.to(a, { x: 5 * Number(a.dataset.dir), duration: .6, repeat: -1, yoyo: true, ease: 'sine.inOut' })));
     };
     if (first) {
       build();
-      gsap.fromTo($$('.sprint-art, .sprint-q, .opt', wrap), { y: 16, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .38, stagger: .05, ease: 'power2.out' });
+      gsap.fromTo($$('.sprint-art, .qcard', wrap), { y: 16, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .38, stagger: .05, ease: 'power2.out' });
     } else {
       gsap.to(wrap, {
         x: -30, autoAlpha: 0, duration: .2, ease: 'power2.in',
@@ -1510,11 +1836,13 @@ const Sprint = {
       });
     }
   },
-  answer(btn) {
+  answer(btn, via = 'tap') {
     if (btn.disabled || this.answered) return;
-    const sc = SCENARIOS[this.i], id = btn.dataset.id, w = WORDS[id];
+    const sc = this.list[this.i], id = btn.dataset.id, w = WORDS[id];
+    Log.answer({ part: 'sprint', item: sc.id, kind: sc.kind, time: sc.time, picked: id, correct: sc.correct.includes(id), first: !this.wrong, via });
     if (sc.correct.includes(id)) {
       this.answered = true;
+      $('#sprint-mic').disabled = true;
       btn.classList.add('is-right');
       btn.insertAdjacentHTML('afterbegin', `<span class="ok" aria-hidden="true">${UI.check}</span>`);
       $$('#sprint-card .opt').forEach(b => { b.disabled = true; });
@@ -1522,9 +1850,10 @@ const Sprint = {
       SFX.good();
       Voice.play(id, w.text);
       const first = !this.wrong;
-      if (first) { this.stars++; this.fly(btn); }
+      if (first) { this.stars++; this.markPip(); }
+      $('#sprint-status').textContent = `Score ${this.stars} of 5`;
       $('#nudge').textContent = '';
-      Sheet.show({ first, why: sc.why, tip: sc.tip });
+      Sheet.show({ first, why: sc.why, tip: sc.tip, last: this.i === this.list.length - 1 });
     } else {
       this.wrong = true;
       btn.classList.add('is-wrong');
@@ -1533,44 +1862,36 @@ const Sprint = {
       SFX.bad();
       shake(btn, 8);
       const n = $('#nudge');
-      n.textContent = 'Not this one. Are you arriving or leaving? Try again.';
+      n.textContent = MODE === 'practice' ? 'Not this one. Listen to the right answer, then tap it.' : 'Not this one. Are you arriving or leaving? Try again.';
       gsap.fromTo(n, { autoAlpha: 0, y: -4 }, { autoAlpha: 1, y: 0, duration: .25 });
+      if (MODE === 'practice') {
+        const right = $$('#sprint-card .opt').find(b => sc.correct.includes(b.dataset.id));
+        if (right) { right.classList.add('is-hint'); setTimeout(() => Voice.play(right.dataset.id, WORDS[right.dataset.id].text), 450); }
+      }
     }
   },
-  fly(btn) {
-    const slot = $$('#stars .star')[this.stars - 1];
-    if (!slot) return;
-    const b = btn.getBoundingClientRect(), s = slot.getBoundingClientRect(), size = 34;
-    const bx = b.left + b.width / 2, by = b.top + b.height / 2;
-    const el = document.createElement('div');
-    el.className = 'fly-star';
-    el.innerHTML = UI.star;
-    document.body.appendChild(el);
-    gsap.set(el, { left: bx - size / 2, top: by - size / 2, width: size, height: size });
-    gsap.timeline({ onComplete: () => {
-      el.remove();
-      slot.classList.add('is-on');
-      gsap.fromTo(slot, { scale: .4, rotation: -30 }, { scale: 1, rotation: 0, duration: .6, ease: 'elastic.out(1,.45)' });
-      SFX.star();
-      this.label();
-    } })
-      .fromTo(el, { scale: .3 }, { scale: 1.4, duration: .25, ease: 'back.out(2)' })
-      .to(el, { x: s.left + s.width / 2 - bx, y: s.top + s.height / 2 - by, scale: .8, rotation: 220, duration: .6, ease: 'power2.inOut' });
+  markPip() {
+    const pip = $$('#pips .pip')[this.stars - 1];
+    if (!pip) return;
+    pip.classList.add('is-on');
+    gsap.fromTo(pip, { scale: .6 }, { scale: 1, duration: .35, ease: 'power3.out' });
+    this.label();
   },
   next() {
     if (!this.answered || cur !== 'sprint') return;
     this.answered = false;
     Sheet.hide();
     this.i++;
-    if (this.i >= SCENARIOS.length) { clearTimeout(this.timer); this.timer = null; sprintClock.stop('is-done'); show('end'); }
+    if (this.i >= this.list.length) { clearTimeout(this.timer); this.timer = null; sprintClock.stop('is-done'); show('end'); }
     else this.render(false);
   },
   timeUp() {
     sprintClock.stop('is-up');
+    Log.timeout('sprint');
     Sheet.hide(true);
     Voice.stop();
     $$('#sprint-card .opt').forEach(b => { b.disabled = true; });
-    Modal.open({ icon: UI.hourglass, title: 'Time’s up', text: 'Scenario Sprint starts again from the first situation. You have 5 minutes.', button: 'Start again', onClose: () => this.start() });
+    Modal.open({ icon: UI.hourglass, title: 'Time’s up', text: 'Scenario Sprint starts again from the first situation. You have 5 minutes.', button: 'Start again', onClose: () => this.start(false) });
   }
 };
 
@@ -1578,36 +1899,56 @@ const Sprint = {
    End screen
    ========================================================= */
 const End = {
+  /* "What to practise" (the mistakes that matter) or "What went well" */
+  practise() {
+    const conf = Log.confusions(), list = $('#practise-list'), q = id => `<span class="q">${WORDS[id].text}</span>`, when = { morning: 'in the morning', afternoon: 'in the afternoon', evening: 'in the evening', night: 'at night' };
+    const MSG = {
+      'greet-when-leaving': a => `You chose ${q(a.picked)} when leaving. When you leave, say <span class="b">Goodbye</span> or <span class="b">See you</span>, even ${when[a.time]}.`,
+      'bye-when-arriving': a => `You chose ${q(a.picked)} when ${a.kind === 'meet' ? 'meeting someone' : 'arriving'}. Greet people instead: <span class="b">Good morning</span>, <span class="b">Good afternoon</span> or <span class="b">Good evening</span>.`,
+      time: a => `You chose ${q(a.picked)} ${when[a.time]}. Match the greeting to the time of day: morning, afternoon, or evening and night.`,
+      farewell: a => `You chose ${q(a.picked)} when leaving. Say <span class="b">See you tomorrow</span> only when you will meet again tomorrow.`
+    };
+    const said = Log.ensure().speaking.filter(x => x.ok).length;
+    $('#practise-title').textContent = conf.length ? 'What to practise' : 'What went well';
+    list.className = `list ${conf.length ? 'fix' : 'good'}`;
+    list.innerHTML = conf.length
+      ? conf.map(([k, a], i) => `<li><span class="dot">${i + 1}</span><p>${MSG[k](a)}</p></li>`).join('')
+      : `<li><span class="dot">${UI.check}</span><p>You chose the right words for arriving and leaving.</p></li>${said ? `<li><span class="dot">${UI.check}</span><p>You said ${said} phrase${said === 1 ? '' : 's'} clearly.</p></li>` : ''}`;
+  },
   buildRecap() {
     const item = id => `<li><button class="recap-word" data-id="${id}">${WORDS[id].text}${UI.speaker}</button></li>`;
     $('#recap-sun').innerHTML = GREETINGS.map(item).join('');
     $('#recap-sky').innerHTML = FAREWELLS.map(item).join('');
   },
   render() {
-    const n = Sprint.stars;
+    const n = Sprint.stars, len = (251.3 * n / 5).toFixed(1);
+    $('#end-level').textContent = n === 5 ? 'Excellent' : n >= 4 ? 'Great' : n >= 3 ? 'Good' : 'Keep practising';
     $('#end-title').textContent = `You matched ${n} out of 5!`;
-    $('#end-note').textContent = n === 5 ? 'All five right on the first try.'
-      : n >= 3 ? 'Nice work. Only first tries count. Play again to get all five.'
-      : 'Only first tries count. Play again and you will get more.';
-    const box = $('#end-stars');
-    box.innerHTML = Array.from({ length: 5 }, () => `<span class="star">${UI.star}</span>`).join('');
-    box.setAttribute('aria-label', `${n} of 5 stars`);
-    gsap.fromTo(box.children, { scale: 0, rotation: -40 }, { scale: 1, rotation: 0, duration: .5, stagger: .08, ease: 'back.out(2)' });
-    Array.from(box.children).slice(0, n).forEach((s, i) => gsap.delayedCall(.45 + i * .15, () => {
-      s.classList.add('is-on');
-      gsap.fromTo(s, { scale: 1.35 }, { scale: 1, duration: .4, ease: 'back.out(3)' });
-    }));
-    if (n) gsap.delayedCall(.45 + n * .15, () => SFX.star());
-    gsap.fromTo(['#end-title', '#end-note', '.recap'], { y: 16, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .4, stagger: .08, delay: .2 });
-    gsap.delayedCall(.5, confetti);
+    $('#end-note').textContent = n === 5 ? 'All five correct on the first try.' : 'Only first tries count. Play again to improve your score.';
+    const best = Math.max(n, Store.get().best || 0);
+    Store.set({ best });
+    $('#end-status').textContent = `Score ${n} of 5 · best ${best}`;
+    this.practise();
+    $('#report').textContent = Log.report();
+    try { localStorage.setItem('kw-stage4-last-report', $('#report').textContent); } catch (e) { /* storage blocked */ }
+    $('#end-ring').innerHTML = `<svg class="ring" viewBox="0 0 96 96" role="img" aria-label="${n} of 5"><circle class="bg" cx="48" cy="48" r="40" fill="none" stroke-width="10"/><circle class="fg" cx="48" cy="48" r="40" fill="none" stroke-width="10" stroke-linecap="round" stroke-dasharray="${len} 251.3" transform="rotate(-90 48 48)"/><text x="48" y="57" text-anchor="middle" font-weight="700">${n}<tspan class="of">/5</tspan></text></svg>`;
+    if (n) gsap.delayedCall(.6, () => SFX.good());
   }
 };
 
+function copyReport() {
+  const txt = $('#report').textContent, msg = $('#copy-msg');
+  const select = () => { const r = document.createRange(); r.selectNodeContents($('#report')); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); msg.textContent = 'Selected. Press Ctrl+C (or Cmd+C) to copy.'; };
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(() => { msg.textContent = 'Copied. Paste it into your notes.'; }, select);
+  else select();
+}
+
 function finish() {
+  Store.clear();
   try { if (window.parent !== window) window.parent.postMessage({ type: 'stage-complete', stage: 4, score: Sprint.stars, outOf: 5 }, '*'); } catch (e) { /* not embedded */ }
   Modal.open({
-    icon: UI.trophyBig, title: 'Stage 4 complete',
-    text: 'You know three greetings and three farewells, and when to use each one.',
+    icon: UI.done, title: 'Stage 4 complete',
+    text: 'You can now greet people and say goodbye correctly, at work and in daily life.',
     button: 'Back to start',
     onClose: () => { buildWordCards(); Story.done = false; show('welcome', -1); }
   });
@@ -1625,20 +1966,47 @@ function init() {
   Story.build();
   End.buildRecap();
   Voice.init();
+  syncChoices();
+  if (window.CommKit && Speak.served()) CommKit.offline();   // keep the kit and speech model on the device
+  /* Saved progress: put back what was heard and offer to continue */
+  const saved = Store.get();
+  if (saved.heard) restoreHeard(saved.heard);
+  if (saved.storyDone) Story.done = true;
+  if (saved.screen && saved.screen !== 'welcome' && ORDER.includes(saved.screen)) {
+    $('#resume').hidden = false;
+    $('#restart').hidden = false;
+    $('#start').hidden = true;
+    $('#welcome-status').textContent = `Saved: ${TITLES[saved.screen]}`;
+  }
 
   document.addEventListener('click', e => {
     const t = e.target.closest('button');
     if (!t || t.disabled) return;
-    if (t.id === 'start') return show('greetings');
-    if (t.id === 'back') return goBack();
+    if (t.closest('.modes')) return setChoice(t.closest('.modes').dataset.kind, t.dataset.value);
+    if (t.classList.contains('read-btn')) return readAloud(t);
+    if (t.classList.contains('say-word')) return sayWord(t);
+    if (t.id === 'story-mic') return sayAnswer(t, '#story-options .opt', '#story-say-msg', b => Story.answer(b, 'voice'));
+    if (t.id === 'sprint-mic') return sayAnswer(t, '#sprint-card .opt', '#sprint-say-msg', b => Sprint.answer(b, 'voice'));
+    if (t.id === 'copy-report') return copyReport();
+    if (t.id === 'start' || t.id === 'resume' || t.id === 'restart') {
+      if (t.id === 'restart') { Store.clear(); buildWordCards(); Story.done = false; }
+      const to = t.id === 'resume' ? (Store.get().screen || 'greetings') : 'greetings';
+      ['resume', 'restart'].forEach(x => { $(`#${x}`).hidden = true; });
+      $('#start').hidden = false;
+      $('#welcome-status').textContent = '5 parts · 2 short games';
+      Log.begin();
+      Speak.warm();
+      return show(to);
+    }
+    if (t.hasAttribute('data-back')) return goBack();
     if (t.hasAttribute('data-next')) return goNext();
     if (t.classList.contains('wcard')) return tapWord(t);
     if (t.classList.contains('say')) { gsap.fromTo(t, { scale: .94 }, { scale: 1, duration: .4, ease: 'back.out(3)' }); return Voice.play(t.dataset.id, t.dataset.text); }
     if (t.id === 'replay-compare') return Story.start();
-    if (t.classList.contains('mcard')) return t.getAttribute('aria-disabled') ? null : Match.tap(t);
+    if (t.classList.contains('mcard')) return Match.tap(t);
     if (t.closest('#story-options')) return Story.answer(t);
     if (t.classList.contains('opt')) return Sprint.answer(t);
-    if (t.id === 'sheet-btn') return Sprint.next();
+    if (t.id === 'sprint-next') return Sprint.next();
     if (t.id === 'modal-btn') return Modal.close();
     if (t.dataset.action === 'replay') return show('sprint', -1);
     if (t.dataset.action === 'finish') return finish();
@@ -1652,7 +2020,7 @@ function init() {
       if (k >= 1 && k <= 3) { const b = $$('#story-options .opt')[k - 1]; if (b && !b.disabled) { b.focus(); b.click(); } }
       return;
     }
-    if (cur !== 'sprint' || !$('#modal').hidden || !$('#sheet').hidden) return;
+    if (cur !== 'sprint' || !$('#modal').hidden || !$('#feedback').hidden) return;
     const k = Number(e.key);
     if (k >= 1 && k <= 4) { const b = $$('#sprint-card .opt')[k - 1]; if (b && !b.disabled) { b.focus(); b.click(); } }
   });

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /*
-  Generates the word clips that index.html plays (audio/<id>.mp3) with ElevenLabs text-to-speech.
+  Generates every clip index.html plays (audio/<id>.mp3) with ElevenLabs text-to-speech.
 
   The API key is never stored in this project, so it cannot reach GitHub or the page.
   It is read, in this order, from:
@@ -11,30 +11,61 @@
   Usage (from the project folder):
     node tools/generate-audio.mjs                 generate any clips that are missing
     node tools/generate-audio.mjs --force         regenerate every clip
+    node tools/generate-audio.mjs --only=mgr-     (re)generate only clips whose id starts with "mgr-"
     node tools/generate-audio.mjs --list-voices   show the voices on your account
-  Optional settings (environment or .env): ELEVENLABS_VOICE_ID, ELEVENLABS_MODEL
+  Optional settings (environment or .env): ELEVENLABS_VOICE_ID (narrator), ELEVENLABS_MANAGER_VOICE_ID, ELEVENLABS_MODEL
 */
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { homedir } from 'node:os';
 
-/* Default voice: Tripti – Warm & Sweet Training Voice (a voice ID is not a secret) */
-const DEFAULT_VOICE_ID = 'X5RWySWhCXiGdP9YIKck';
-
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT_DIR = join(ROOT, 'audio');
 const API = 'https://api.elevenlabs.io/v1';
 
-/* What the page says. Keys must match the word ids in index.html. */
-const CLIPS = {
-  'good-morning': 'Good morning!',
-  'good-afternoon': 'Good afternoon!',
-  'good-evening': 'Good evening!',
-  'goodbye': 'Goodbye!',
-  'see-you': 'See you!',
-  'see-you-tomorrow': 'See you tomorrow!'
-};
+/* Voices (a voice ID is not a secret) */
+const NARRATOR = 'X5RWySWhCXiGdP9YIKck'; // Tripti – Warm & Sweet Training Voice: words, Ananya, instructions, situations
+const MANAGER = '9PvnT6XRzlljoaDG6Knu';  // Ranbir Merchant – Warm & Friendly: Ananya's manager in the arrive/leave story
+
+/* Everything the page says. Ids must match index.html. voice: 'manager' uses MANAGER, otherwise NARRATOR.
+   Instruction and situation texts must stay identical to the text on screen. */
+const CLIPS = [
+  // the six key words
+  { id: 'good-morning', text: 'Good morning!' },
+  { id: 'good-afternoon', text: 'Good afternoon!' },
+  { id: 'good-evening', text: 'Good evening!' },
+  { id: 'goodbye', text: 'Goodbye!' },
+  { id: 'see-you', text: 'See you!' },
+  { id: 'see-you-tomorrow', text: 'See you tomorrow!' },
+  // Ananya's manager
+  { id: 'mgr-good-evening', text: 'Good evening!', voice: 'manager' },
+  { id: 'mgr-see-you-tomorrow', text: 'See you tomorrow!', voice: 'manager' },
+  // instructions, read aloud on request
+  { id: 'ins-welcome', text: 'Learn what to say when you arrive and when you leave, at work and in daily life.' },
+  { id: 'ins-greetings', text: 'Say these when you arrive. Tap a card to hear it, then tap Say it and say it yourself.' },
+  { id: 'ins-farewells', text: 'Say these when you leave. Tap a card to hear it, then tap Say it and say it yourself.' },
+  { id: 'ins-story-1', text: 'Ananya arrives at the office in the evening. What does she say?' },
+  { id: 'ins-story-2', text: 'Later that evening, Ananya leaves. What does she say now?' },
+  { id: 'ins-recap', text: 'Same evening. Same office. Only the direction changes. Even in the evening, say Goodbye or See you when you leave.' },
+  { id: 'ins-match', text: 'Find each word and its picture.' },
+  { id: 'ins-match-sounds', text: 'Listen to each card and find its picture.' },
+  { id: 'ins-sprint', text: 'Pick what you would say, or say it out loud.' },
+  { id: 'tip-night', text: "Tip: when you meet someone at night, say Good evening. You'll find out when to say Good night later." },
+  // Scenario Sprint situations
+  { id: 'sit-office', text: 'You are arriving at the office in the morning.' },
+  { id: 'sit-market', text: 'You are leaving the market in the evening.' },
+  { id: 'sit-friend', text: 'You are meeting a friend at night.' },
+  { id: 'sit-work', text: 'You are leaving work in the afternoon.' },
+  { id: 'sit-home', text: 'You are arriving home in the evening.' },
+  { id: 'sit-client', text: "You are arriving at a client's office in the afternoon." },
+  { id: 'sit-shop-morning', text: 'You are leaving a shop in the morning.' },
+  { id: 'sit-market-morning', text: 'You are arriving at the market in the morning.' },
+  { id: 'sit-friend-home', text: "You are leaving a friend's home at night." },
+  { id: 'sit-college', text: 'You are arriving at college in the afternoon.' },
+  { id: 'sit-office-evening', text: 'You are leaving the office in the evening. You will come back tomorrow.' },
+  { id: 'sit-manager-morning', text: 'You meet your manager at the office gate in the morning.' }
+];
 
 /* Read KEY=value lines from .env without printing anything */
 function loadEnv() {
@@ -60,13 +91,15 @@ if (!KEY) {
   process.exit(1);
 }
 const headers = { 'xi-api-key': KEY };
-const args = new Set(process.argv.slice(2));
+const args = process.argv.slice(2);
+const has = flag => args.includes(flag);
+const only = (args.find(a => a.startsWith('--only=')) || '').slice(7);
 
 async function fail(res, what) {
   let detail = '';
   try { const j = await res.json(); detail = j.detail?.message || j.detail?.status || JSON.stringify(j.detail || j); } catch { /* not JSON */ }
   console.error(`${what} failed: HTTP ${res.status} ${detail}`);
-  if (res.status === 401) console.error('The API key was rejected. Check ELEVENLABS_API_KEY in .env.');
+  if (res.status === 401) console.error('The API key was rejected.');
   process.exit(1);
 }
 
@@ -80,34 +113,40 @@ async function listVoices() {
   }
 }
 
-async function generate() {
-  const voice = process.env.ELEVENLABS_VOICE_ID || DEFAULT_VOICE_ID;
-  const model = process.env.ELEVENLABS_MODEL || 'eleven_multilingual_v2';
-  // Use the voice's own tuned settings (the voice owner's defaults sound most natural)
-  let voiceSettings = { stability: 0.5, similarity_boost: 0.75, style: 0, use_speaker_boost: true };
-  const sres = await fetch(`${API}/voices/${voice}/settings`, { headers });
-  if (sres.ok) voiceSettings = await sres.json();
-  else if (sres.status === 401) await fail(sres, 'Reading voice settings');
-  console.log(`voice ${voice}, model ${model}, settings ${JSON.stringify(voiceSettings)}`);
+/* The voice owner's own tuned settings sound most natural */
+const settingsCache = {};
+async function settingsFor(voice) {
+  if (settingsCache[voice]) return settingsCache[voice];
+  let s = { stability: 0.5, similarity_boost: 0.75, style: 0, use_speaker_boost: true };
+  const res = await fetch(`${API}/voices/${voice}/settings`, { headers });
+  if (res.ok) s = await res.json();
+  else if (res.status === 401) await fail(res, 'Reading voice settings');
+  return (settingsCache[voice] = s);
+}
 
+async function generate() {
+  const narrator = process.env.ELEVENLABS_VOICE_ID || NARRATOR;
+  const manager = process.env.ELEVENLABS_MANAGER_VOICE_ID || MANAGER;
+  const model = process.env.ELEVENLABS_MODEL || 'eleven_multilingual_v2';
   mkdirSync(OUT_DIR, { recursive: true });
-  for (const [id, text] of Object.entries(CLIPS)) {
-    const out = join(OUT_DIR, `${id}.mp3`);
-    if (existsSync(out) && !args.has('--force')) { console.log(`skip  ${id}.mp3 (exists)`); continue; }
+  let made = 0, skipped = 0;
+  for (const clip of CLIPS) {
+    if (only && !clip.id.startsWith(only)) continue;
+    const out = join(OUT_DIR, `${clip.id}.mp3`);
+    if (existsSync(out) && !has('--force')) { skipped++; continue; }
+    const voice = clip.voice === 'manager' ? manager : narrator;
     const res = await fetch(`${API}/text-to-speech/${voice}?output_format=mp3_44100_128`, {
       method: 'POST',
       headers: { ...headers, 'Content-Type': 'application/json', Accept: 'audio/mpeg' },
-      body: JSON.stringify({
-        text,
-        model_id: model,
-        voice_settings: voiceSettings
-      })
+      body: JSON.stringify({ text: clip.text, model_id: model, voice_settings: await settingsFor(voice) })
     });
-    if (!res.ok) await fail(res, `Generating "${text}"`);
+    if (!res.ok) await fail(res, `Generating "${clip.text}"`);
     const buf = Buffer.from(await res.arrayBuffer());
     writeFileSync(out, buf);
-    console.log(`saved ${id}.mp3  (${(buf.length / 1024).toFixed(1)} KB)  "${text}"`);
+    made++;
+    console.log(`saved ${clip.id}.mp3  (${(buf.length / 1024).toFixed(1)} KB, ${clip.voice === 'manager' ? 'manager' : 'narrator'})`);
   }
+  console.log(`done: ${made} generated, ${skipped} already there`);
 }
 
-(args.has('--list-voices') ? listVoices() : generate()).catch(e => { console.error(e.message); process.exit(1); });
+(has('--list-voices') ? listVoices() : generate()).catch(e => { console.error(e.message); process.exit(1); });
