@@ -169,6 +169,17 @@ body[data-view="welcome"] .pagehead{display:none}
   .home-track{grid-area:track;margin-right:26px}
 }
 
+/* ---------- Start / Continue transition ----------
+   The black button grows over the screen, names the part, then lifts like a curtain into the black top bar. */
+.launch{position:fixed;inset:0;z-index:70;display:grid;place-items:center;padding:24px;background:var(--frame);color:#fff;text-align:center}
+.launch-in{display:grid;justify-items:center;gap:10px}
+.launch-part{margin:0;font-size:.9375rem;font-weight:600;color:#a3a7b1}
+.launch-title{margin:0;font-size:clamp(2.5rem,1.5rem + 4.5vw,5rem);font-weight:800;line-height:1.02;letter-spacing:-.045em}
+.launch-dots{display:flex;gap:6px;margin-top:12px}
+.launch-dots i{width:8px;height:8px;border-radius:99px;background:#3a3d45}
+.launch-dots i.done{background:var(--mint)}
+.launch-dots i.on{width:28px;background:#fff}
+
 /* ---------- 4a / 4b word cards: pinned sticky notes ----------
    Built from Figma moodboard nodes 30:47 (yellow backing, greetings) and 30:15 (blue backing, farewells).
    .note-inner is laid out at the design's native 518.773 x 476 px and scaled to the card width by JS (--k). */
@@ -627,6 +638,14 @@ details.more .btn{margin-left:20px}
 </div>
 
 <!-- Dialog -->
+<div class="launch" id="launch" hidden aria-hidden="true">
+  <div class="launch-in">
+    <p class="launch-part" id="launch-part">Part 1 of 5</p>
+    <p class="launch-title" id="launch-title">Greetings</p>
+    <div class="launch-dots" id="launch-dots"><i></i><i></i><i></i><i></i><i></i></div>
+  </div>
+</div>
+
 <div class="modal" id="modal" hidden role="dialog" aria-modal="true" aria-labelledby="modal-title">
   <div class="modal-card">
     <div class="modal-icon" id="modal-icon"></div>
@@ -1375,6 +1394,39 @@ const Home = {
   },
   stop() { if (this.pulse) { this.pulse.kill(); this.pulse = null; gsap.set('.start-pulse', { opacity: 0 }); } },
   enter() { this.render(); dropNotes(screenEl('welcome')); this.startPulse(); }
+};
+/* Start / Continue: press, the black grows from the button to fill the screen, the part is named,
+   the screen changes underneath, then the black lifts into the top bar. Reduced motion: a plain change. */
+const Launch = {
+  running: false,
+  go(btn, to) {
+    if (this.running) return;
+    const step = STEP[to], title = $(`#home-track li[data-step="${to}"] .ht-lb`).textContent;
+    announce(`Part ${step} of 5: ${title}`);
+    if (RM) return show(to);
+    this.running = true;
+    Home.stop();
+    const el = $('#launch'), r = btn.getBoundingClientRect();
+    const x = Math.round(r.left + r.width / 2), y = Math.round(r.top + r.height / 2);
+    const far = Math.ceil(Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y))) + 24;
+    $('#launch-part').textContent = `Part ${step} of 5`;
+    $('#launch-title').textContent = title;
+    $$('#launch-dots i').forEach((d, i) => { d.className = i + 1 < step ? 'done' : i + 1 === step ? 'on' : ''; });
+    gsap.set('#launch-dots i', { clearProps: 'width' });
+    const parts = $$('.launch-in > *');
+    gsap.set(el, { clipPath: `circle(${Math.round(r.height / 2)}px at ${x}px ${y}px)` });
+    gsap.set(parts, { y: 26, autoAlpha: 0 });
+    el.hidden = false;
+    gsap.timeline({ onComplete: () => { el.hidden = true; gsap.set(el, { clearProps: 'clipPath' }); this.running = false; } })
+      .to(btn, { scale: .96, duration: .1, yoyo: true, repeat: 1, ease: 'power1.inOut' }, 0)
+      .to(el, { clipPath: `circle(${far}px at ${x}px ${y}px)`, duration: .55, ease: 'power3.in' }, .08)
+      .to(parts, { y: 0, autoAlpha: 1, duration: .45, stagger: .07, ease: 'power3.out' }, .45)
+      .add(() => { gsap.set(btn, { clearProps: 'transform' }); show(to); }, .64)
+      .set(el, { clipPath: 'inset(0px 0px 0px 0px)' }, .66)
+      .to('#launch-dots i.on', { width: 40, duration: .35, ease: 'power2.out' }, .75)
+      .to(parts, { y: -28, autoAlpha: 0, duration: .3, stagger: .04, ease: 'power2.in' }, 1.12)
+      .to(el, { clipPath: () => `inset(0px 0px ${innerHeight - $('#topbar').offsetHeight}px 0px)`, duration: .6, ease: 'power3.inOut' }, 1.18);
+  }
 };
 /* First load: notes drop onto the board, the title rises, then the Start button arrives */
 function playWelcome() {
@@ -2127,7 +2179,7 @@ function init() {
       if (t.id === 'restart') { Store.clear(); buildWordCards(); Story.done = false; }
       Log.begin();
       Speak.warm();
-      return show(to || 'greetings');
+      return Launch.go(t, to || 'greetings');
     }
     if (t.hasAttribute('data-back')) return goBack();
     if (t.hasAttribute('data-next')) return goNext();
