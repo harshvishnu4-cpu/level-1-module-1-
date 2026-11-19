@@ -242,25 +242,45 @@ const ReadDone = {
     $('#rd-list').innerHTML = READ_Q.map((q, k) => `<li class="${ReadQ.results[k] ? 'ok' : 'fix'}"><span class="rd-mark" aria-label="${ReadQ.results[k] ? 'Right' : 'Not quite'}">${ReadQ.results[k] ? UI.check : UI.replay}</span><div><b>${escH(q.q)}</b><p>${escH(q.answer)}<span class="rd-where">${q.where}</span></p></div></li>`).join('');
     markStage('s5');
     postStage(5, { right, outOf: READ_Q.length });
+    if (!RM) {
+      gsap.fromTo('[data-screen="readdone"] .done-title', { scale: .7, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, duration: .55, ease: 'back.out(2.2)', delay: .25 });
+      if (right === READ_Q.length && window.Motion) setTimeout(() => Motion.confetti($('[data-screen="readdone"] .done-title'), 36), 520);
+    }
   }
 };
 
 /* =========================================================
    This page: read -> readq (3 questions) -> readdone; 12 minutes for reading plus the questions
    ========================================================= */
+/* Questions on wide screens: the passage sits on the right while you answer (on phones, Show text opens it) */
+const SidePassage = {
+  mq: matchMedia('(min-width: 56.25em)'),
+  show() { if (!this.mq.matches) return; const side = $('#rq-side'), art = $('#reading'); if (side && art.parentElement !== side) { Gloss.close(); side.append(art); } },
+  restore() { const art = $('#reading'), home = $('.read-home'); if (art.parentElement !== home) { Gloss.close(); home.append(art); } },
+  active() { return !!$('#reading').closest('#rq-side'); },
+  /* "See it in the text": scroll the passage on the right to the paragraph and light it up */
+  flash(paras) {
+    const ps = paras.map(n => $(`#passage p[data-para="${n}"]`)).filter(Boolean);
+    if (!ps.length) return;
+    ps[0].scrollIntoView({ behavior: RM ? 'auto' : 'smooth', block: 'center' });
+    ps.forEach(p => gsap.fromTo(p, { backgroundColor: 'rgba(253,232,176,1)', boxShadow: '0 0 0 8px rgba(253,232,176,1)' }, { backgroundColor: 'rgba(253,232,176,0)', boxShadow: '0 0 0 8px rgba(253,232,176,0)', duration: 2.4, delay: .35, ease: 'power1.in', clearProps: 'backgroundColor,boxShadow' }));
+  }
+};
+SidePassage.mq.addEventListener('change', () => { if (cur !== 'readq') return; if (SidePassage.mq.matches) { TextDrawer.close(); SidePassage.show(); } else SidePassage.restore(); });
 Screens.enter = name => {
+  if (name === 'readq') SidePassage.show();
   $('#read-timer').hidden = !(name === 'read' || name === 'readq');
   if (name === 'readq') ReadQ.enter();
   if (name === 'readdone') ReadDone.render();
 };
-Screens.leave = () => { TextDrawer.close(); Gloss.close(); };
+Screens.leave = name => { TextDrawer.close(); Gloss.close(); if (name === 'readq') SidePassage.restore(); };
 document.addEventListener('click', e => {
   const t = e.target.closest('button');
   if (!t || t.disabled) return;
   if (t.classList.contains('gloss')) return Gloss.open(t);
   if (t.id === 'listen') return Reading.listen(t);
-  if (t.dataset.act === 'show-text') return TextDrawer.open();
-  if (t.dataset.act === 'see-text') return TextDrawer.open(t.dataset.para.split(','));
+  if (t.dataset.act === 'show-text') return SidePassage.active() ? SidePassage.flash([1]) : TextDrawer.open();
+  if (t.dataset.act === 'see-text') return SidePassage.active() ? SidePassage.flash(t.dataset.para.split(',')) : TextDrawer.open(t.dataset.para.split(','));
   if (t.id === 'td-close') return TextDrawer.close();
   if (t.classList.contains('choice')) return ReadQ.pick(t);
   if (t.dataset.act === 'rq-check' || t.id === 'rq-next') return ReadQ.primary();

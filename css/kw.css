@@ -936,11 +936,6 @@ body[data-view="intro"] main{min-height:0;padding-top:12px;padding-bottom:12px}
   /* Scenario Sprint: the scene sized from the height; four answers as 2 x 2 */
   .sprint-art{width:min(100%,calc((100dvh - 380px) * 320 / 200))}
   .sprint .options,.bigq .options{grid-template-columns:1fr 1fr}
-  /* end screen: score and what to practise on the left, the two word lists on the right */
-  .screen[data-screen="end"]>.work{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"score recap" "practise recap" ". recap"}
-  #scoreCard{grid-area:score}
-  #practise{grid-area:practise}
-  .screen[data-screen="end"] .recap{grid-area:recap;align-self:start}
   /* learning path: the path gets the full height on the left; banner, Up next and words on the right */
   .home-map{grid-template-columns:minmax(0,1fr) 370px;grid-template-areas:"path unit" "path upnext" "path words" "path stats" "path .";grid-template-rows:auto auto auto auto 1fr;gap:12px 24px;align-items:start}
   .map-main,.map-side{display:contents}
@@ -973,9 +968,6 @@ body[data-view="intro"] main{min-height:0;padding-top:12px;padding-bottom:12px}
   .check-btn{min-height:48px}
   .done-card .read-art{display:none}
   .review li{padding:9px 12px}
-  .stat{padding:8px 6px}
-  .stat b{font-size:1.375rem}
-  .scorecard{gap:12px 18px}
 }
 @media (min-width:56.25em) and (max-height:57.5em){
   .un-done{padding:6px 10px;font-size:.8125rem}
@@ -983,11 +975,475 @@ body[data-view="intro"] main{min-height:0;padding-top:12px;padding-bottom:12px}
   .wk-label{display:none}
   .wk{font-size:.8125rem;padding:4px 9px}
   .wk svg{width:12px;height:12px}
-  .scorecard .ring{width:72px;height:72px}
-  .lvl{font-size:1.125rem}
-  .scorecard p{margin-top:2px}
-  #practise .list{gap:8px}
-  #practise .list p{font-size:.9375rem;line-height:1.45}
-  .recap-col ul{gap:6px}
-  .recap-word{min-height:40px;padding:8px 12px}
 }
+
+/* ---------- Reading Card questions on wide screens: the question on the left, the passage on the right ---------- */
+@media (min-width:56.25em){
+  .screen[data-screen="readq"]>.work{display:flex;flex-direction:column;overflow:hidden}
+  .rq-layout{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:20px}
+  .rq-layout>.quiz{max-width:none;margin:0;min-height:0;overflow-y:auto;align-content:start;scrollbar-width:thin;padding:0 4px 8px}
+  .rq-layout .show-text{display:none}
+  .rq-layout .bigq .options{grid-template-columns:1fr}
+  .rq-side{min-height:0;display:flex;flex-direction:column}
+  .rq-side>.reading{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;align-content:start;padding:20px 22px 22px}
+  .rq-side .reading-head{position:sticky;top:-20px;z-index:3;margin:-20px -22px 0;padding:20px 22px 10px;background:var(--card);border-radius:var(--r-xl) var(--r-xl) 0 0}
+  .rq-side .read-art svg{width:150px}
+  .rq-side .reading-title{font-size:1.375rem}
+}
+@media (min-width:56.25em) and (max-height:57.5em){
+  .rq-layout .bigq .question{font-size:1.25rem}
+  .rq-layout .choice{min-height:46px;padding:9px 14px;font-size:1rem}
+  .rq-layout .bigq .options{gap:8px}
+}
+
+/* ================= UI review fixes ================= */
+/* Start screen: the card stretches to fill its box (base.css pins .work content to the top, which left a grey band) */
+.screen[data-screen="intro"]>.work>.home{align-self:stretch}
+
+/* One way forward at a time: while the answer sheet is up, its button is the only one that moves on */
+body.kw-sheet .actionbar .btn.primary{visibility:hidden}
+/* Reading Card and Quick Check questions: Check sits in the card, under the answers; no second Check in the top bar */
+#rq-next,#qc-next{display:none}
+/* Closing screens of Stage 5 and 8 on wide screens: the card's own button is the one way on (phones keep the top one too) */
+@media (min-width:56.25em){
+  .screen[data-screen="readdone"] .actionbar .btn.primary,.screen[data-screen="checkdone"] .actionbar .btn.primary{display:none}
+}
+
+/* Closing titles: base.css's ".card h2" (18px) was beating ".done-title" */
+.done-card .done-title{margin:0;font-size:clamp(1.75rem,1.3rem + 1.8vw,2.5rem);font-weight:750;letter-spacing:-.03em;line-height:1.1}
+.done-card .done-title.big{font-size:clamp(2.25rem,1.6rem + 2.6vw,3.25rem)}
+
+/* "Tap to hear": dark text in the card's own colour (grey on yellow or blue was too faint) */
+.wword .wcard-hint{color:var(--c-ink,var(--text))}
+
+/* Counters: the question card already says "1 of 5", so the picture doesn't repeat it */
+.stage-step,.sprint-count{display:none}
+
+/* Pictures use the height that was left empty under them (story, recap, Scenario Sprint) */
+@media (min-width:56.25em){
+  .story,.sprint,#recap{container-type:inline-size}
+  .story{grid-template-columns:auto minmax(0,1fr)}
+  .stage-art{width:min(calc(100cqw - 400px),calc((100dvh - 300px) * 440 / 340))}
+  .sprint{grid-template-columns:auto minmax(0,1fr)}
+  .sprint-art{width:min(calc(100cqw - 440px),calc((100dvh - 380px) * 320 / 200))}
+  #recap .compare{max-width:none;width:min(calc(100cqw - 400px),calc((100dvh - 360px) * 600 / 340 + 22px))}
+}
+/* Greetings / Farewells on wide screens: the picture panels grow into the free height */
+@media (min-width:75em){
+  .wcard-body{min-height:clamp(180px,calc(100vh - 480px),440px)}
+}
+/* Reading done: keep the reading picture when the window is tall enough for it */
+@media (min-width:56.25em) and (min-height:53.75em){
+  .done-card .read-art{display:block}
+  .done-card .read-art svg{width:180px}
+}
+
+/* ================= Learning path, map style (from the user's mockup) =================
+   A wide light road with a 3D edge (green where you have been), big round 3D stops, a sky with clouds and a hill
+   with leaves at the bottom; on the right a dark banner, Up next with its own Start, the words, and three tiles. */
+/* top bar: a sprout beside "Learning path", and a round Back (to the Key Words start screen) */
+.nav-sprout{display:none}
+body[data-view="welcome"] .nav a[data-stage="home"]>svg:first-child{display:none}
+body[data-view="welcome"] .nav a[data-stage="home"] .nav-sprout{display:block;width:26px;height:26px}
+.actionbar .map-back{width:46px;height:46px;min-height:46px;padding:0;border-radius:50%;justify-content:center}
+
+/* the map fills the screen; scenery sits behind everything */
+body[data-view="welcome"] main{padding-bottom:0}
+.screen[data-screen="welcome"]>.work{align-content:stretch;padding-bottom:0}
+.screen[data-screen="welcome"] .home-map{align-self:stretch;padding-bottom:16px}
+.unit,.upnext,.words-known,.map-stats,.path{position:relative;z-index:1}
+/* scenery on the panel itself, so it spans the whole panel: clouds top left, a hill along the bottom */
+@media (min-width:48em){
+  body[data-view="welcome"] .panel{background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 140' preserveAspectRatio='none'%3E%3Cpath d='M0 78C170 34 360 40 560 78S930 126 1200 58V140H0Z' fill='%23e3f5e8'/%3E%3Cpath d='M0 108C230 78 470 86 720 110S1040 122 1200 96V140H0Z' fill='%23d2eedb'/%3E%3C/svg%3E") left bottom / 100% clamp(70px,13vh,130px) no-repeat,
+    radial-gradient(closest-side,#fff 30%,rgba(255,255,255,0)) -90px -70px / 420px 240px no-repeat,
+    radial-gradient(closest-side,#fff 25%,rgba(255,255,255,0)) 150px -10px / 300px 150px no-repeat,
+    radial-gradient(closest-side,rgba(255,255,255,.85) 20%,rgba(255,255,255,0)) -60px 46% / 320px 170px no-repeat,
+    var(--bg)}
+}
+
+/* the road */
+.path-line .base-edge{fill:none;stroke:#d8dce3;stroke-width:24;stroke-linecap:round;transform:translateY(5px)}
+.path-line .base{fill:none;stroke:#eaecf0;stroke-width:24;stroke-linecap:round;stroke-dasharray:none}
+.path-line .prog-edge{fill:none;stroke:#1f8a45;stroke-width:17;stroke-linecap:round;transform:translateY(4px)}
+.path-line .prog{fill:none;stroke:#3cba60;stroke-width:17;stroke-linecap:round}
+@media (max-width:37.49em){.path-line .base,.path-line .base-edge{stroke-width:18}.path-line .prog,.path-line .prog-edge{stroke-width:13}}
+
+/* the stops: one size token drives the nodes, their icons and where the labels sit */
+.path{--nd:76px}
+@media (min-width:56.25em){.path{--nd:clamp(60px,8.4vh,88px)}}
+.path .node{width:var(--nd);height:var(--nd);background:radial-gradient(circle at 35% 28%,#3b3e47,#16181d 68%);box-shadow:0 7px 0 #000,0 18px 26px -12px rgba(16,24,40,.5)}
+.path .node>svg:not(.spark){width:calc(var(--nd) * .42);height:calc(var(--nd) * .42)}
+.path .stop.is-done .node{background:radial-gradient(circle at 35% 28%,#63d68b,#2fae62 55%,#1f8a45);box-shadow:0 7px 0 #146c36,0 18px 26px -12px rgba(20,108,54,.55)}
+.path .stop.is-current .node{box-shadow:0 7px 0 #000,0 0 0 11px rgba(198,241,213,.9),0 0 0 12px rgba(47,174,98,.18),0 22px 30px -12px rgba(16,24,40,.5)}
+.path .stop.is-current .node::before{inset:-18px;border-width:3px}
+.path .stop.is-soon .node,.path .stop.is-locked .node,.path .stop.end .node{width:calc(var(--nd) * .86);height:calc(var(--nd) * .86);border:0;background:linear-gradient(180deg,#fff,#f1f3f6);color:#4b5160;
+  box-shadow:inset 0 0 0 4px #eef0f4,0 6px 0 #d3d7df,0 16px 24px -12px rgba(16,24,40,.32)}
+.path .stop.end .node{width:calc(var(--nd) * .94);height:calc(var(--nd) * .94)}
+.path .stop.is-soon .node{font-size:calc(var(--nd) * .3);font-weight:700}
+.path .stop.is-locked .node>svg:not(.spark){display:none}
+.path .stop.is-locked .flag.lock{inset:0;width:100%;height:100%;background:none;box-shadow:none;color:#4b5160}
+.path .stop.is-locked .flag.lock svg{width:38%;height:38%}
+.path .stop.end .node>svg:not(.spark){width:calc(var(--nd) * .46);height:calc(var(--nd) * .46)}
+.path .stop.end.is-done .node{background:radial-gradient(circle at 35% 28%,#ffd76a,#E2A53A 60%);box-shadow:0 6px 0 #a06a12,0 16px 24px -12px rgba(160,106,18,.5)}
+.path .flag{width:calc(var(--nd) * .4);height:calc(var(--nd) * .4);right:-8px;bottom:-6px}
+.path .flag svg{width:50%;height:50%}
+.start-bubble{bottom:calc(100% + 12px);padding:7px 15px;font-size:.9375rem}
+/* little sparkles: beside a finished stop, the trophy, Ananya's wave and the handshake */
+.spark{position:absolute;display:none;width:30px;height:30px;pointer-events:none;overflow:visible}
+.path .stop.is-done .node>svg.spark{display:block;width:30px;height:30px;top:-18px;right:-20px}
+.path .stop.end .node>svg.spark{display:block;width:30px;height:30px;top:-16px;left:-22px;transform:scaleX(-1)}
+.decor .spark{display:block}
+.decor.ananya{width:clamp(120px,10.5vw,150px)}
+.decor.ananya img,.decor.handshake img{display:block;width:100%;height:auto;object-fit:contain}
+.decor.ananya .decor-bubble{top:-24px}
+.decor.handshake{width:clamp(120px,10.5vw,150px);color:inherit;padding:0;background:none}
+.decor.handshake>svg:not(.spark){display:block;width:100%;height:auto}
+.decor.times{padding:16px 20px;border-radius:50%;background:radial-gradient(closest-side,rgba(253,232,176,.9),rgba(243,211,246,.45) 66%,rgba(243,211,246,0))}
+
+/* labels beside the stops */
+.path .stop-label{left:calc(50% + var(--nd) / 2 + 18px)}
+.path .stop.label-left .stop-label{left:auto;right:calc(50% + var(--nd) / 2 + 18px)}
+.stop-label span{font-size:.8125rem;font-weight:600}
+.stop-label b{font-size:1.25rem;font-weight:750;letter-spacing:-.01em}
+.stop-label small{font-size:.875rem}
+.stop.is-locked .stop-label b{color:var(--text);font-weight:750}
+.stop.is-soon .stop-label b{color:#6a7080;font-weight:700}
+.stop.is-current .stop-label>span{justify-self:start;padding:2px 10px;border-radius:99px;background:var(--mint);color:var(--mint-ink);font-weight:700}
+.stop.label-left.is-current .stop-label>span{justify-self:end}
+.path .stop.end .stop-label{background:none}
+.stop.end .stop-label b{display:flex;align-items:center;gap:10px}
+.flag-tile{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:var(--mint);color:var(--mint-ink)}
+.flag-tile svg{width:18px;height:18px}
+
+/* right column: the dark banner */
+.unit{gap:12px;padding:18px 22px 20px;background:linear-gradient(180deg,#1f2128,#0d0e11)}
+.unit-title{display:flex;align-items:center;gap:12px;font-family:var(--kw-display)}
+.unit-ico{display:grid;place-items:center;flex:none;width:34px;height:34px}
+.unit-ico svg{width:32px;height:32px}
+.unit-sub{margin:8px 0 0;font-size:.9375rem;line-height:1.4;color:#d4d7de}
+.unit-prog{font-size:.9375rem;color:#fff}
+.unit-bar{height:12px;background:#3a3d45}
+.unit-bar i{background:linear-gradient(90deg,#4cc874,#3cba60)}
+/* Up next */
+.upnext{gap:12px;padding:16px 20px 20px}
+.un-kicker{justify-self:start;padding:3px 12px;border-radius:99px;background:var(--mint);color:var(--mint-ink);font-size:.8125rem;font-weight:700}
+.un-row{display:grid;grid-template-columns:auto minmax(0,1fr);gap:22px;align-items:start}
+.un-ico{position:relative;display:grid;place-items:center;width:62px;height:62px;border-radius:16px;background:#e3f5e8;color:var(--good)}
+.un-ico::after{content:"";position:absolute;right:-12px;top:4px;bottom:4px;width:2px;border-radius:2px;background:var(--line)}
+.un-ico svg{width:30px;height:30px}
+.un-text{display:grid;gap:4px;min-width:0}
+.un-about{font-size:.9375rem;line-height:1.4}
+.un-meta{list-style:none;padding:0;display:flex;flex-wrap:wrap;justify-content:center;gap:6px 0;color:#3d4250}
+.un-meta li{display:flex;align-items:center;gap:6px;padding:0 12px}
+.un-meta li+li{border-left:1.5px solid var(--line)}
+.un-meta svg{width:16px;height:16px;flex:none;color:#4b5160}
+.un-go{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:54px;font-size:1.125rem}
+.un-go svg{width:20px;height:20px}
+/* the words you know */
+.wk-head{display:flex;align-items:center;gap:10px}
+.wk-head h2{flex:1;margin:0;font-family:var(--kw-display);font-size:1.25rem;font-weight:750;letter-spacing:-.01em}
+.wk-ico{display:grid;place-items:center;color:var(--text)}
+.wk-ico svg{width:24px;height:24px}
+.wk-count{padding:3px 10px;border-radius:99px;background:var(--soft);color:#3d4250;font-size:.8125rem;font-weight:600;white-space:nowrap}
+.wk-label{gap:8px;font-size:.9375rem;color:var(--text)}
+.wk-label svg{width:18px;height:18px}
+.wk-group.sun .wk-label svg{color:#E2A53A;transform:rotate(28deg)}
+.wk-group.sky .wk-label svg{color:#3A8FC4;transform:rotate(-28deg)}
+.words-known .wk-group .wk-chips{padding-left:26px}
+/* three tiles */
+.map-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.mstat{display:flex;align-items:center;gap:8px;min-width:0;padding:12px 10px;border-radius:18px;background:var(--card);box-shadow:var(--shadow)}
+.mstat.mint{background:linear-gradient(180deg,#fff,#effaf2)}
+.mstat.sky{background:linear-gradient(180deg,#fff,#edf6fd)}
+.ms-ico{flex:none;display:grid;place-items:center;color:var(--good)}
+.mstat.sky .ms-ico{color:#3A8FC4}
+.ms-ico svg{width:24px;height:24px}
+.mstat b{display:block;font-family:var(--kw-display);font-size:1.375rem;font-weight:750;line-height:1.1}
+.mstat span{display:block;font-size:.8125rem;line-height:1.2;color:#3d4250;white-space:nowrap}
+@media (max-width:37.49em){.mstat{flex-direction:column;align-items:flex-start;gap:6px}}
+
+/* wide screens: a wider side column; the tiles sit at the bottom, on the hill */
+@media (min-width:56.25em){
+  .home-map{grid-template-areas:"path unit" "path upnext" "path words" "path ." "path stats";grid-template-rows:auto auto auto 1fr auto}
+}
+@media (min-width:75em){.home-map{grid-template-columns:minmax(0,1fr) clamp(380px,36%,460px)}}
+/* re-show what the older compact rules hid, when the window is tall enough */
+@media (min-width:56.25em) and (min-height:52.5em){
+  .unit-sub,.un-about{display:block}
+  .map-stats{display:grid}
+  .wk-label{display:flex}
+}
+/* path: room for the Start bubble; Ananya's speech bubble moves left when Key Words itself is next */
+.path .stop.is-current:not(:first-child){margin-top:18px}
+.stop.is-current .decor-bubble{left:auto;right:56%;border-radius:12px 12px 4px 12px}
+/* phones: slightly smaller stops and labels so the labels stay on one line more often */
+@media (max-width:37.49em){
+  .path{--nd:64px}
+  .stop-label b{font-size:1.0625rem}
+  .stop-label span,.stop-label small{font-size:.75rem}
+}
+/* shorter laptop screens: the side cards get tighter so everything still fits */
+@media (min-width:56.25em) and (max-height:57.5em){
+  .unit{padding:16px 20px 18px;gap:10px}
+  .upnext{padding:14px 18px 18px;gap:10px}
+  .words-known{padding:14px 18px 16px}
+}
+@media (min-width:56.25em) and (max-height:52.49em){.words-known .wk-group .wk-chips{padding-left:0}}
+@media (min-width:56.25em) and (max-height:50em){
+  .unit{padding:12px 18px 14px;gap:8px}
+  .unit-title{font-size:1.375rem}
+  .unit-ico,.unit-ico svg{width:26px;height:26px}
+  .upnext{padding:12px 16px 14px;gap:8px}
+  .un-row{gap:18px;align-items:center}
+  .un-ico{width:46px;height:46px;border-radius:13px}
+  .un-ico svg{width:22px;height:22px}
+  .un-go{min-height:44px;font-size:1rem}
+  .words-known{padding:12px 16px 14px;gap:8px}
+  .wk-head h2{font-size:1.125rem}
+  .wk{min-height:30px;padding:3px 9px}
+  .mstat{padding:8px 10px}
+  .mstat b{font-size:1.125rem}
+}
+@media (max-width:74.99em){.mstat span{white-space:normal}}
+/* path Back: a true circle with the arrow in the middle (the general Back rule adds left padding with !important) */
+.actionbar .map-back{padding:0 !important;gap:0}
+.actionbar .map-back svg{margin:0}
+/* the current stop: its 3D depth is drawn inside the circle, so the green glow and the pulse ring sit evenly around it */
+.path .stop.is-current .node{box-shadow:inset 0 -7px 0 rgba(0,0,0,.6),inset 0 2px 0 rgba(255,255,255,.08),0 0 0 10px rgba(198,241,213,.9),0 0 0 11px rgba(47,174,98,.22),0 18px 28px -10px rgba(16,24,40,.45)}
+.path .stop.is-current .node:active:not(:disabled){transform:scale(.95);box-shadow:inset 0 -3px 0 rgba(0,0,0,.6),0 0 0 10px rgba(198,241,213,.9),0 0 0 11px rgba(47,174,98,.22),0 10px 18px -10px rgba(16,24,40,.45)}
+.path .stop.is-current .node::before{inset:-15px;border-width:3px}
+
+/* ================= Morning / afternoon / evening pictures (the user's three illustrations) =================
+   One picture per time of day, used wherever the time is shown as a picture: word cards, the start card,
+   Word Match, the Quick Check tiles and the little row beside Quick Check on the path. */
+.ico.scene{display:block;flex:none;aspect-ratio:1;object-fit:cover;border-radius:18%;overflow:hidden;box-shadow:0 8px 18px -10px rgba(16,24,40,.45);user-select:none;-webkit-user-drag:none}
+.wword .ico.scene{width:76px;height:76px}
+@media (min-width:48em){.wword .ico.scene{width:120px;height:120px}}
+@media (min-width:75em){.wword .ico.scene{width:clamp(110px,calc(100vh - 600px),260px);height:auto}}
+.hword .ico.scene{width:clamp(64px,10vw,110px);height:auto}
+@media (min-width:75em){.hword .ico.scene{width:clamp(96px,15vh,190px)}}
+.mcard-front .ico.scene{width:80%;height:80%;border-radius:16%}
+.choice.tile .ico.scene{width:96px;height:96px}
+@media (min-width:75em){.choice.tile .ico.scene{width:clamp(96px,calc(100vh - 690px),190px);height:auto}}
+@media (max-width:22.5em){.choice.tile .ico.scene{width:72px;height:72px}}
+.decor.times .ico.scene{width:46px;height:46px;border-radius:12px}
+/* the old icon rules set overflow:visible, which stops a picture being clipped to its rounded corners */
+.wword .ico.scene,.hword .ico.scene,.choice.tile .ico.scene,.mcard-front .ico.scene,.decor.times .ico.scene{overflow:hidden}
+
+/* Greetings cards: the picture fills the card's picture panel edge to edge; "Tap to hear" / the word sits in a strip below */
+.wcard-body.has-scene{overflow:hidden}
+.wcard-body.has-scene .ico.scene{border-radius:0;box-shadow:none;object-fit:cover;object-position:50% 62%}
+@media (min-width:48em){
+  .wcard-body.has-scene{display:flex;flex-direction:column;align-items:stretch;gap:0;padding:0}
+  .wcard-body.has-scene .ico.scene{flex:1 1 0;width:100%;height:auto;min-height:0;aspect-ratio:auto}
+  .wcard-body.has-scene .wcard-word{flex:none;place-items:center;padding:14px 12px 16px}
+}
+@media (max-width:47.99em){
+  .wcard-body.has-scene{align-items:stretch;padding:0 16px 0 0;min-height:104px}
+  .wcard-body.has-scene .ico.scene{align-self:stretch;width:116px;height:100%;min-height:104px;aspect-ratio:auto}
+  .wcard-body.has-scene .wcard-word{align-self:center}
+}
+/* when the panel is wide and short, each picture keeps its sun or moon in view (and some hill) */
+.wcard-body.has-scene .ico.scene-morning{object-position:50% 70%}
+.wcard-body.has-scene .ico.scene-afternoon{object-position:50% 8%}
+.wcard-body.has-scene .ico.scene-evening{object-position:50% 18%}
+@media (min-width:75em){.wcard-body.has-scene{min-height:clamp(200px,calc(100vh - 470px),440px)}}
+
+/* ================= Word cards, picture style (from the user's mockup) =================
+   White card with a soft border in the picture's colour; the picture fills the top and ends in a white wave;
+   a round speaker sits on the wave; under it the time of day, which turns into the word once heard. */
+.wword.t-peach{--wt:#F6C79B;--wt-strong:#E89A55;--wt-glow:rgba(246,199,155,.32);--wt-soft:#FDEBDC}
+.wword.t-sky{--wt:#9CD2F2;--wt-strong:#3F9FD8;--wt-glow:rgba(156,210,242,.32);--wt-soft:#E3F3FD}
+.wword.t-lilac{--wt:#D6B6F0;--wt-strong:#A974DC;--wt-glow:rgba(214,182,240,.32);--wt-soft:#F1E6FB}
+.wword{position:relative;display:block;padding:0;border-radius:28px;background:#fff;border:3px solid var(--wt);overflow:hidden;
+  box-shadow:0 0 0 5px var(--wt-glow),0 20px 36px -24px rgba(16,24,40,.4);transition:border-color .2s ease,box-shadow .2s ease}
+.wword.is-active{border-color:var(--wt-strong);box-shadow:0 0 0 6px var(--wt-glow),0 22px 40px -22px rgba(16,24,40,.45)}
+.wword .wcard{position:relative;display:flex;flex-direction:column;align-items:stretch;gap:0;width:100%;height:100%;padding:0;border-radius:25px}
+.wword .wcard:focus-visible{outline:3px solid var(--accent);outline-offset:-6px}
+/* the picture */
+.wc-pic{position:relative;display:grid;place-items:center;flex:none;aspect-ratio:3/2;overflow:hidden;background:linear-gradient(180deg,var(--wt-soft),#fff)}
+.wc-pic .ico.scene{position:absolute;inset:0;width:100%;height:100%;border-radius:0;box-shadow:none;object-fit:cover;object-position:50% 60%}
+.wc-pic .ico.scene-morning{object-position:50% 68%}
+.wc-pic .ico.scene-afternoon{object-position:50% 12%}
+.wc-pic .ico.scene-evening{object-position:50% 22%}
+.wc-pic>svg.ico{width:42%;height:auto;max-height:70%;margin-bottom:18px;overflow:visible}
+.wc-wave{position:absolute;left:-1px;bottom:-1px;width:calc(100% + 2px);height:clamp(22px,14%,40px);fill:#fff}
+/* the speaker on the wave */
+.wc-play{position:relative;z-index:2;align-self:center;display:grid;place-items:center;width:56px;height:56px;margin-top:-34px;border-radius:50%;background:#fff;color:#1f2347;
+  box-shadow:0 0 0 1px rgba(16,24,40,.05),0 8px 18px -8px rgba(16,24,40,.38)}
+.wc-play svg{width:24px;height:24px}
+/* the label: the time of day, then the word */
+.wword .wcard-word{display:grid;place-items:center;padding:8px 14px 20px}
+.wword .wcard-hint,.wword .wcard-text{font-family:var(--kw-display);font-size:clamp(1.5rem,1.1rem + 1vw,2rem);font-weight:750;letter-spacing:-.02em;line-height:1.15;color:var(--text);text-align:center}
+.wword .wcard-check{top:12px;right:12px;z-index:3;width:34px;height:34px;box-shadow:0 0 0 3px #fff}
+@media (max-width:47.99em){
+  .wc-pic{aspect-ratio:2/1}
+  .wc-play{width:50px;height:50px;margin-top:-30px}
+  .wword .wcard-word{padding:6px 12px 16px}
+}
+/* wide screens: the cards fill the height and the picture takes what the label leaves */
+@media (min-width:56.25em){
+  .word-cards{align-items:stretch}
+  .wword{min-height:clamp(300px,calc(100dvh - 344px),620px)}
+  .wword .wcard{height:100%;min-height:inherit}
+  .wc-pic{flex:1 1 0;aspect-ratio:auto;min-height:150px}
+}
+/* the wave rises higher in the middle and the speaker sits on its crest, half over the picture */
+.wc-wave{height:46px}
+.wc-play{width:60px;height:60px;margin-top:-76px}
+.wc-play svg{width:26px;height:26px}
+.wword .wcard-word{padding-top:10px}
+@media (max-width:47.99em){.wc-wave{height:34px}.wc-play{width:52px;height:52px;margin-top:-58px}}
+/* cards with a drawing instead of a picture (Farewells): a fuller sky behind it, so the white wave reads */
+.wword.t-peach{--wt-sky:linear-gradient(180deg,#FBD3B2,#FDEADB)}
+.wword.t-sky{--wt-sky:linear-gradient(180deg,#B6DFF9,#DCEFFC)}
+.wword.t-lilac{--wt-sky:linear-gradient(180deg,#DEC6F5,#F0E5FB)}
+.wc-pic:not(.has-scene){background:var(--wt-sky)}
+.wc-pic>svg.ico{width:46%;max-height:62%;margin-bottom:28px}
+/* word cards a little smaller: a narrower row, and not quite the full height */
+@media (min-width:56.25em){
+  .word-cards{width:100%;max-width:1060px;margin-left:auto;margin-right:auto}
+  .wword{min-height:clamp(280px,calc(100dvh - 420px),500px)}
+}
+
+/* ================= Start screen cards, photo style (from the user's reference) =================
+   The picture fills the card; at the bottom, on a dark fade: the word and the time, one line, and a white Hear it button. */
+.hword.photo{position:relative;display:block;padding:0;aspect-ratio:4/5;border:0;border-radius:28px;overflow:hidden;color:#fff;text-align:left;
+  background:linear-gradient(180deg,#9ad4f6 0%,#5c9fdc 52%,#22467c 100%);box-shadow:0 26px 46px -24px rgba(16,24,40,.6),0 2px 6px rgba(16,24,40,.12)}
+.hword.photo::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg,rgba(9,13,30,0) 38%,rgba(9,13,30,.5) 60%,rgba(9,13,30,.86) 100%)}
+.hword.photo .hw-pic{position:absolute;inset:0;display:grid;justify-items:center;align-content:start;padding-top:13%}
+.hword.photo .hw-pic .ico.scene{position:absolute;inset:0;width:100%;height:100%;border-radius:0;box-shadow:none;object-fit:cover;object-position:50% 25%}
+.hword.photo .hw-pic>svg.ico{width:48%;height:auto;max-height:none;overflow:visible}
+.hword.photo .hw-info{position:absolute;left:0;right:0;bottom:0;z-index:1;display:grid;gap:8px;padding:16px}
+.hw-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 10px}
+.hword.photo .hw-text{font-family:var(--kw-display);font-size:1.375rem;font-weight:750;letter-spacing:-.02em;line-height:1.1;color:#fff}
+.hw-time{display:inline-flex;align-items:center;gap:5px;flex:none;padding:4px 10px;border-radius:99px;background:rgba(255,255,255,.22);color:#fff;font-size:.8125rem;font-weight:700;
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.hw-time svg{width:13px;height:13px}
+.hw-desc{font-size:.875rem;line-height:1.4;color:rgba(255,255,255,.8)}
+.hw-btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:46px;margin-top:2px;border-radius:99px;background:#fff;color:#1f2347;font-size:1rem;font-weight:750;
+  box-shadow:0 4px 0 rgba(0,0,0,.22)}
+.hw-btn svg{width:18px;height:18px}
+.hword.photo:hover .hw-btn{background:#f2f3f7}
+.hword.photo:focus-visible{outline:3px solid var(--accent);outline-offset:4px}
+@media (max-width:37.49em){
+  .hword.photo{border-radius:20px}
+  .hword.photo .hw-info{gap:6px;padding:10px}
+  .hword.photo .hw-text{font-size:1rem}
+  .hw-time{padding:2px 7px;font-size:.6875rem}
+  .hw-desc{display:none}
+  .hw-btn{min-height:34px;font-size:.8125rem}
+  .hw-btn svg{width:14px;height:14px}
+}
+@media (min-width:75em){
+  .hword.photo .hw-info{gap:10px;padding:clamp(16px,2.2vh,22px)}
+  .hword.photo .hw-text{font-size:clamp(1.375rem,2.8vh,2rem)}
+  .hw-time{font-size:clamp(.8125rem,1.4vh,.9375rem)}
+  .hw-desc{font-size:clamp(.875rem,1.5vh,1rem)}
+  .hw-btn{min-height:clamp(46px,5.6vh,56px);font-size:clamp(1rem,1.7vh,1.125rem)}
+}
+/* keep the word and the time on one line, as in the reference */
+.hw-row{flex-wrap:nowrap}
+.hword.photo .hw-text{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (min-width:37.5em){.hword.photo .hw-text{font-size:clamp(1.125rem,2.3vh,1.625rem)}.hw-time{padding:3px 9px;font-size:.75rem}}
+@media (max-width:37.49em){.hw-row{flex-wrap:wrap}.hword.photo .hw-text{white-space:normal}}
+
+/* ---------- Start screen cards, closer to the reference: straight, taller, a soft blur under the text, flat white button ---------- */
+.home-board .pinned.left,.home-board .pinned.right{transform:none}
+.hword.photo{aspect-ratio:3/4;border-radius:30px;box-shadow:0 30px 50px -28px rgba(16,24,40,.6),0 1px 3px rgba(16,24,40,.12)}
+.hword.photo::after{background:linear-gradient(180deg,rgba(14,20,34,0) 36%,rgba(14,20,34,.5) 54%,rgba(14,20,34,.88) 74%,rgba(14,20,34,.95) 100%)}
+.hw-blur{position:absolute;left:0;right:0;bottom:0;height:60%;pointer-events:none;-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
+  -webkit-mask-image:linear-gradient(180deg,transparent 0%,#000 42%);mask-image:linear-gradient(180deg,transparent 0%,#000 42%)}
+.hword.photo .hw-info{gap:10px;padding:18px}
+.hword.photo .hw-text{font-family:var(--font);font-weight:700;letter-spacing:-.01em}
+.hw-time{padding:4px 11px;background:rgba(255,255,255,.2);font-weight:700}
+.hw-time svg{display:none}
+.hw-desc{color:rgba(255,255,255,.66);line-height:1.45}
+.hw-chips{display:flex;flex-wrap:wrap;gap:6px}
+.hw-chip{padding:4px 10px;border-radius:99px;background:rgba(255,255,255,.14);color:#fff;font-size:.75rem;font-weight:600;line-height:1.3}
+.hw-btn{min-height:50px;margin-top:4px;background:#fff;color:#1d2433;font-weight:700;box-shadow:none}
+.hw-btn svg{display:none}
+/* wide screens: the cards are sized from the height, so they keep the reference's tall shape and still fit */
+@media (min-width:56.25em){
+  .home-board{padding:28px 24px}
+  .home-board .pinned{width:auto;flex:none}
+  .hword.photo{width:auto;height:clamp(280px,calc(100dvh - 470px),480px);aspect-ratio:2/3}
+}
+@media (max-width:37.49em){.hw-chips{display:none}.hw-btn{min-height:34px}}
+/* the blur layer keeps the card's rounded bottom corners (a backdrop blur is not clipped by the card itself) */
+.hw-blur{border-radius:0 0 30px 30px}
+@media (max-width:37.49em){.hw-blur{border-radius:0 0 20px 20px}}
+@media (max-width:37.49em){.hword.photo{border-radius:20px}.hw-blur{border-radius:0 0 20px 20px}}
+
+/* ================= Photo cards on the Greetings / Farewells screens too (same style as the start cards) =================
+   Picture fills the card; a soft blur and dark fade at the bottom hold the word, its time, a line and two chips;
+   a round speaker sits in the top-right corner; a green tick in the top-left once the word is heard. */
+.wword.photo{position:relative;display:block;padding:0;border:0;border-radius:28px;overflow:hidden;color:#fff;
+  background:var(--wt-sky,linear-gradient(180deg,#9ad4f6 0%,#5c9fdc 52%,#22467c 100%));
+  box-shadow:0 28px 48px -28px rgba(16,24,40,.6),0 1px 3px rgba(16,24,40,.12);transition:box-shadow .2s ease}
+.wword.photo.t-sky{background:linear-gradient(180deg,#9ad4f6 0%,#5c9fdc 52%,#22467c 100%)}
+.wword.photo.is-active{box-shadow:0 0 0 4px #fff,0 0 0 7px var(--wt-strong),0 28px 48px -26px rgba(16,24,40,.6)}
+.wword.photo .wcard{position:relative;display:block;width:100%;height:100%;padding:0;border-radius:28px;text-align:left;color:#fff}
+.wword.photo .wcard:focus-visible{outline:3px solid #fff;outline-offset:-7px}
+.wword.photo .hw-pic{position:absolute;inset:0;display:grid;justify-items:center;align-content:start;padding-top:12%}
+.wword.photo .hw-pic .ico.scene{position:absolute;inset:0;width:100%;height:100%;border-radius:0;box-shadow:none;object-fit:cover;object-position:50% 25%}
+.wword.photo .hw-pic>svg.ico{width:44%;height:auto;max-height:46%;overflow:visible}
+.hw-shade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(14,20,34,0) 36%,rgba(14,20,34,.5) 54%,rgba(14,20,34,.88) 74%,rgba(14,20,34,.95) 100%)}
+.wword.photo .hw-blur{border-radius:0 0 28px 28px}
+.wword.photo .hw-info{position:absolute;left:0;right:0;bottom:0;z-index:1;display:grid;gap:10px;padding:18px}
+.wword.photo .hw-text{min-width:0;font-family:var(--font);font-size:clamp(1.25rem,2.4vh,1.625rem);font-weight:700;letter-spacing:-.01em;line-height:1.1;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wword.photo .wcard-check{top:14px;left:14px;right:auto;z-index:3;width:36px;height:36px;box-shadow:0 0 0 3px rgba(255,255,255,.9)}
+/* the speaker: a round frosted button in the top-right corner (start cards and word cards) */
+.hw-sound{position:absolute;top:14px;right:14px;z-index:3;display:grid;place-items:center;width:46px;height:46px;border-radius:50%;
+  background:rgba(255,255,255,.88);color:#1d2433;box-shadow:0 6px 16px -6px rgba(0,0,0,.4);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);transition:background-color .15s ease}
+.hw-sound svg{width:22px;height:22px}
+.hword.photo:hover .hw-sound,.wword.photo .wcard:hover .hw-sound{background:#fff}
+@media (max-width:37.49em){.hw-sound{top:10px;right:10px;width:38px;height:38px}.hw-sound svg{width:18px;height:18px}}
+/* sizes: three tall cards in a row on wide screens; stacked on phones */
+@media (min-width:56.25em){.wword.photo{min-height:0;height:clamp(300px,calc(100dvh - 400px),520px)}}
+@media (min-width:48em) and (max-width:56.24em){.wword.photo{height:420px}}
+@media (max-width:47.99em){.wword.photo{height:300px;border-radius:24px}.wword.photo .wcard{border-radius:24px}.wword.photo .hw-blur{border-radius:0 0 24px 24px}}
+/* word cards: the fade and blur start lower, so the sun and moon stay bright above the text */
+.wword.photo .hw-shade{background:linear-gradient(180deg,rgba(14,20,34,0) 46%,rgba(14,20,34,.42) 60%,rgba(14,20,34,.86) 75%,rgba(14,20,34,.95) 100%)}
+.wword.photo .hw-blur{height:44%}
+/* drawings (Farewells, See you) get the full card width to size against */
+.hword.photo .hw-pic,.wword.photo .hw-pic{grid-template-columns:minmax(0,1fr)}
+/* phones: only the word and its time sit at the bottom, so the fade starts lower and the picture stays bright */
+@media (max-width:37.49em){.wword.photo{height:320px}.wword.photo .hw-shade{background:linear-gradient(180deg,rgba(14,20,34,0) 60%,rgba(14,20,34,.5) 76%,rgba(14,20,34,.92) 100%)}.wword.photo .hw-blur{height:30%}}
+.wword.photo .hw-pic>svg.ico{width:40%;max-height:none}
+
+/* ---------- Greetings / Farewells cards: the text sits on a white panel in black (readable); the picture fills the space above ---------- */
+.wword.photo .wcard{display:flex;flex-direction:column}
+.wword.photo .hw-pic{position:relative;inset:auto;flex:1 1 0;min-height:0;overflow:hidden;align-content:center;padding-top:0}
+.wword.photo .hw-blur,.wword.photo .hw-shade{display:none}
+.wword.photo .hw-info{position:relative;inset:auto;z-index:1;flex:none;gap:8px;padding:16px 18px 18px;background:#fff;color:var(--text)}
+.wword.photo .hw-text{color:var(--text)}
+.wword.photo .hw-time{background:var(--soft);color:var(--text);-webkit-backdrop-filter:none;backdrop-filter:none}
+.wword.photo .hw-desc{color:var(--text)}
+.wword.photo .hw-chip{background:var(--soft);color:var(--text)}
+.wword.photo.t-sky{background:linear-gradient(180deg,#a9dcf8 0%,#6fb0e4 100%)}
+@media (max-width:37.49em){.wword.photo .hw-info{padding:12px 14px 14px}}
+
+/* ================= Greetings: blank liquid cards that drain away to reveal the picture and the words =================
+   The cover is white at the top with coloured liquid below (its surface is two moving waves). On tap the liquid
+   lifts, drains to the bottom, the picture settles, and the white text panel slides up. */
+.wword.t-peach{--lq-top:#FFC79A;--lq-bottom:#F28F4E;--lq-light:#FFE0C4}
+.wword.t-sky{--lq-top:#9ED8FA;--lq-bottom:#3F9FD8;--lq-light:#D3EEFD}
+.wword.t-lilac{--lq-top:#D3B5F6;--lq-bottom:#9B6BDB;--lq-light:#EBDDFB}
+.wc-liquid{position:absolute;inset:0;z-index:5;overflow:hidden;border-radius:inherit;background:#fff;pointer-events:none}
+.wl-body{position:absolute;left:0;right:0;top:26%;height:calc(74% + 60px)}
+.wl-wave{position:absolute;left:0;width:200%;height:26px;animation:kwWave 3.2s linear infinite}
+.wl-wave.back{top:-30px;fill:var(--lq-light);animation-duration:5s;animation-direction:reverse}
+.wl-wave.front{top:-22px;fill:var(--lq-top)}
+.wl-fill{position:absolute;left:0;right:0;top:2px;bottom:0;background:linear-gradient(180deg,var(--lq-top),var(--lq-bottom) 80%)}
+@keyframes kwWave{to{transform:translateX(-50%)}}
+.wl-hint{position:absolute;left:50%;top:60%;transform:translate(-50%,-50%);display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:99px;
+  background:rgba(255,255,255,.92);color:#1d2433;font-size:1rem;font-weight:700;white-space:nowrap;box-shadow:0 10px 24px -12px rgba(16,24,40,.5)}
+.wl-hint svg{width:22px;height:22px;overflow:visible}
+.wl-ring{transform-origin:12px 12px;animation:kwTap 1.6s ease-out infinite}
+@keyframes kwTap{0%{transform:scale(.55);opacity:1}100%{transform:scale(1.25);opacity:0}}
+.wword.is-blank .hw-sound,.wword.is-blank .wcard-check{visibility:hidden}
+.wword.is-blank .wcard:hover .wl-hint{background:#fff}
+@media (prefers-reduced-motion:reduce){.wl-wave,.wl-ring{animation:none}}

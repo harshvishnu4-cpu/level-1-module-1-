@@ -43,8 +43,8 @@ const CLIPS = [
   { id: 'mgr-see-you-tomorrow', text: 'See you tomorrow!', voice: 'manager' },
   // instructions, read aloud on request
   { id: 'ins-welcome', text: 'Learn what to say when you arrive and when you leave, at work and in daily life.' },
-  { id: 'ins-greetings', text: 'Say these when you arrive. Tap a card to hear it, then tap Say it and say it yourself.' },
-  { id: 'ins-farewells', text: 'Say these when you leave. Tap a card to hear it, then tap Say it and say it yourself.' },
+  { id: 'ins-greetings', text: 'Say these when you arrive. Tap a card to hear it, then say it yourself.' },
+  { id: 'ins-farewells', text: 'Say these when you leave. Tap a card to hear it, then say it yourself.' },
   { id: 'ins-story-1', text: 'Ananya arrives at the office in the evening. What does she say?' },
   { id: 'ins-story-2', text: 'Later that evening, Ananya leaves. What does she say now?' },
   { id: 'ins-recap', text: 'Same evening. Same office. Only the direction changes. Even in the evening, say Goodbye or See you when you leave.' },

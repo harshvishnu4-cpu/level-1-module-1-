@@ -14,7 +14,7 @@
 <script src="lib/gsap.min.js"></script>
 <script src="js/motion.js" defer></script>
 <script src="kit/commkit.js"></script>
-<link rel="stylesheet" href="css/kw.css?v=20261118i">
+<link rel="stylesheet" href="css/kw.css?v=20261120m">
 </head>
 <body data-kind="speak" data-view="welcome">
 
@@ -31,7 +31,7 @@
 
 <header class="topbar" id="topbar">
   <nav class="nav" aria-label="Main">
-    <a href="#main" data-stage="home" aria-current="page" title="Back to your learning path"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="18" r="2.2"/><circle cx="18" cy="6" r="2.2"/><path d="M8.2 18H15a3 3 0 0 0 0-6H9a3 3 0 0 1 0-6h6.8"/></svg><span class="lbl" id="nav-lbl">Learning path</span></a>
+    <a href="#main" data-stage="home" aria-current="page" title="Back to your learning path"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="18" r="2.2"/><circle cx="18" cy="6" r="2.2"/><path d="M8.2 18H15a3 3 0 0 0 0-6H9a3 3 0 0 1 0-6h6.8"/></svg><svg class="nav-sprout" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21v-8.5" fill="none" stroke="#2fae62" stroke-width="2.4" stroke-linecap="round"/><path d="M12 13.5C11.6 8.6 8.6 5.6 3.4 5.4c.1 5 3.3 8.1 8.6 8.1z" fill="#4cc874"/><path d="M12 11.6c.2-4.9 3.4-7.9 8.6-8 0 4.9-3.4 7.9-8.6 8z" fill="#2fae62"/></svg><span class="lbl" id="nav-lbl">Learning path</span></a>
   </nav>
 </header>
 
@@ -74,8 +74,7 @@
           <div class="map-main">
             <header class="unit">
               <div>
-                <p class="unit-kicker">Communication Skills · Segment 1</p>
-                <h1 class="unit-title">Your learning path</h1>
+                <h1 class="unit-title"><span class="unit-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="12" width="4.2" height="9" rx="1.3" fill="#4cc874"/><rect x="9.9" y="7" width="4.2" height="14" rx="1.3" fill="#2fae62"/><rect x="16.8" y="3" width="4.2" height="18" rx="1.3" fill="#4cc874"/></svg></span>Your learning path</h1>
                 <p class="unit-sub">Greetings and goodbyes, a short read, then a quick check.</p>
               </div>
               <div class="unit-prog"><span class="unit-bar" role="img" id="unit-bar"><i></i></span><span id="unit-n">0 of 3 done</span></div>
@@ -89,10 +88,12 @@
           <aside class="map-side" aria-label="Your progress">
             <section class="dc upnext" id="upnext" aria-live="polite"></section>
             <section class="dc words-known" id="words-known"></section>
-            <section class="stats map-stats" id="map-stats" aria-label="Your progress in numbers"></section>
           </aside>
         </div>
       </div>
+      <div class="actionbar"><div class="actionbar-in">
+        <button type="button" class="btn secondary back-btn map-back" data-go="intro" aria-label="Back to Key Words"><i data-ui="back"></i></button>
+      </div></div>
     </section>
 
     <!-- Key Words start screen: shown until Stage 4 is done; then the learning path is home -->
@@ -134,7 +135,7 @@
     <!-- 4a Greetings -->
     <section class="screen" data-screen="greetings" hidden>
       <div class="work">
-        <div class="instr sun"><span class="kind"><i data-ui="doorIn"></i>Arriving</span><p>Say these when you arrive. Tap a card to hear it, then tap Say it and say it yourself.</p><button type="button" class="read-btn" data-read="ins-greetings" data-text="Say these when you arrive. Tap a card to hear it, then tap Say it and say it yourself." aria-label="Read the instructions aloud"><i data-ui="speaker"></i></button></div>
+        <div class="instr sun"><p>Say these when you arrive. Tap a card to hear it, then say it yourself.</p><button type="button" class="read-btn" data-read="ins-greetings" data-text="Say these when you arrive. Tap a card to hear it, then say it yourself." aria-label="Read the instructions aloud"><i data-ui="speaker"></i></button></div>
         <div class="word-cards" data-set="greetings"></div>
       </div>
       <div class="actionbar"><div class="actionbar-in">
@@ -147,7 +148,7 @@
     <!-- 4b Farewells -->
     <section class="screen" data-screen="farewells" hidden>
       <div class="work">
-        <div class="instr sky"><span class="kind"><i data-ui="doorOut"></i>Leaving</span><p>Say these when you leave. Tap a card to hear it, then tap Say it and say it yourself.</p><button type="button" class="read-btn" data-read="ins-farewells" data-text="Say these when you leave. Tap a card to hear it, then tap Say it and say it yourself." aria-label="Read the instructions aloud"><i data-ui="speaker"></i></button></div>
+        <div class="instr sky"><p>Say these when you leave. Tap a card to hear it, then say it yourself.</p><button type="button" class="read-btn" data-read="ins-farewells" data-text="Say these when you leave. Tap a card to hear it, then say it yourself." aria-label="Read the instructions aloud"><i data-ui="speaker"></i></button></div>
         <div class="word-cards" data-set="farewells"></div>
       </div>
       <div class="actionbar"><div class="actionbar-in">
@@ -163,7 +164,6 @@
         <div class="story" id="story">
           <figure class="stage sun" id="stage">
             <div class="stage-art" id="stage-art">
-              <span class="kind" id="stage-tag"></span>
               <span class="stage-step" id="stage-step">1 of 2</span>
               <div class="say-bubble" id="bubble-ananya" aria-hidden="true"></div>
               <div class="say-bubble plain" id="bubble-teacher" aria-hidden="true"></div>
@@ -184,13 +184,13 @@
           <div class="instr"><p>Same evening. Same office. Only the direction changes.</p><span class="chip-soft"><i data-ui="moon"></i>Evening in both pictures</span><button type="button" class="read-btn" data-read="ins-recap" data-text="Same evening. Same office. Only the direction changes. Even in the evening, say Goodbye or See you when you leave." aria-label="Read the instructions aloud"><i data-ui="speaker"></i></button></div>
           <div class="compare">
             <figure class="scene sun">
-              <div class="scene-art" id="scene-arrive"><span class="kind"><i data-ui="doorIn"></i>Arriving</span></div>
+              <div class="scene-art" id="scene-arrive"></div>
               <div class="says">
                 <button type="button" class="say" data-id="good-evening" data-text="Good evening!"><i data-ui="speaker"></i>“Good evening!”</button>
               </div>
             </figure>
             <figure class="scene sky">
-              <div class="scene-art" id="scene-leave"><span class="kind"><i data-ui="doorOut"></i>Leaving</span></div>
+              <div class="scene-art" id="scene-leave"></div>
               <div class="says">
                 <button type="button" class="say" data-id="see-you" data-text="See you!"><i data-ui="speaker"></i>“See you!”</button>
                 <button type="button" class="say" data-id="goodbye" data-text="Goodbye!"><i data-ui="speaker"></i>“Goodbye!”</button>
@@ -482,9 +482,9 @@ function arrow(x, y, dir, len = 36, fill = '#FFFFFF') {
 /* ---- Word icons (120 x 120) ---- */
 const HAND_SHAPES = '<rect x="38" y="30" width="12" height="44" rx="6"/><rect x="51" y="22" width="12" height="50" rx="6"/><rect x="64" y="26" width="12" height="46" rx="6"/><rect x="77" y="36" width="11" height="38" rx="5.5"/><rect x="38" y="54" width="50" height="44" rx="18"/><rect x="22" y="58" width="13" height="32" rx="6.5" transform="rotate(-40 28.5 74)"/>';
 const ICON = {
-  sunrise: () => `<svg class="ico" viewBox="0 0 120 120" aria-hidden="true"><g class="i-rays" stroke="#FFAA1A" stroke-width="7" stroke-linecap="round">${rays(60, 84, 40, 52, [160, 125, 90, 55, 20])}</g><path class="i-body" d="M30 84a30 30 0 0 1 60 0z" fill="#FFC93C"/><path d="M6 90Q32 76 60 85T114 86V100Q60 112 6 100z" fill="#7FCF7A"/><path d="M6 98Q60 88 114 98V100Q60 112 6 100z" fill="#5DBB63"/></svg>`,
-  sun: () => `<svg class="ico" viewBox="0 0 120 120" aria-hidden="true"><g class="i-rays" stroke="#FFAA1A" stroke-width="7" stroke-linecap="round">${rays(60, 60, 35, 47, [0, 45, 90, 135, 180, 225, 270, 315])}</g><circle class="i-body" cx="60" cy="60" r="26" fill="#FFC93C"/><path d="M47 55a14 14 0 0 1 12-10" stroke="#FFF3C4" stroke-width="5" stroke-linecap="round" fill="none"/></svg>`,
-  moon: () => `<svg class="ico" viewBox="0 0 120 120" aria-hidden="true"><g class="i-moon"><path d="${CRESCENT}" fill="#8B7CF6"/><path d="M40 44a26 26 0 0 0 2 30" stroke="#B3A8FF" stroke-width="5" stroke-linecap="round" fill="none"/></g><g class="i-spark" fill="#FFC21A"><path d="${sparkle(90, 34, 10)}"/><path d="${sparkle(100, 62, 6)}"/></g></svg>`,
+  sunrise: () => `<img class="ico scene scene-morning" src="assets/times/morning.jpg" alt="" width="600" height="600" draggable="false" decoding="async">`,
+  sun: () => `<img class="ico scene scene-afternoon" src="assets/times/afternoon.jpg" alt="" width="600" height="600" draggable="false" decoding="async">`,
+  moon: () => `<img class="ico scene scene-evening" src="assets/times/evening.jpg" alt="" width="600" height="600" draggable="false" decoding="async">`,
   walker: () => `<svg class="ico" viewBox="0 0 120 120" aria-hidden="true"><g stroke="#9DC3FF" stroke-width="4" stroke-linecap="round"><path d="M12 66h12"/><path d="M8 80h14"/></g><g class="i-fig">${person({ x: 50, y: 110, s: .84, face: 1, top: '#4F7FD6', bottom: '#1E2240', skin: '#C98B5E', wave: true, look: true, stride: 16 })}</g><g class="i-arrow" fill="none" stroke="#1F66D6" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><path d="M80 70h24"/><path d="M95 61l9 9-9 9"/></g></svg>`,
   hand: () => `<svg class="ico" viewBox="0 0 120 120" aria-hidden="true"><g class="i-waves" stroke="#3B8CFF" stroke-width="4.5" stroke-linecap="round" fill="none"><path d="M14 26Q6 38 12 50"/><path d="M24 20Q16 32 21 44"/><path d="M100 26Q108 38 102 50"/></g><g class="i-hand"><g transform="rotate(-12 62 70)"><g fill="#E39A55" stroke="#E39A55" stroke-width="6" stroke-linejoin="round">${HAND_SHAPES}</g><g fill="#FFCB91">${HAND_SHAPES}</g><path d="M50 84Q62 91 76 84" stroke="#E39A55" stroke-width="3" fill="none" stroke-linecap="round" opacity=".6"/></g></g></svg>`,
   calendar: () => {
@@ -501,9 +501,9 @@ const ICON = {
 /* Note: the origin goes in BOTH from- and to-vars. If only the to-vars carry it,
    GSAP's smoothOrigin compensates for the change and the part ends up shifted. */
 const WIGGLE = {
-  sunrise: s => { gsap.fromTo($('.i-body', s), { y: 14 }, { y: 0, duration: .6, ease: 'back.out(1.6)' }); gsap.fromTo($('.i-rays', s), { scale: .5, opacity: 0, svgOrigin: '60 84' }, { scale: 1, opacity: 1, duration: .6, delay: .12, ease: 'back.out(2)', svgOrigin: '60 84' }); },
-  sun: s => { gsap.fromTo($('.i-rays', s), { rotation: 0, svgOrigin: '60 60' }, { rotation: 45, duration: .9, ease: 'power3.out', svgOrigin: '60 60' }); gsap.fromTo($('.i-body', s), { scale: .8, svgOrigin: '60 60' }, { scale: 1, duration: .7, ease: 'elastic.out(1,.4)', svgOrigin: '60 60' }); },
-  moon: s => { gsap.fromTo($('.i-moon', s), { rotation: -18, svgOrigin: '60 62' }, { rotation: 0, duration: .9, ease: 'elastic.out(1,.45)', svgOrigin: '60 62' }); gsap.fromTo($$('.i-spark path', s), { scale: 0, transformOrigin: '50% 50%' }, { scale: 1, duration: .5, stagger: .12, ease: 'back.out(3)', transformOrigin: '50% 50%' }); },
+  sunrise: s => { if (!s) return; const full = s.closest('.has-scene'); gsap.fromTo(s, full ? { scale: 1.08 } : { scale: .9, rotation: -3 }, { scale: 1, rotation: 0, duration: .6, ease: full ? 'power2.out' : 'back.out(2.2)', clearProps: 'transform' }); },
+  sun: s => { if (!s) return; const full = s.closest('.has-scene'); gsap.fromTo(s, full ? { scale: 1.08 } : { scale: .9, rotation: -3 }, { scale: 1, rotation: 0, duration: .6, ease: full ? 'power2.out' : 'back.out(2.2)', clearProps: 'transform' }); },
+  moon: s => { if (!s) return; const full = s.closest('.has-scene'); gsap.fromTo(s, full ? { scale: 1.08 } : { scale: .9, rotation: -3 }, { scale: 1, rotation: 0, duration: .6, ease: full ? 'power2.out' : 'back.out(2.2)', clearProps: 'transform' }); },
   walker: s => { gsap.fromTo($('.i-fig', s), { x: -10 }, { x: 0, duration: .6, ease: 'power2.out' }); const arm = $('.arm-w', s); if (arm) { const o = arm.dataset.origin, d = Number(arm.dataset.dir); gsap.fromTo(arm, { rotation: 0, transformOrigin: o }, { rotation: 18 * d, duration: .18, repeat: 5, yoyo: true, ease: 'sine.inOut', transformOrigin: o }); } gsap.fromTo($('.i-arrow', s), { x: -8, opacity: .3 }, { x: 0, opacity: 1, duration: .5, ease: 'power2.out' }); },
   hand: s => { gsap.fromTo($('.i-hand', s), { rotation: 0, svgOrigin: '62 100' }, { keyframes: { rotation: [0, 18, -12, 14, -6, 0] }, duration: 1, ease: 'sine.inOut', svgOrigin: '62 100' }); gsap.fromTo($$('.i-waves path', s), { opacity: 0, scale: .6, transformOrigin: '50% 50%' }, { opacity: 1, scale: 1, duration: .4, stagger: .08, transformOrigin: '50% 50%' }); },
   calendar: s => { gsap.fromTo($('.i-badge', s), { scale: .3, rotation: -60, svgOrigin: '90 88' }, { scale: 1, rotation: 0, duration: .6, ease: 'back.out(2.5)', svgOrigin: '90 88' }); gsap.fromTo($('.i-next', s), { scale: .4, transformOrigin: '50% 50%' }, { scale: 1, duration: .6, ease: 'elastic.out(1,.4)', transformOrigin: '50% 50%' }); }
@@ -1054,13 +1054,13 @@ function leave(name) {
 const REVIEW = /[?&]review\b/.test(location.search);
 const PART_NAME = { greetings: 'Greetings', farewells: 'Farewells', compare: 'Arrive or leave', match: 'Word Match', sprint: 'Scenario Sprint' };
 const STAGES = [
-  { id: 's4', n: 4, name: 'Key Words', icon: 'chat', go: 'greetings', time: 'about 10 min', meta: '5 parts · about 10 min',
+  { id: 's4', n: 4, name: 'Key Words', icon: 'chat', go: 'greetings', time: 'about 10 min', meta: '5 parts · about 10 min', items: [['grid', '5 parts'], ['clock', 'about 10 min']],
     about: 'What to say when you arrive and when you leave, at work and in daily life.' },
-  { id: 's5', n: 5, name: 'Reading Card', icon: 'book', go: 'reading.html', time: '12 min', meta: '1 short read · 3 questions · 12 min', needs: 's4',
+  { id: 's5', n: 5, name: 'Reading Card', icon: 'book', go: 'reading.html', time: '12 min', meta: '1 short read · 3 questions · 12 min', items: [['book', '1 short read'], ['list', '3 questions'], ['clock', '12 min']], needs: 's4',
     about: 'A short read: greetings are actions as well as words, and even a handshake differs between cultures.' },
   { id: 's6', n: 6, soon: true },
   { id: 's7', n: 7, soon: true },
-  { id: 's8', n: 8, name: 'Quick Check', icon: 'clip', go: 'quick-check.html', time: '10 min', meta: '4 questions · 10 min · not graded', needs: 's5',
+  { id: 's8', n: 8, name: 'Quick Check', icon: 'clip', go: 'quick-check.html', time: '10 min', meta: '4 questions · 10 min · not graded', items: [['list', '4 questions'], ['clock', '10 min']], needs: 's5',
     about: 'A short self-check before you move on. Nothing new, and it is not graded.' }
 ];
 const BUILT = STAGES.filter(st => !st.soon);
@@ -1071,9 +1071,18 @@ const stagesDone = () => Store.get().stages || {};
 function markStage(id) { const d = Store.get(); Store.set({ stages: { ...(d.stages || {}), [id]: true } }); }
 const LOCK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
 const CLIP = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 3.5h6v3H9z"/><path d="m9 13.5 2 2 4-4.5"/></svg>';
+const MAPI = {
+  flag: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V4"/><path d="M5 4h12l-2.5 4.5L17 13H5"/></svg>',
+  plane: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M2.5 12c0-.8.6-1.4 1.4-1.4H19c1.4 0 2.5.6 2.5 1.4s-1.1 1.4-2.5 1.4H3.9c-.8 0-1.4-.6-1.4-1.4z"/><path d="M9.6 10.7 6.9 3.5h2.4l5.2 7.2zM9.6 13.3l-2.7 7.2h2.4l5.2-7.2zM3.7 10.8 2.5 7.5h1.8l2.6 3.3zM3.7 13.2l-1.2 3.3h1.8l2.6-3.3z"/></svg>',
+  list: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r=".6" fill="currentColor"/><circle cx="4.5" cy="12" r=".6" fill="currentColor"/><circle cx="4.5" cy="18" r=".6" fill="currentColor"/></svg>',
+  play: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.8v14.4c0 .8.9 1.3 1.6.9l11.3-7.2c.6-.4.6-1.4 0-1.8L8.6 3.9C7.9 3.5 7 4 7 4.8z" fill="currentColor"/></svg>',
+  target: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="13" r="8"/><circle cx="11" cy="13" r="4"/><path d="M11 13l9-9M16.5 4H20v3.5"/></svg>',
+  star: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.2l2.6 5.5 6 .8-4.4 4.1 1.1 5.9L12 16.6l-5.3 2.9 1.1-5.9-4.4-4.1 6-.8z"/></svg>'
+};
+const SPARK = c => `<svg class="spark" viewBox="0 0 32 32" aria-hidden="true"><path d="M5 17 1.5 14.5M11 9 9.5 4.5M20 10.5 23.5 7" stroke="${c}" stroke-width="3.2" stroke-linecap="round" fill="none"/></svg>`;
 const DECOR = {
-  s4: () => `<div class="decor ananya" aria-hidden="true"><span class="decor-bubble">Good evening!</span><svg viewBox="0 0 110 160">${person({ x: 50, y: 154, s: 1.05, face: 1, wave: true, ...ANANYA })}</svg></div>`,
-  s5: () => `<div class="decor handshake" aria-hidden="true">${READ_ART}</div>`,
+  s4: () => `<div class="decor ananya" aria-hidden="true"><span class="decor-bubble">Good evening!</span><img src="assets/learning-path/waving-girl.png" alt="" width="1312" height="1199" decoding="async"></div>`,
+  s5: () => `<div class="decor handshake" aria-hidden="true"><img src="assets/learning-path/handshake.png" alt="" width="1536" height="1024" decoding="async"></div>`,
   s8: () => `<div class="decor times" aria-hidden="true">${ICON.sunrise()}${ICON.sun()}${ICON.moon()}</div>`
 };
 const Home = {
@@ -1090,11 +1099,11 @@ const Home = {
     $('#nodes').innerHTML = STAGES.map((st, i) => {
       const icon = st.soon ? `<span>${st.n}</span>` : st.icon === 'clip' ? CLIP : UI[st.icon];
       return `<li class="stop${PATH_X[i] > 0 ? ' label-left' : ''}" data-stage="${st.id}" style="--x:${PATH_X[i]}px">
-        <button type="button" class="node"${st.soon ? ' disabled' : ''}>${icon}<span class="flag ok" aria-hidden="true">${UI.check}</span><span class="flag lock" aria-hidden="true">${LOCK}</span></button>
+        <button type="button" class="node"${st.soon ? ' disabled' : ''}>${icon}<span class="flag ok" aria-hidden="true">${UI.check}</span><span class="flag lock" aria-hidden="true">${LOCK}</span>${st.soon ? '' : SPARK('#2fae62')}</button>
         <div class="stop-label"><span>Stage ${st.n}</span><b>${st.soon ? 'Coming soon' : st.name}</b>${st.soon ? '' : `<small>${st.time}</small>`}</div>
         ${DECOR[st.id] ? DECOR[st.id]() : ''}
       </li>`;
-    }).join('') + `<li class="stop end" data-stage="end" style="--x:${PATH_X[STAGES.length]}px"><span class="node" aria-hidden="true">${UI.trophy}</span><div class="stop-label"><span>Segment 1</span><b>Finish line</b></div></li>`;
+    }).join('') + `<li class="stop end" data-stage="end" style="--x:${PATH_X[STAGES.length]}px"><span class="node" aria-hidden="true">${UI.trophy}${SPARK('#E2A53A')}</span><div class="stop-label"><b><span class="flag-tile">${MAPI.flag}</span>Finish line</b></div></li>`;
     new ResizeObserver(() => { this.closePop(); this.drawPath(); }).observe($('#path'));
   },
   render() {
@@ -1124,19 +1133,20 @@ const Home = {
     const jd = this.justDone ? `<p class="un-done">${UI.check}${this.justDone.name} complete${this.justDone.id === 's4' ? ' · 6 new words' : ''}</p>` : '';
     if (current) {
       const step = resume && current.id === 's4' ? STEP[resume] : 0;
-      $('#upnext').innerHTML = `${jd}<p class="un-kicker">Up next · Stage ${current.n}</p><h2 class="un-title">${current.name}</h2><p class="un-about">${current.about}</p>
-        <p class="un-meta">${step ? `Part ${step} of 5: ${PART_NAME[resume]}` : current.meta}</p>
-        <button type="button" class="btn primary wide" data-act="stage-go" data-stage="${current.id}">${step ? 'Continue' : 'Start'}</button>`;
+      const ico = current.icon === 'clip' ? CLIP : UI[current.icon];
+      const items = step ? [['grid', `Part ${step} of 5: ${PART_NAME[resume]}`]] : current.items;
+      $('#upnext').innerHTML = `${jd}<p class="un-kicker">Up next · Stage ${current.n}</p>
+        <div class="un-row"><span class="un-ico" aria-hidden="true">${ico}</span><div class="un-text"><h2 class="un-title">${current.name}</h2><p class="un-about">${current.about}</p></div></div>
+        <ul class="un-meta">${items.map(([i, t]) => `<li>${MAPI[i] || UI[i]}<span>${t}</span></li>`).join('')}</ul>
+        <button type="button" class="btn primary wide un-go" data-act="stage-go" data-stage="${current.id}">${MAPI.play}${step ? 'Continue' : 'Start'}</button>`;
     } else {
       $('#upnext').innerHTML = `${jd}<span class="un-trophy">${UI.trophy}</span><h2 class="un-title">Segment 1 complete</h2><p class="un-about">You finished every stage. Tap any stage on the path to practise it again.</p>`;
     }
     const chip = id => `<button type="button" class="wk ${WORDS[id].kind}" data-id="${id}" aria-label="Hear ${WORDS[id].text}">${WORDS[id].text}${UI.speaker}</button>`;
-    const group = (kind, ids) => `<div class="wk-group"><p class="wk-label">${kind === 'sun' ? UI.doorIn + 'Arriving' : UI.doorOut + 'Leaving'}</p><div class="wk-chips">${ids.map(chip).join('')}</div></div>`;
-    $('#words-known').innerHTML = `<div class="dc-head"><span class="dc-ico">${UI.chat}</span><h2>Words you know</h2><span class="dc-meta">${done.s4 ? '6 words' : '0 of 6'}</span></div>`
+    const group = (kind, ids) => `<div class="wk-group ${kind}"><p class="wk-label">${MAPI.plane}${kind === 'sun' ? 'Arriving' : 'Leaving'}</p><div class="wk-chips">${ids.map(chip).join('')}</div></div>`;
+    $('#words-known').innerHTML = `<div class="wk-head"><span class="wk-ico" aria-hidden="true">${UI.book}</span><h2>Words you know</h2><span class="wk-count">${done.s4 ? '6 words' : '0 of 6'}</span></div>`
       + (done.s4 ? group('sun', GREETINGS) + group('sky', FAREWELLS)
         : `<p class="wk-note">Finish Key Words to collect your first six words.</p><div class="wk-chips" aria-hidden="true">${'<span class="wk ghost"></span>'.repeat(6)}</div>`);
-    const best = Store.get().best;
-    $('#map-stats').innerHTML = `<div class="stat"><b>${n}/${BUILT.length}</b><span>Stages</span></div><div class="stat mint"><b>${done.s4 ? 6 : 0}</b><span>Words</span></div><div class="stat dashed"><b>${best !== undefined ? `${best}/5` : '–'}</b><span>Best Sprint</span></div>`;
   },
   /* the dotted path through every stop, and the green part up to the next stage */
   points() {
@@ -1162,7 +1172,8 @@ const Home = {
     if (!path || !path.offsetParent) return;
     const pts = this.points(), svg = $('#path-line'), pr = path.getBoundingClientRect();
     svg.setAttribute('viewBox', `0 0 ${pr.width.toFixed(0)} ${pr.height.toFixed(0)}`);
-    svg.innerHTML = `<path class="base" d="${this.d(pts, pts.length - 1)}"/><path class="prog" d="${this.d(pts, this.reach())}"/>`;
+    const all = this.d(pts, pts.length - 1), prog = this.d(pts, this.reach());
+    svg.innerHTML = `<path class="base-edge" d="${all}"/><path class="base" d="${all}"/><path class="prog-edge" d="${prog}"/><path class="prog" d="${prog}"/>`;
   },
   /* a stage was just finished: it pops green with confetti, the path fills to the next stage, which opens */
   celebrate(st) {
@@ -1172,13 +1183,13 @@ const Home = {
     li.scrollIntoView({ block: 'center' });
     this.drawPath();
     if (RM) return;
-    const prog = $('#path-line .prog'), full = prog.getTotalLength();
+    const prog = $$('#path-line .prog, #path-line .prog-edge'), full = prog[0].getTotalLength();
     const tmp = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     tmp.setAttribute('d', this.d(this.points(), from));
     $('#path-line').append(tmp);
     const part = tmp.getTotalLength();
     tmp.remove();
-    gsap.fromTo(prog, { attr: { 'stroke-dasharray': `${part} ${full + 20}` } }, { attr: { 'stroke-dasharray': `${full} ${full + 20}` }, duration: 1.1, delay: .75, ease: 'power2.inOut', onComplete: () => prog.removeAttribute('stroke-dasharray') });
+    gsap.fromTo(prog, { attr: { 'stroke-dasharray': `${part} ${full + 20}` } }, { attr: { 'stroke-dasharray': `${full} ${full + 20}` }, duration: 1.1, delay: .75, ease: 'power2.inOut', onComplete: () => prog.forEach(p => p.removeAttribute('stroke-dasharray')) });
     gsap.fromTo(node, { scale: .55 }, { scale: 1, duration: .8, ease: 'elastic.out(1,.45)', delay: .2, clearProps: 'transform' });
     setTimeout(() => window.Motion && Motion.confetti(node, 44), 320);
     gsap.fromTo('#upnext', { y: 14, scale: .97 }, { y: 0, scale: 1, duration: .6, ease: 'back.out(2)', delay: .3, clearProps: 'transform' });
@@ -1301,10 +1312,16 @@ const Intro = {
   build() {
     $$('.home-board .hword-slot').forEach(slot => {
       const id = slot.dataset.id, w = WORDS[id], arrive = w.kind === 'sun';
-      slot.outerHTML = `<button type="button" class="dc hword home-note ${w.kind}" data-id="${id}" aria-label="Hear ${w.text}">
-        <span class="dc-head"><span class="dc-ico">${arrive ? UI.doorIn : UI.doorOut}</span><span>${arrive ? 'Arriving' : 'Leaving'}</span></span>
-        <span class="dc-body">${ICON[w.icon]()}<span class="hw-text">${w.text}</span></span>
-        <span class="dc-foot"><span class="dpill">${UI.clock}6:30 pm</span><span class="dround dark" aria-hidden="true">${UI.speaker}</span></span>
+      const scene = ['sunrise', 'sun', 'moon'].includes(w.icon);
+      slot.outerHTML = `<button type="button" class="dc hword home-note photo ${w.kind}${scene ? ' has-scene' : ''}" data-id="${id}" aria-label="Hear ${w.text}">
+        <span class="hw-pic">${ICON[w.icon]()}</span>
+        <span class="hw-blur" aria-hidden="true"></span>
+        <span class="hw-sound" aria-hidden="true">${UI.speaker}</span>
+        <span class="hw-info">
+          <span class="hw-row"><span class="hw-text">${w.text}</span><span class="hw-time">${UI.clock}6:30 pm</span></span>
+          <span class="hw-desc">${arrive ? 'What to say when you arrive in the evening.' : 'What to say when you leave for the day.'}</span>
+          <span class="hw-chips"><span class="hw-chip">${arrive ? 'Evening' : 'Any time'}</span><span class="hw-chip">${arrive ? 'Polite' : 'Friendly'}</span></span>
+        </span>
       </button>`;
     });
   },
@@ -1373,28 +1390,54 @@ function bumpCard(el) {
   gsap.fromTo(el, { y: 0 }, { y: -7, duration: .16, yoyo: true, repeat: 1, ease: 'power2.out', clearProps: 'transform' });
 }
 /* time of day shown in each word card's head */
+const WTONE = { 'good-morning': 'peach', 'good-afternoon': 'sky', 'good-evening': 'lilac', 'goodbye': 'sky', 'see-you': 'sky', 'see-you-tomorrow': 'sky' };
+const WDESC = { 'good-morning': 'What to say when you arrive in the morning.', 'good-afternoon': 'What to say when you arrive in the afternoon.', 'good-evening': 'What to say when you arrive in the evening.',
+  'goodbye': 'What to say when you leave, at any time of day.', 'see-you': 'A friendly way to say goodbye when you leave.', 'see-you-tomorrow': 'Say it only when you will meet again tomorrow.' };
+const WREG = { 'good-morning': 'Polite', 'good-afternoon': 'Polite', 'good-evening': 'Polite', 'goodbye': 'Polite', 'see-you': 'Friendly', 'see-you-tomorrow': 'Friendly' };
 const WMETA = { 'good-morning': 'Morning', 'good-afternoon': 'Afternoon', 'good-evening': 'Evening', 'goodbye': 'Any time', 'see-you': 'Any time', 'see-you-tomorrow': 'Tomorrow' };
 
 const splitChars = text => text.split(' ').map(w => `<span class="wd">${[...w].map(c => `<span class="ch">${c}</span>`).join('')}</span>`).join(' ');
+/* Greetings: each card starts blank, filled with moving liquid; tapping drains it to reveal the picture, then the words */
+const WAVE = '<path d="M0 10Q12.5 0 25 10T50 10T75 10T100 10T125 10T150 10T175 10T200 10V20H0Z"/>';
+const LIQUID = (n) => `<span class="wc-liquid" aria-hidden="true"><span class="wl-body"><svg class="wl-wave back" viewBox="0 0 200 20" preserveAspectRatio="none">${WAVE}</svg><svg class="wl-wave front" viewBox="0 0 200 20" preserveAspectRatio="none">${WAVE}</svg><span class="wl-fill"></span></span><span class="wl-hint"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="currentColor"/><circle class="wl-ring" cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/></svg>Tap to reveal</span></span>`;
+function revealCard(card) {
+  const box = card.closest('.wword'), cover = $('.wc-liquid', card);
+  box.classList.remove('is-blank');
+  if (!cover) return;
+  if (RM) { cover.remove(); return; }
+  const body = $('.wl-body', cover), info = $('.hw-info', card), img = $('.hw-pic .ico', card);
+  gsap.set(info, { autoAlpha: 0, y: 36 });
+  gsap.set([$('.hw-sound', card)], { scale: 0 });
+  gsap.timeline({ onComplete: () => cover.remove() })
+    .to($('.wl-hint', cover), { autoAlpha: 0, scale: .8, duration: .18 }, 0)
+    .to(body, { y: -14, duration: .2, ease: 'power1.out' }, 0)                                   // the liquid lifts a little...
+    .to(cover, { backgroundColor: 'rgba(255,255,255,0)', duration: .35, ease: 'power1.out' }, .12)
+    .to(body, { y: () => cover.clientHeight + 40, duration: 1, ease: 'power2.in' }, .2)        // ...then drains away
+    .fromTo(img, { scale: 1.14 }, { scale: 1, duration: 1.3, ease: 'power2.out', clearProps: 'transform' }, .2)
+    .to(info, { autoAlpha: 1, y: 0, duration: .55, ease: 'back.out(1.6)', clearProps: 'transform,opacity,visibility' }, 1.0)
+    .fromTo(info.children, { y: 12, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .4, stagger: .07, ease: 'power2.out', clearProps: 'transform,opacity,visibility' }, 1.1)
+    .to($('.hw-sound', card), { scale: 1, duration: .45, ease: 'back.out(2.6)', clearProps: 'transform' }, 1.2);
+}
 function buildWordCards() {
   [['greetings', GREETINGS], ['farewells', FAREWELLS]].forEach(([set, ids]) => {
     $(`[data-set="${set}"]`).innerHTML = ids.map(id => {
       const w = WORDS[id], arrive = w.kind === 'sun';
-      return `<div class="dc wword ${w.kind}" data-id="${id}">
-        <button type="button" class="wcard" data-id="${id}" aria-label="Tap to hear a word. ${w.alt}.">
-          <span class="dc-head"><span class="dc-ico" title="${arrive ? 'Arriving' : 'Leaving'}">${arrive ? UI.doorIn : UI.doorOut}</span><span>${WMETA[id]}</span></span>
-          <span class="dc-body wcard-body">
-            <span class="wcard-speak" aria-hidden="true">${UI.speaker}</span>
-            ${ICON[w.icon]()}
-            <span class="wcard-word"><span class="wcard-hint">Tap to hear</span><span class="wcard-text">${splitChars(w.text)}</span></span>
-          </span>
+      const scene = ['sunrise', 'sun', 'moon'].includes(w.icon), tone = WTONE[id] || (arrive ? 'peach' : 'sky');
+      const blank = set === 'greetings';
+      return `<div class="dc wword photo ${w.kind} t-${tone}${blank ? ' is-blank' : ''}" data-id="${id}">
+        <button type="button" class="wcard" data-id="${id}" aria-label="${blank ? `Hidden greeting ${ids.indexOf(id) + 1} of 3. Tap to reveal and hear it.` : `Hear ${w.text}. ${w.alt}.`}">
+          ${blank ? LIQUID() : ''}
+          <span class="hw-pic${scene ? ' has-scene' : ''}">${ICON[w.icon]()}</span>
+          <span class="hw-blur" aria-hidden="true"></span>
+          <span class="hw-shade" aria-hidden="true"></span>
+          <span class="hw-sound" aria-hidden="true">${UI.speaker}</span>
           <span class="wcard-check" aria-hidden="true">${UI.check}</span>
+          <span class="hw-info">
+            <span class="hw-row"><span class="hw-text">${w.text}</span><span class="hw-time">${WMETA[id]}</span></span>
+            <span class="hw-desc">${WDESC[id]}</span>
+            <span class="hw-chips"><span class="hw-chip">${arrive ? 'Greeting' : 'Farewell'}</span><span class="hw-chip">${WREG[id]}</span></span>
+          </span>
         </button>
-        <div class="dc-foot">
-          <span class="dpill wcard-status">New</span>
-          <button type="button" class="mic mic-pill say-word" data-id="${id}" aria-label="Say ${w.text}">${UI.mic}<span>Say it</span></button>
-          <p class="speak-msg" aria-live="polite"></p>
-        </div>
       </div>`;
     }).join('');
     const scr = screenEl(set);
@@ -1402,31 +1445,23 @@ function buildWordCards() {
     $('[data-next]', scr).disabled = true;
   });
 }
-/* the foot pill: New -> Heard */
-function markHeard(box, animate) {
-  const pill = $('.wcard-status', box);
-  pill.textContent = 'Heard 👏';
-  pill.classList.add('done');
-  if (animate && !RM) gsap.fromTo(pill, { scale: .7 }, { scale: 1, duration: .45, ease: 'back.out(3)', delay: .3 });
-}
 function tapWord(card) {
   const id = card.dataset.id, w = WORDS[id];
   const set = card.closest('.word-cards'), scr = card.closest('.screen'), box = card.closest('.wword');
   $$('.wword.is-active', set).forEach(c => { if (c !== box) c.classList.remove('is-active'); });
   box.classList.add('is-active');
-  bumpCard(box);
-  WIGGLE[w.icon]($('svg.ico', card));
-  gsap.fromTo($('.wcard-speak', card), { scale: 1 }, { scale: 1.2, duration: .16, repeat: 5, yoyo: true, ease: 'sine.inOut' });
+  const blank = !!$('.wc-liquid', card);
+  if (blank) revealCard(card);
+  else {
+    bumpCard(box);
+    WIGGLE[w.icon]($('.ico', card));
+    gsap.fromTo($('.hw-sound', card), { scale: 1 }, { scale: 1.15, duration: .16, repeat: 5, yoyo: true, ease: 'sine.inOut' });
+  }
   Voice.play(id, w.text);
   if (card.classList.contains('is-heard')) return;
   card.classList.add('is-heard');
-  card.setAttribute('aria-label', `${w.text}. Tap to hear again.`);
-  const text = $('.wcard-text', card);
-  gsap.to($('.wcard-hint', card), { autoAlpha: 0, y: -6, duration: .15 });
-  gsap.set(text, { visibility: 'visible' });
-  gsap.fromTo($$('.ch', text), { y: 16, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .4, stagger: .035, ease: 'back.out(2.2)', delay: .08 });
-  gsap.fromTo($('.wcard-check', card), { scale: 0 }, { scale: 1, duration: .45, ease: 'back.out(3)', delay: .35 });
-  markHeard(box, true);
+  card.setAttribute('aria-label', `${w.text}. Heard. Tap to hear again.`);
+  gsap.fromTo($('.wcard-check', card), { scale: 0 }, { scale: 1, duration: .45, ease: 'back.out(3)', delay: blank && !RM ? 1.35 : .2 });
   saveHeard();
   const n = $$('.wcard.is-heard', set).length;
   const nEl = $('.heard-n', scr);
@@ -1452,11 +1487,10 @@ function restoreHeard(heard) {
       const card = $(`[data-set="${set}"] .wcard[data-id="${id}"]`);
       if (!card) return;
       card.classList.add('is-heard');
-      card.setAttribute('aria-label', `${WORDS[id].text}. Tap to hear again.`);
-      gsap.set($('.wcard-hint', card), { autoAlpha: 0 });
-      gsap.set($('.wcard-text', card), { visibility: 'visible' });
+      card.setAttribute('aria-label', `${WORDS[id].text}. Heard. Tap to hear again.`);
+      $('.wc-liquid', card)?.remove();
+      card.closest('.wword').classList.remove('is-blank');
       gsap.set($('.wcard-check', card), { scale: 1 });
-      markHeard(card.closest('.wword'), false);
     });
     const scr = screenEl(set), n = $$(`[data-set="${set}"] .wcard.is-heard`).length;
     $('.heard-n', scr).textContent = n;
@@ -1536,7 +1570,6 @@ const Story = {
     const leaving = step === 2, stage = $('#stage');
     stage.classList.toggle('sun', !leaving);
     stage.classList.toggle('sky', leaving);
-    $('#stage-tag').innerHTML = leaving ? `${UI.doorOut}Leaving` : `${UI.doorIn}Arriving`;
     $('#stage-step').textContent = `${step} of 2`;
     $('#compare-status').textContent = `Question ${step} of 2`;
   },
@@ -1671,7 +1704,7 @@ const Story = {
     tl.to(['#story-q', '#story-options'], { autoAlpha: 0, duration: .2 }, 0)
       .call(() => this.setQuestion(2), null, .22)
       .to('#story-q', { autoAlpha: 1, duration: .3 }, .25)
-      .call(() => { this.setLook(2); this.arrows(2); gsap.fromTo('#stage-tag', { scale: .6 }, { scale: 1, duration: .45, ease: 'back.out(2.5)' }); }, null, .3)
+      .call(() => { this.setLook(2); this.arrows(2); }, null, .3)
       // Ananya turns around...
       .to(pose, { scaleX: 0, duration: .16, ease: 'power2.in', transformOrigin: '50% 50%' }, .35)
       .call(() => { this.setPose(true); const arm = $('.arm-w', w); if (arm && !RM) this.loops.push(waveLoop(arm)); }, null, .51)
@@ -1815,7 +1848,7 @@ const Match = {
     gsap.fromTo([a, b], { scale: 1 }, { scale: 1.08, duration: .18, yoyo: true, repeat: 1, ease: 'power2.out' });
     gsap.fromTo([a, b].map(c => $('.mcard-check', c)), { scale: 0 }, { scale: 1, duration: .45, ease: 'back.out(3)', delay: .15 });
     const iconCard = a.dataset.face === 'icon' ? a : b;
-    WIGGLE[w.icon]($('svg.ico', iconCard));
+    WIGGLE[w.icon]($('.ico', iconCard));
     this.open = []; this.lock = false;
     this.n++;
     this.tally(true);
@@ -2109,7 +2142,7 @@ function init() {
     if (t.classList.contains('say-word')) return sayWord(t);
     if (t.id === 'sprint-mic') return sayAnswer(t, '#sprint-card .opt', '#sprint-say-msg', b => Sprint.answer(b, 'voice'));
     if (t.classList.contains('node')) return Home.pop(t.closest('.stop'));
-    if (t.classList.contains('home-note')) { const w = WORDS[t.dataset.id]; bumpCard(t); WIGGLE[w.icon]($('svg.ico', t)); return Voice.play(t.dataset.id, w.text); }
+    if (t.classList.contains('home-note')) { const w = WORDS[t.dataset.id]; bumpCard(t); WIGGLE[w.icon]($('.ico', t)); return Voice.play(t.dataset.id, w.text); }
     if (t.classList.contains('wk')) { if (!RM) gsap.fromTo(t, { scale: .92 }, { scale: 1, duration: .35, ease: 'back.out(3)', clearProps: 'transform' }); return Voice.play(t.dataset.id, WORDS[t.dataset.id].text); }
     if (t.id === 'start' || t.id === 'restart') return Intro.go(t);
     if (t.dataset.act === 'stage-go' || t.dataset.act === 'stage-restart') return Home.go(t);

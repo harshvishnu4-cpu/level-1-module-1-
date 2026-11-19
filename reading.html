@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#000000">
 <title>Reading Card</title>
 <link rel="stylesheet" href="css/base.css">
-<link rel="stylesheet" href="css/kw.css?v=20261118i">
+<link rel="stylesheet" href="css/kw.css?v=20261120m">
 <link rel="preload" href="fonts/outfit/outfit-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <!-- Timer digits only (Figma timer); falls back to a monospace font offline -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -28,7 +28,7 @@
 
 <div class="panel">
   <div class="pagehead">
-    <div><p class="crumb">Communication Skills · Stage 5</p><h1 id="page-title">Reading</h1></div>
+    <div><p class="crumb">Communication Skills · Stage 5</p><h1 id="page-title">Reading Card</h1></div>
     <div class="title-tools">
       <div class="timer" id="read-timer" role="timer" aria-label="Time left" hidden>
         <div class="timer-inner"><div class="timer-swing">
@@ -45,7 +45,7 @@
     <!-- Stage 5: Reading Card. The passage is the content team's approved text, word for word (CC BY-SA 4.0). -->
     <section class="screen" data-screen="read" hidden>
       <div class="work">
-        <div class="instr read-instr"><span class="kind lilac"><i data-ui="book"></i>Reading</span><p>Ananya greeted her manager with words. People greet with actions too. Read the passage, then answer three questions.</p><button type="button" class="read-btn" data-read="ins-read" data-text="Ananya greeted her manager with words. People greet with actions too. Read the passage, then answer three questions." aria-label="Read the instructions aloud"><i data-ui="speaker"></i></button></div>
+        <div class="instr read-instr"><p>Ananya greeted her manager with words. People greet with actions too. Read the passage, then answer three questions.</p><button type="button" class="read-btn" data-read="ins-read" data-text="Ananya greeted her manager with words. People greet with actions too. Read the passage, then answer three questions." aria-label="Read the instructions aloud"><i data-ui="speaker"></i></button></div>
         <div class="read-home">
           <article class="card reading" id="reading" aria-labelledby="read-title">
             <header class="reading-head">
@@ -70,10 +70,13 @@
     </section>
 
     <section class="screen" data-screen="readq" hidden>
-      <div class="work">
+      <div class="work rq-work">
+        <div class="rq-layout">
         <div class="quiz">
           <div class="qtop"><div class="qdots" id="rq-dots" role="img"></div><button type="button" class="btn secondary show-text" data-act="show-text"><i data-ui="book"></i><span>Show text</span></button></div>
           <section class="dc lilac bigq" id="rq-card"></section>
+        </div>
+        <aside class="rq-side" id="rq-side" aria-label="The passage"></aside>
         </div>
       </div>
       <div class="actionbar"><div class="actionbar-in">
@@ -145,7 +148,7 @@
   </div>
 </div>
 
-<script src="js/kw-core.js?v=20261118f"></script>
-<script src="js/stage5.js?v=20261118f"></script>
+<script src="js/kw-core.js?v=20261119o"></script>
+<script src="js/stage5.js?v=20261119c"></script>
 </body>
 </html>
