@@ -1447,3 +1447,249 @@ body[data-view="welcome"] main{padding-bottom:0}
 .wword.is-blank .hw-sound,.wword.is-blank .wcard-check{visibility:hidden}
 .wword.is-blank .wcard:hover .wl-hint{background:#fff}
 @media (prefers-reduced-motion:reduce){.wl-wave,.wl-ring{animation:none}}
+
+/* ================= Top bar, cleaner =================
+   No white notch under the title. The title is a soft pill (it is a link back to the path). Back is an outline pill,
+   the status is a soft pill, Continue is solid white; a locked Continue is a faint outline that still reads. */
+.nav a[aria-current="page"]::after{display:none}
+.topbar{border-bottom:1px solid rgba(255,255,255,.06)}
+.topbar .nav a{height:40px;padding:0 16px 0 12px;gap:8px;border-radius:99px;background:rgba(255,255,255,.08);color:#fff;font-size:.9375rem;font-weight:700;transition:background-color .15s ease}
+.topbar .nav a:hover{background:rgba(255,255,255,.14)}
+.topbar .nav a svg{width:20px;height:20px;opacity:.9}
+.topbar .nav a .lbl{color:#fff !important}
+/* buttons on the bar: same height, no heavy 3D edge */
+.actionbar .btn{min-height:44px;height:44px;padding:0 20px;border-radius:99px;font-size:.9375rem;font-weight:700;box-shadow:none}
+.actionbar .btn.secondary,.actionbar .back-btn{background:transparent;color:#fff;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.24)}
+.actionbar .btn.secondary:hover:not(:disabled),.actionbar .back-btn:hover{background:rgba(255,255,255,.08);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.38)}
+.actionbar .back-btn{gap:6px;padding:0 18px 0 12px !important}
+.actionbar .back-btn svg{width:18px;height:18px}
+.actionbar .btn.primary{background:#fff;color:#16181d;box-shadow:0 3px 0 #a9aeb8}
+.actionbar .btn.primary:hover:not(:disabled){background:#eef0f4}
+.actionbar .btn.primary:active:not(:disabled){transform:translateY(3px);box-shadow:0 0 0 #a9aeb8}
+.actionbar .btn:disabled,.actionbar .btn.primary:disabled{background:rgba(255,255,255,.06);color:rgba(255,255,255,.42);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.12);cursor:not-allowed}
+/* the status beside Continue: a soft pill */
+.actionbar .grow{flex:none;max-width:none;padding:6px 14px;border-radius:99px;background:rgba(255,255,255,.08);color:#c9ccd3;font-size:.875rem;font-weight:600}
+.actionbar .grow b{color:#fff;font-weight:800}
+/* the path's round Back matches the other Back buttons */
+.actionbar .map-back{width:44px;height:44px;min-height:44px;padding:0 !important}
+/* phones: Back shows only its arrow, as a circle */
+@media (max-width:37.49em){
+  .actionbar .back-btn{width:44px;padding:0 !important;justify-content:center}
+  .actionbar .back-btn .back-lb{display:none}
+  .actionbar .btn{padding:0 16px}
+}
+
+/* cinematic change between the Key Words parts: the outgoing screen is positioned against main while both are on screen */
+main.kw-cine{position:relative}
+main.kw-cine>.screen>.work{will-change:transform,opacity;backface-visibility:hidden}
+
+/* ---------- Reading Card: no paragraph numbers; every word can be tapped (a soft highlight shows it); glossary words stay bold, no underline or "i" ---------- */
+.passage p{padding-left:0}
+.passage .w,.reading-title .w{border-radius:5px;cursor:pointer;transition:background-color .12s ease}
+@media (hover:hover){.passage .w:hover,.reading-title .w:hover{background:#eef2fd}}
+.gloss{text-decoration:none}
+.gi{display:none}
+
+/* ================= Reading Card questions: three tries, hints in the passage, feedback in the card ================= */
+.rq-tries{display:inline-flex;align-items:center;gap:6px}
+.rq-tries i{display:grid;place-items:center;width:12px;height:12px;border-radius:50%;background:#d3d7df;color:#fff}
+.rq-tries i.x{width:20px;height:20px;background:#d93636}
+.rq-tries i.x svg{width:11px;height:11px}
+.rq-how{margin:-2px 0 0;font-size:.9375rem;font-weight:600;color:var(--muted)}
+#rq-card .choice.is-wrong{border-color:#d93636;--kw-edge:#d93636;background:#fdecec;color:#b42323}
+#rq-card .choice.row.is-wrong::before{box-shadow:inset 0 0 0 7px #d93636}
+#rq-card .choice.is-out{opacity:.42;cursor:not-allowed;text-decoration:line-through;text-decoration-thickness:1.5px}
+.rq-fb{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 12px;align-items:center;padding:14px 16px;border-radius:16px}
+.rq-fb.ok,.rq-fb.reveal{background:var(--good-soft)}
+.rq-fb.bad{background:#fdecec}
+.rq-fb-ico{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--good);color:#fff}
+.rq-fb.bad .rq-fb-ico{background:#d93636}
+.rq-fb.reveal .rq-fb-ico{background:#E2A53A}
+.rq-fb-ico svg{width:18px;height:18px}
+.rq-fb-text b{display:block;font-size:1.125rem;font-weight:750;line-height:1.25;color:var(--good)}
+.rq-fb.bad .rq-fb-text b{color:#b42323}
+.rq-fb-text p{margin:2px 0 0;font-size:1rem;line-height:1.4;color:var(--text)}
+.rq-fb .rq-go{grid-column:1/-1;width:100%;margin-top:6px}
+/* hints in the passage: the paragraph(s), then the exact line(s) */
+#passage p{transition:background-color .3s ease,box-shadow .3s ease}
+#passage p.is-hint{background:#fff4d8;box-shadow:0 0 0 10px #fff4d8;border-radius:10px}
+mark.rq-line{background:none;color:inherit;border-radius:4px;transition:background-color .3s ease,box-shadow .3s ease}
+mark.rq-line.is-hint{background:#fde2a0;box-shadow:0 0 0 3px #fde2a0}
+
+/* Reading Card questions on wide screens: the passage on the left, the question on the right */
+@media (min-width:56.25em){.rq-layout{grid-template-columns:minmax(0,1.05fr) minmax(0,1fr)}}
+
+/* ================= Segment 1 result page (result.html): score, what to practise, skills ================= */
+.res-grid{display:grid;gap:16px;align-content:start}
+.res-grid>.card{padding:20px}
+.res-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.res-head h2{flex:1;margin:0;font-family:var(--kw-display);font-size:1.25rem;font-weight:750;letter-spacing:-.01em}
+.res-head h2 small{font-family:var(--font);font-size:.875rem;font-weight:600;color:var(--muted)}
+.res-hico{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:#e3f5e8}
+.res-hico svg{width:20px;height:20px}
+.res-hico.bulb{background:#fff1c7;color:#9a6a00}
+.res-count{padding:3px 10px;border-radius:99px;background:var(--soft);font-size:.8125rem;font-weight:700;color:#3d4250;white-space:nowrap}
+/* B1. score */
+.res-top{display:grid;grid-template-columns:auto minmax(0,1fr);gap:18px;align-items:center}
+.res-ring{width:118px;height:118px}
+.res-words{display:grid;gap:6px;justify-items:start}
+.res-label{padding:3px 12px;border-radius:99px;font-size:.8125rem;font-weight:800}
+.res-label.l-excellent,.res-label.l-great{background:var(--good-soft);color:var(--good)}
+.res-label.l-good-effort{background:#fff1c7;color:#7a5200}
+.res-label.l-keep-practising{background:#fdecec;color:#b42323}
+.res-label.l-not-started{background:var(--soft);color:var(--muted)}
+.res-main{margin:0;font-family:var(--kw-display);font-size:1.375rem;font-weight:750;line-height:1.2;letter-spacing:-.015em}
+.res-sub{margin:0;font-size:.9375rem;line-height:1.4;color:#3d4250}
+.res-tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.res-tile{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:16px}
+.res-tile.blue{background:#e6f3fd;color:#11577E}
+.res-tile.green{background:var(--good-soft);color:var(--good)}
+.res-tile-ico svg{display:block;width:24px;height:24px}
+.res-tile b{display:block;font-family:var(--kw-display);font-size:1.5rem;font-weight:750;line-height:1.05}
+.res-tile span{font-size:.8125rem;font-weight:600}
+/* B2. what to practise */
+.rp-table{width:100%;border-collapse:collapse;font-size:.9375rem;line-height:1.4}
+.rp-table th{position:sticky;top:0;z-index:1;padding:8px 10px;background:#fff;border-bottom:2px solid var(--line);text-align:left;font-size:.75rem;font-weight:700;color:var(--muted);white-space:nowrap}
+.rp-table td{padding:12px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.rp-table tr:last-child td{border-bottom:0}
+.rp-n{width:32px;color:var(--muted);font-weight:700}
+.rp-q{width:38%}
+.rp-text{display:block;font-weight:600;color:var(--text)}
+.rp-src{display:inline-block;margin-top:6px;padding:2px 9px;border-radius:99px;font-size:.75rem;font-weight:700}
+.rp-src.t-sun{background:var(--butter);color:#7A4B06}
+.rp-src.t-lilac{background:var(--lilac);color:var(--tip)}
+.rp-src.t-sky{background:var(--sky);color:#11577E}
+.rp-src.t-mint{background:var(--mint);color:var(--mint-ink)}
+.rp-wrong{width:20%;color:#b42323;font-weight:700}
+.rp-fix b{display:block;color:var(--good);font-weight:700}
+.rp-fix span{display:block;margin-top:3px;font-size:.875rem;color:#3d4250}
+.rp-empty{margin:0;padding:18px;border-radius:14px;background:var(--soft-2);color:#3d4250;font-weight:600;text-align:center}
+/* B3. skills */
+.sk-list{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.sk-row{display:flex;justify-content:space-between;gap:10px;margin-bottom:5px;font-size:.9375rem}
+.sk-name{font-weight:600}
+.sk-pct{font-weight:800}
+.sk-bar{display:block;height:10px;border-radius:99px;background:#eef0f4;overflow:hidden}
+.sk-bar i{display:block;height:100%;border-radius:99px;background:var(--path)}
+.sk.mid .sk-bar i{background:#E2A53A}
+.sk.low .sk-bar i{background:#d93636}
+.sk.mid .sk-pct{color:#9a6a00}
+.sk.low .sk-pct{color:#b42323}
+.sk.none .sk-pct{color:var(--muted)}
+/* Retake in the top bar, and its confirm box */
+.retake-btn{gap:8px}
+.retake-btn svg{width:18px;height:18px}
+.cf-actions{display:flex;gap:10px;justify-content:center;margin-top:6px}
+.cf-actions .btn{min-width:120px}
+/* wide screens: score and skills on the left, the practise table on the right (it scrolls inside its card) */
+@media (min-width:56.25em){
+  .screen[data-screen="result"]>.work{display:flex;flex-direction:column;overflow:hidden}
+  .res-grid{flex:1 1 auto;min-height:0;grid-template-columns:minmax(320px,400px) minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);grid-template-areas:"score practise" "skills practise"}
+  .res-score{grid-area:score}.res-skills{grid-area:skills;align-self:start}
+  .res-practise{grid-area:practise;display:flex;flex-direction:column;min-height:0}
+  .rp-scroll{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;margin:0 -6px;padding:0 6px}
+}
+@media (min-width:56.25em) and (max-height:50em){
+  .res-grid>.card{padding:16px 18px}
+  .res-ring{width:96px;height:96px}
+  .res-main{font-size:1.1875rem}
+  .res-tiles{margin-top:12px}
+  .res-tile{padding:9px 12px}
+  .sk-list{gap:9px}
+}
+/* phones: the table becomes one card per question */
+@media (max-width:37.49em){
+  .res-ring{width:96px;height:96px}
+  .rp-table thead{display:none}
+  .rp-table,.rp-table tbody,.rp-table tr,.rp-table td{display:block;width:auto}
+  .rp-table tr{padding:12px 0;border-bottom:1px solid var(--line)}
+  .rp-table td{padding:3px 0;border:0}
+  .rp-n{display:none !important}
+  .rp-wrong::before,.rp-fix::before{content:attr(data-label);display:block;font-size:.75rem;font-weight:700;color:var(--muted)}
+}
+
+/* ================= Learning path as a dial (from the user's reference) =================
+   A large arc at the left with the stage numbers along it; the number in focus is big at the arc's right edge, with
+   the stage's details beside it. Plain light page; progress at the top left; the words you know at the bottom right. */
+body[data-view="welcome"] .panel{background:var(--bg)}
+.screen[data-screen="welcome"]>.work.dial-work{display:flex;flex-direction:column;overflow:hidden;margin:0;padding:0}
+.dial-stage{position:relative;flex:1 1 auto;min-height:0;overflow:hidden}
+.dial-head{position:absolute;left:clamp(18px,3vw,44px);top:clamp(14px,3vh,30px);z-index:3;display:grid;gap:6px;justify-items:start}
+.dial-head .unit-kicker{margin:0;font-size:.8125rem;font-weight:600;color:var(--muted)}
+.dial-head .unit-title{display:block;margin:0;font-family:var(--kw-display);font-size:clamp(1.5rem,1.1rem + 1.1vw,2rem);font-weight:750;letter-spacing:-.02em;line-height:1.1;color:var(--text)}
+.dial-head .unit-prog{display:flex;align-items:center;gap:10px;margin-top:2px;font-size:.875rem;font-weight:600;color:#3d4250}
+.dial-head .unit-bar{flex:none;width:140px;height:6px;border-radius:99px;background:#e1e4ea;overflow:hidden}
+.dial-head .unit-bar i{display:block;height:100%;border-radius:99px;background:var(--path);transition:width .9s ease}
+.dial{position:absolute;left:0;top:0;width:0;height:0;z-index:1}
+.dial-arc{position:absolute;overflow:visible;pointer-events:none}
+.dial-arc circle{fill:none;stroke:#cfd3da;stroke-width:1.5;stroke-dasharray:1;stroke-dashoffset:0}
+.dial-rot{position:absolute;left:0;top:0;width:0;height:0;margin:0;padding:0;list-style:none;will-change:transform}
+.dstop{position:absolute;left:0;top:0;width:0;height:0}
+.dnode{position:absolute;left:var(--R);top:0;width:0;height:0;padding:0;border:0;background:none;color:var(--text);font:inherit;cursor:pointer}
+/* the dot on the arc (a bigger invisible area to tap) */
+.d-dot{position:absolute;left:-6px;top:-6px;width:12px;height:12px;border-radius:50%;display:grid;place-items:center;background:#c4c9d1;transition:background-color .3s ease}
+.d-dot::before{content:"";position:absolute;inset:-12px;border-radius:50%}
+.d-tick{display:none;color:#fff}
+.d-tick svg{width:10px;height:10px}
+.dstop.is-done .d-dot{left:-10px;top:-10px;width:20px;height:20px;background:var(--path)}
+.dstop.is-done .d-tick{display:grid}
+.dstop.is-current .d-dot{left:-8px;top:-8px;width:16px;height:16px;background:#1d1f25;box-shadow:0 0 0 6px rgba(29,31,37,.08)}
+.dstop.is-current .d-dot::after{content:"";position:absolute;inset:-9px;border-radius:50%;border:2px solid rgba(47,174,98,.55);animation:kwRing 2.2s ease-out infinite}
+.dstop.is-locked .d-dot{background:#fff;box-shadow:inset 0 0 0 2px #c4c9d1}
+.dstop.is-soon .d-dot{background:none;border:2px dashed #c4c9d1}
+.dstop.end .d-dot{left:-8px;top:-8px;width:16px;height:16px;background:#fff;box-shadow:inset 0 0 0 2px #E2A53A}
+.dstop.end.is-done .d-dot{background:#E2A53A;box-shadow:none}
+/* the numbers: one size, scaled down when not in focus (so the turn is smooth) */
+.d-num{position:absolute;left:30px;top:0;transform-origin:0 50%;font-family:var(--kw-display);font-size:clamp(4.25rem,2.6rem + 4.4vw,7.5rem);font-weight:800;line-height:1;letter-spacing:-.045em;color:#1d1f25;white-space:nowrap;font-variant-numeric:tabular-nums;will-change:transform,opacity;transition:color .3s ease}
+.dstop.is-done .d-num{color:#1f8a45}
+.dstop.is-locked .d-num,.dstop.is-soon .d-num{color:#7d838f}
+.d-num svg{display:block;width:.78em;height:.78em}
+.dnode:focus-visible{outline:none}
+.dnode:focus-visible .d-num{outline:3px solid var(--accent);outline-offset:8px;border-radius:10px}
+@media (hover:hover){.dstop:not(.is-sel) .dnode:hover .d-num{color:#3d4250}}
+/* the details of the stage in focus */
+.dial-info{position:absolute;z-index:2;transform:translateY(-50%)}
+.dial-info.below{transform:none}
+.di-in{display:grid;gap:10px;justify-items:start}
+.dial-info .un-kicker{margin:0}
+.dial-info .un-kicker.done{background:var(--good-soft);color:var(--good)}
+.dial-info .un-kicker.lock{background:var(--soft);color:#3d4250}
+.dial-info .un-title{margin:0;font-family:var(--kw-display);font-size:clamp(1.625rem,1.2rem + 1.1vw,2.25rem);font-weight:750;letter-spacing:-.02em;line-height:1.1}
+.dial-info .un-about{display:block;margin:0;max-width:40ch;font-size:1.0625rem;line-height:1.5;color:#5b6170}
+.dial-info .un-meta{justify-content:flex-start;margin:2px 0 0;color:#3d4250}
+.dial-info .un-meta li:first-child{padding-left:0}
+.dial-info .un-done{margin:0}
+.dial-info .pop-lock{margin:4px 0 0}
+.di-acts{display:flex;align-items:center;gap:16px;margin-top:6px}
+.di-go{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:52px;padding:0 26px;font-size:1.0625rem;text-decoration:none}
+.di-go svg{width:18px;height:18px}
+/* the words you know: a quiet line at the bottom right */
+.dial-foot{position:absolute;right:clamp(18px,3vw,44px);bottom:clamp(12px,3vh,26px);z-index:3;display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:8px 12px;max-width:min(780px,72%)}
+.wf-label{font-size:.875rem;font-weight:600;color:var(--muted);white-space:nowrap}
+.wf-line{flex:none;width:44px;height:1px;background:#c4c9d1}
+.dial-foot .wk-chips{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:6px}
+.dial-foot .wk{min-height:32px;padding:4px 11px;font-size:.8125rem;box-shadow:none;--kw-edge:transparent}
+.dial-foot .wk-note{font-size:.875rem;color:#5b6170}
+/* phones: smaller numbers, details under the big number, words along the bottom */
+@media (max-width:37.49em){
+  .dial-head .unit-title{font-size:1.375rem}
+  .dial-head .unit-bar{width:100px}
+  .dial-info .un-title{font-size:1.5rem}
+  .dial-info .un-about{font-size:.9375rem}
+  .di-go{min-height:46px;padding:0 20px;font-size:1rem}
+  .dial-foot{left:18px;right:18px;max-width:none;justify-content:flex-start}
+  .dial-foot .wk-chips{justify-content:flex-start}
+  .wf-line{display:none}
+}
+@media (min-width:37.5em) and (max-height:46em){.dial-info .un-about{font-size:.9375rem}.dial-info .un-meta{display:none}}
+@media (prefers-reduced-motion:reduce){.dstop.is-current .d-dot::after{animation:none}}
+.dial-stage{align-self:stretch;width:100%}
+/* the title area sits on a patch of the page colour, so the arc passes behind it */
+.dial-head{padding:6px 16px 10px 0;border-radius:0 0 16px 0;background:var(--bg);box-shadow:0 0 0 10px var(--bg)}
+/* coming-soon and locked stops: a plain hollow ring */
+.dstop.is-soon .d-dot{border:0;background:#fff;box-shadow:inset 0 0 0 2px #d3d7df}
+@media (max-width:37.49em){
+  .dial-info .un-meta{display:none}
+  .dial-foot .wk{min-height:28px;padding:3px 9px;font-size:.75rem}
+  .dial-foot{gap:6px 10px;bottom:12px}
+}

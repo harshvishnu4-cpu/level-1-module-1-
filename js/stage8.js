@@ -29,6 +29,19 @@ function shopFront() {
     <rect y="162" width="300" height="18" fill="#3A3263"/><rect y="162" width="300" height="5" fill="#4C437A"/>
   </svg>`;
 }
+/* First tries for the Segment 1 result page */
+const QC_RES = {
+  qc1: { skill: 'Time-of-day greetings', question: 'Listen. Which picture matches? (You hear “Good afternoon”.)', correct: 'The sun high in the sky', tip: '“Good afternoon” goes with the sun high in the sky.' },
+  qc2: { skill: 'Courtesy words', question: 'Which word means “a small apology”?', correct: 'Sorry', tip: '“Sorry” is a small apology.' },
+  qc3: { skill: 'I am / This is', question: 'Drag “am” and “is” into the right blanks.', correct: 'I am Ananya. This is my first day.', tip: 'Use “am” with I, and “is” with this.' },
+  qc4: { skill: 'Arriving vs. leaving', question: 'You’re leaving a shop in the evening. What do you say?', correct: 'See you', tip: 'You are leaving, so say “See you”, even in the evening.' }
+};
+function saveCheck(q, ok, first) {
+  const d = Store.get(), res = d.results || {}, list = (res.check || []).slice(), at = list.findIndex(r => r.id === q.id);
+  if (at >= 0) { if (ok && !list[at].solved) list[at] = { ...list[at], solved: true }; }
+  else list.push({ id: q.id, source: 'Quick Check', ...QC_RES[q.id], first, firstRight: ok, solved: ok });
+  Store.set({ results: { ...res, check: list } });
+}
 const QuickCheck = {
   LIMIT: 10 * 60 * 1000, timer: null, clock: null, i: 0, sel: null, checked: false, slots: [null, null],
   start() {
@@ -145,6 +158,9 @@ const QuickCheck = {
     else { SFX.bad(); buzz(); shake($$('#qc-card .is-wrong'), 7); }
     if (q.id === 'qc1') setTimeout(() => this.play(), 500);
     postKW('check-answer', { question: q.id, correct: ok });
+    const first = q.type === 'drag' ? `I ${this.slots[0] || '___'} Ananya. This ${this.slots[1] || '___'} my first day.`
+      : q.type === 'icons' ? ((q.options.find(o => o.v === this.sel) || {}).label || '').replace(/^Picture: /, '').replace(/^./, c => c.toUpperCase()) : this.sel;
+    saveCheck(q, ok, first);
     const last = this.i === CHECK_Q.length - 1;
     QSheet.show({ ok, title: ok ? praise() : 'Not quite', text: ok ? q.right : q.wrong, button: last ? 'Finish' : 'Continue', onNext: () => this.next() });
     this.sync();
@@ -169,7 +185,9 @@ const QuickCheck = {
   finish() {
     markStage('s8');
     postStage(8);
-    goPath();
+    const st = Store.get().stages || {};
+    if (st.s4 && st.s5 && st.s8) location.href = 'result.html';       // the last stage: on to the Segment 1 result
+    else goPath();
   }
 };
 

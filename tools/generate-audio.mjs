@@ -78,6 +78,9 @@ const CLIPS = [
   { id: "qc4", text: "You're leaving a shop in the evening. What do you say?" },
   { id: "qc-done", text: "Great start! Next, you'll get to use this greeting in five different situations of your own." }
 ];
+/* Reading Card: every word of the passage and its title, so tapping a word reads it (audio/w-<word>.mp3) */
+const READ_WORDS = ["a", "action", "actions", "agree", "almost", "also", "an", "and", "answer", "are", "bare", "be", "both", "bow", "but", "call", "can", "chance", "class", "common", "cultures", "do", "down", "each", "english", "especially", "everywhere", "exactly", "family", "firm", "first", "follow", "for", "formal", "friendly", "friends", "gentle", "give", "gloves", "go", "good", "greet", "greeting", "greetings", "hand", "hands", "handshake", "hello", "hey", "hi", "hiya", "hold", "hug", "idea", "important", "in", "informal", "instead", "is", "it", "language", "let", "like", "little", "long", "many", "may", "meet", "members", "men", "more", "most", "move", "new", "nod", "not", "of", "offers", "office", "often", "old", "older", "on", "one", "only", "or", "other", "other's", "people", "person", "phone", "places", "polite", "politeness", "right", "same", "say", "saying", "senior", "shake", "short", "show", "sign", "so", "some", "someone", "something", "that", "the", "their", "them", "then", "there", "they", "tightly", "time", "to", "too", "two", "up", "use", "used", "usually", "very", "watch", "wave", "way", "we", "what", "when", "whether", "who", "with", "women", "word", "words", "you", "your"];
+for (const w of READ_WORDS) CLIPS.push({ id: `w-${w.toLowerCase().replace(/[^a-z]/g, '')}`, text: w });
 
 /* Read KEY=value lines from .env without printing anything */
 function loadEnv() {

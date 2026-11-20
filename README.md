@@ -46,9 +46,8 @@ speech checking: `kit/commkit.js`, `lib/vosk.js`, `js/scoring.js`,
 
 ## What learners can do
 
-- Hear each word on its card, then tap **Say it** and say it (checked on the device).
+- Tap each card to hear its word (on Greetings the card is blank until tapped, then the liquid drains to reveal it).
 - Read aloud: every instruction, question and situation has a speaker button.
-- **Practice / Test**: Practice has no timer and hints after a wrong answer; Test is timed and scored (the spec).
 - Word Match with **Words** or **Sounds** (sound cards play the phrase instead of showing it).
 - Scenario Sprint: the spec's five situations first, then five drawn from a pool of 12 on each replay. Answers can be tapped or said.
 - Progress is saved on the device (Continue / Start over on the welcome screen).

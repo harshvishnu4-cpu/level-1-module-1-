@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#000000">
 <title>Reading Card</title>
 <link rel="stylesheet" href="css/base.css">
-<link rel="stylesheet" href="css/kw.css?v=20261120m">
+<link rel="stylesheet" href="css/kw.css?v=20261120x">
 <link rel="preload" href="fonts/outfit/outfit-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <!-- Timer digits only (Figma timer); falls back to a monospace font offline -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -28,7 +28,7 @@
 
 <div class="panel">
   <div class="pagehead">
-    <div><p class="crumb">Communication Skills · Stage 5</p><h1 id="page-title">Reading Card</h1></div>
+    <div><p class="crumb">Communication Skills · Stage 5</p><h1 id="page-title" class="sr-only">Reading Card</h1></div>
     <div class="title-tools">
       <div class="timer" id="read-timer" role="timer" aria-label="Time left" hidden>
         <div class="timer-inner"><div class="timer-swing">
@@ -45,12 +45,11 @@
     <!-- Stage 5: Reading Card. The passage is the content team's approved text, word for word (CC BY-SA 4.0). -->
     <section class="screen" data-screen="read" hidden>
       <div class="work">
-        <div class="instr read-instr"><p>Ananya greeted her manager with words. People greet with actions too. Read the passage, then answer three questions.</p><button type="button" class="read-btn" data-read="ins-read" data-text="Ananya greeted her manager with words. People greet with actions too. Read the passage, then answer three questions." aria-label="Read the instructions aloud"><i data-ui="speaker"></i></button></div>
+        <div class="instr read-instr"><p>Ananya greeted her manager with words. People greet with actions too. Read the passage, then answer three questions. Tap any word to hear it.</p></div>
         <div class="read-home">
           <article class="card reading" id="reading" aria-labelledby="read-title">
             <header class="reading-head">
               <div class="reading-id">
-                <span class="read-art" aria-hidden="true"></span>
                 <h2 class="reading-title" id="read-title">Saying Hello — Words and Actions</h2>
               </div>
               <button type="button" class="btn secondary listen-btn" id="listen" aria-label="Listen to the whole passage"><i data-ui="speaker"></i><span>Listen</span></button>
@@ -58,7 +57,6 @@
             <div class="passage" id="passage"></div>
             <div class="gloss-pop" id="gloss-pop" role="status" aria-live="polite" hidden></div>
             <p class="source">Adapted from Simple English Wikipedia, “Hello” and “Handshake,” <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>.<br>This adapted text is shared under the same licence.</p>
-            <section class="glossary" aria-labelledby="gl-title"><h3 id="gl-title">Glossary</h3><dl id="glossary-list"></dl></section>
           </article>
         </div>
       </div>
@@ -72,11 +70,11 @@
     <section class="screen" data-screen="readq" hidden>
       <div class="work rq-work">
         <div class="rq-layout">
+        <aside class="rq-side" id="rq-side" aria-label="The passage"></aside>
         <div class="quiz">
           <div class="qtop"><div class="qdots" id="rq-dots" role="img"></div><button type="button" class="btn secondary show-text" data-act="show-text"><i data-ui="book"></i><span>Show text</span></button></div>
           <section class="dc lilac bigq" id="rq-card"></section>
         </div>
-        <aside class="rq-side" id="rq-side" aria-label="The passage"></aside>
         </div>
       </div>
       <div class="actionbar"><div class="actionbar-in">
@@ -90,7 +88,6 @@
       <div class="work">
         <div class="quiz">
           <section class="card done-card">
-            <span class="read-art" aria-hidden="true"></span>
             <h2 class="done-title">Reading done</h2>
             <p class="done-sub" id="rd-sub"></p>
             <ol class="review" id="rd-list"></ol>
@@ -148,7 +145,8 @@
   </div>
 </div>
 
-<script src="js/kw-core.js?v=20261119o"></script>
-<script src="js/stage5.js?v=20261119c"></script>
+<script src="js/kw-core.js?v=20261120r"></script>
+<script src="js/stage5.js?v=20261120h"></script>
+<script src="dev-menu/dev-menu.js?v=2"></script> <!-- DEV MENU: testing only. Delete this line and the dev-menu folder when done. -->
 </body>
 </html>

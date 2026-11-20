@@ -14,7 +14,7 @@
 <script src="lib/gsap.min.js"></script>
 <script src="js/motion.js" defer></script>
 <script src="kit/commkit.js"></script>
-<link rel="stylesheet" href="css/kw.css?v=20261120m">
+<link rel="stylesheet" href="css/kw.css?v=20261120x">
 </head>
 <body data-kind="speak" data-view="welcome">
 
@@ -69,26 +69,19 @@
 
     <!-- Welcome -->
     <section class="screen" data-screen="welcome">
-      <div class="work">
-        <div class="home-map">
-          <div class="map-main">
-            <header class="unit">
-              <div>
-                <h1 class="unit-title"><span class="unit-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="12" width="4.2" height="9" rx="1.3" fill="#4cc874"/><rect x="9.9" y="7" width="4.2" height="14" rx="1.3" fill="#2fae62"/><rect x="16.8" y="3" width="4.2" height="18" rx="1.3" fill="#4cc874"/></svg></span>Your learning path</h1>
-                <p class="unit-sub">Greetings and goodbyes, a short read, then a quick check.</p>
-              </div>
-              <div class="unit-prog"><span class="unit-bar" role="img" id="unit-bar"><i></i></span><span id="unit-n">0 of 3 done</span></div>
-            </header>
-            <div class="path" id="path">
-              <svg class="path-line" id="path-line" aria-hidden="true"></svg>
-              <ol class="nodes" id="nodes" aria-label="Stages in Segment 1"></ol>
-              <div class="node-pop" id="node-pop" role="dialog" aria-labelledby="pop-title" hidden></div>
-            </div>
+      <div class="work dial-work">
+        <div class="dial-stage" id="path">
+          <header class="dial-head">
+            <p class="unit-kicker">Communication Skills · Segment 1</p>
+            <h1 class="unit-title">Your learning path</h1>
+            <div class="unit-prog"><span class="unit-bar" role="img" id="unit-bar"><i></i></span><span id="unit-n">0 of 3 done</span></div>
+          </header>
+          <div class="dial" id="dial">
+            <svg class="dial-arc" id="path-line" aria-hidden="true"><circle pathLength="1"/></svg>
+            <ol class="dial-rot" id="nodes" aria-label="Stages in Segment 1"></ol>
           </div>
-          <aside class="map-side" aria-label="Your progress">
-            <section class="dc upnext" id="upnext" aria-live="polite"></section>
-            <section class="dc words-known" id="words-known"></section>
-          </aside>
+          <section class="dial-info" id="upnext" aria-live="polite"></section>
+          <footer class="dial-foot" id="words-known"></footer>
         </div>
       </div>
       <div class="actionbar"><div class="actionbar-in">
@@ -219,7 +212,6 @@
           <button type="button" class="read-btn" id="match-read" data-read="ins-match" data-text="Find each word and its picture." aria-label="Read the instructions aloud"><i data-ui="speaker"></i></button>
           <div class="ctrls">
             <div class="modes" role="group" aria-label="Show words or sounds" data-kind="show"><button type="button" data-value="words" aria-pressed="true">Words</button><button type="button" data-value="sounds" aria-pressed="false">Sounds</button></div>
-            <div class="modes" role="group" aria-label="Practice or test" data-kind="mode"><button type="button" data-value="practice" aria-pressed="false">Practice</button><button type="button" data-value="test" aria-pressed="true">Test</button></div>
           </div>
         </div>
         <div class="mgrid" id="match-grid"></div>
@@ -237,7 +229,6 @@
         <div class="instr game-row">
           <p>Pick what you would say, or say it out loud. <span class="limit-note">You have 5 minutes.</span></p>
           <button type="button" class="read-btn" data-read="ins-sprint" data-text="Pick what you would say, or say it out loud." aria-label="Read the instructions aloud"><i data-ui="speaker"></i></button>
-          <div class="ctrls"><div class="modes" role="group" aria-label="Practice or test" data-kind="mode"><button type="button" data-value="practice" aria-pressed="false">Practice</button><button type="button" data-value="test" aria-pressed="true">Test</button></div></div>
           <div class="score"><div class="pips" id="pips" role="img" aria-label="First-try score: 0 of 5"></div><span class="score-label">First-try score</span></div>
         </div>
         <div class="sprint" id="sprint-card"></div>
@@ -818,11 +809,11 @@ const Store = {
   KEY: 'kw-stage4-progress-v1',
   get() { try { return JSON.parse(localStorage.getItem(this.KEY)) || {}; } catch (e) { return {}; } },
   set(patch) { try { localStorage.setItem(this.KEY, JSON.stringify({ ...this.get(), ...patch, updated: Date.now() })); } catch (e) { /* storage blocked */ } },
-  clear() { const d = this.get(), keep = {}; ['mode', 'show', 'best', 'stages', 'celebrated'].forEach(k => { if (d[k] !== undefined) keep[k] = d[k]; }); try { localStorage.setItem(this.KEY, JSON.stringify(keep)); } catch (e) { /* storage blocked */ } }
+  clear() { const d = this.get(), keep = {}; ['mode', 'show', 'best', 'stages', 'celebrated', 'results'].forEach(k => { if (d[k] !== undefined) keep[k] = d[k]; }); try { localStorage.setItem(this.KEY, JSON.stringify(keep)); } catch (e) { /* storage blocked */ } }
 };
 
 /* Practice / Test (both games) and Words / Sounds (Word Match) */
-let MODE = Store.get().mode === 'practice' ? 'practice' : 'test';
+let MODE = 'test';   // the timed version (the Practice / Test switch was removed)
 let SHOW = Store.get().show === 'sounds' ? 'sounds' : 'words';
 function syncChoices() {
   $$('.modes[data-kind="mode"] button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.value === MODE)));
@@ -848,13 +839,45 @@ function updateTimers(name) {
    Sent to a parent page (postMessage) when embedded, and shown as a report for testers on the end screen.
    ========================================================= */
 const mmss = ms => { const t = Math.round(ms / 1000); return `${Math.floor(t / 60)}:${String(t % 60).padStart(2, '0')}`; };
+/* First tries for the Segment 1 result page (result.html): one record per item, kept in the saved progress.
+   The first try sets the score; a later right answer only marks the item solved. */
+const STORY_RES = {
+  'question-1': { q: 'Ananya arrives at the office in the evening. What does she say?', correct: 'Good evening', tip: 'Arriving in the evening: say Good evening.' },
+  'question-2': { q: 'Later that evening, Ananya leaves. What does she say now?', correct: 'Goodbye or See you', tip: 'Leaving, even in the evening: say Goodbye or See you.' }
+};
+function recordResult(a) {
+  if (a.part !== 'story' && a.part !== 'sprint') return;
+  const d = Store.get(), res = d.results || {}, list = (res[a.part] || []).slice();
+  const id = a.part === 'story' ? `story-${a.item.replace(/\D/g, '')}` : `sprint-${a.item}`;
+  const at = list.findIndex(r => r.id === id);
+  if (at >= 0) {
+    if (a.correct && !list[at].solved) { list[at] = { ...list[at], solved: true }; Store.set({ results: { ...res, [a.part]: list } }); }
+    return;
+  }
+  let rec;
+  if (a.part === 'story') {
+    const s = STORY_RES[a.item];
+    if (!s) return;
+    rec = { id, question: s.q, source: 'Arrive or leave', skill: 'Arriving vs. leaving', correct: s.correct, tip: s.tip };
+  } else {
+    const sc = POOL[a.item];
+    if (!sc) return;
+    // leaving situations, or a farewell picked when arriving, count towards Arriving vs. leaving; the rest are about the time of day
+    const direction = sc.kind === 'leave' || (WORDS[a.picked] && WORDS[a.picked].kind === 'sky');
+    rec = { id, question: sc.text, source: 'Scenario Sprint', skill: direction ? 'Arriving vs. leaving' : 'Time-of-day greetings',
+      correct: sc.correct.map(c => WORDS[c].text).join(' or '), tip: sc.why };
+  }
+  Object.assign(rec, { first: WORDS[a.picked] ? WORDS[a.picked].text : a.picked, firstRight: !!a.correct, solved: !!a.correct });
+  list.push(rec);
+  Store.set({ results: { ...res, [a.part]: list } });
+}
 const Log = {
   s: null, at: 0, part: null,
   begin() { this.s = { started: new Date(), parts: {}, answers: [], speaking: [], timeouts: {}, match: [] }; },
   ensure() { if (!this.s) this.begin(); return this.s; },
   enter(name) { this.ensure(); this.part = name; this.at = performance.now(); },
   leave(name) { if (!this.s || this.part !== name || !this.at) return; this.s.parts[name] = (this.s.parts[name] || 0) + (performance.now() - this.at); this.at = 0; },
-  answer(a) { this.ensure().answers.push({ ...a, mode: MODE }); this.emit('answer', { ...a, mode: MODE }); },
+  answer(a) { this.ensure().answers.push({ ...a, mode: MODE }); this.emit('answer', { ...a, mode: MODE }); recordResult(a); },
   speak(a) { this.ensure().speaking.push(a); this.emit('speak', a); },
   timeout(game) { const s = this.ensure(); s.timeouts[game] = (s.timeouts[game] || 0) + 1; this.emit('timeout', { game }); },
   matchDone(m) { this.ensure().match.push(m); this.emit('match', m); },
@@ -992,13 +1015,49 @@ function setTop(name) {
   updateTimers(name);
 }
 
+/* Cinematic change between the five Key Words parts (Greetings, Farewells, Arrive or leave, Word Match, Scenario Sprint):
+   the outgoing screen slides sideways, turns away in 3D, shrinks and fades; the incoming one slides in from the other
+   side, turns back to face you and grows to full size. Going back mirrors it. Only the screen's content moves; its
+   Back / Continue buttons fade out and drop in on the top bar. Other screen changes keep the quick fade. */
+const CINE = ['greetings', 'farewells', 'compare', 'match', 'sprint'];
+function cineShow(from, to, name, dir) {
+  const main = $('#main'), mr = main.getBoundingClientRect(), fr = from.getBoundingClientRect();
+  const fw = $(':scope > .work', from), tw = $(':scope > .work', to);
+  const fBar = $(':scope > .actionbar', from), tBar = $(':scope > .actionbar', to);
+  // the outgoing screen floats where it is, so the incoming one can take its place underneath at the same time
+  main.classList.add('kw-cine');
+  Object.assign(from.style, { position: 'absolute', top: `${fr.top - mr.top}px`, left: `${fr.left - mr.left}px`, width: `${fr.width}px`, height: `${fr.height}px`, zIndex: 1, pointerEvents: 'none' });
+  gsap.set(to, { position: 'relative', zIndex: 2 });
+  gsap.set(tw, { xPercent: dir * 22, rotationY: -dir * 18, scale: .86, autoAlpha: 0, transformPerspective: 1400, transformOrigin: dir > 0 ? '100% 50%' : '0% 50%' });
+  if (tBar) gsap.set(tBar, { y: -14, autoAlpha: 0 });
+  to.hidden = false;
+  window.scrollTo(0, 0);
+  $$(':scope > .work', to).forEach(w => { w.scrollTop = 0; });
+  enter(name);
+  gsap.timeline({
+    onComplete() {
+      from.hidden = true;
+      from.removeAttribute('style');
+      gsap.set([fw, tw, fBar, to].filter(Boolean), { clearProps: 'all' });
+      main.classList.remove('kw-cine');
+      busy = false;
+    }
+  })
+    .to(fBar, { autoAlpha: 0, duration: .18, ease: 'power1.out' }, 0)
+    .to(fw, { xPercent: -dir * 20, rotationY: dir * 18, scale: .84, autoAlpha: 0, transformPerspective: 1400, transformOrigin: dir > 0 ? '0% 50%' : '100% 50%', duration: .62, ease: 'power3.inOut' }, 0)
+    .to(tw, { xPercent: 0, rotationY: 0, scale: 1, autoAlpha: 1, duration: .85, ease: 'power3.out' }, .26)
+    .fromTo('#page-title', { y: 12, opacity: 0 }, { y: 0, opacity: 1, duration: .5, ease: 'power3.out', clearProps: 'transform,opacity' }, .3)
+    .to(tBar, { y: 0, autoAlpha: 1, duration: .45, ease: 'power3.out', clearProps: 'transform,opacity,visibility' }, .6);
+}
 function show(name, dir = 1) {
   if (busy || name === cur) return;
   busy = true;
   const from = screenEl(cur), to = screenEl(name);
+  const cine = !RM && CINE.includes(cur) && CINE.includes(name);
   leave(cur);
   cur = name;
   setTop(name);
+  if (cine) return cineShow(from, to, name, dir);
   gsap.to(from, {
     autoAlpha: 0, duration: .15, ease: 'power1.in',
     onComplete() {
@@ -1066,7 +1125,6 @@ const STAGES = [
 const BUILT = STAGES.filter(st => !st.soon);
 /* Home is the Key Words start screen until Stage 4 is done; after that it is the learning path */
 const homeScreen = () => (REVIEW || (Store.get().stages || {}).s4 ? 'welcome' : 'intro');
-const PATH_X = [-64, 64, -10, -64, 54, -6];   // the path's sideways swing at each stop (the last is the trophy)
 const stagesDone = () => Store.get().stages || {};
 function markStage(id) { const d = Store.get(); Store.set({ stages: { ...(d.stages || {}), [id]: true } }); }
 const LOCK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
@@ -1079,14 +1137,11 @@ const MAPI = {
   target: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="13" r="8"/><circle cx="11" cy="13" r="4"/><path d="M11 13l9-9M16.5 4H20v3.5"/></svg>',
   star: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.2l2.6 5.5 6 .8-4.4 4.1 1.1 5.9L12 16.6l-5.3 2.9 1.1-5.9-4.4-4.1 6-.8z"/></svg>'
 };
-const SPARK = c => `<svg class="spark" viewBox="0 0 32 32" aria-hidden="true"><path d="M5 17 1.5 14.5M11 9 9.5 4.5M20 10.5 23.5 7" stroke="${c}" stroke-width="3.2" stroke-linecap="round" fill="none"/></svg>`;
-const DECOR = {
-  s4: () => `<div class="decor ananya" aria-hidden="true"><span class="decor-bubble">Good evening!</span><img src="assets/learning-path/waving-girl.png" alt="" width="1312" height="1199" decoding="async"></div>`,
-  s5: () => `<div class="decor handshake" aria-hidden="true"><img src="assets/learning-path/handshake.png" alt="" width="1536" height="1024" decoding="async"></div>`,
-  s8: () => `<div class="decor times" aria-hidden="true">${ICON.sunrise()}${ICON.sun()}${ICON.moon()}</div>`
-};
+/* The learning path as a dial: the stages sit on a large arc at the left; the one in focus is a big number at the
+   arc's right edge, with its name, what it is and its button beside it. Tapping another number turns the dial to it.
+   When a stage is finished, it shows there with a tick, then the dial turns smoothly to the next stage. */
 const Home = {
-  popFor: null, justDone: null,
+  justDone: null, note: null, sel: 0, home: 0, p: 0, tw: null, geo: { step: 21, small: .34 },
   /* where Continue goes in Key Words: the saved part, if the learner has started */
   resumeTo() { const s = Store.get().screen; return s && s !== 'welcome' && s !== 'end' && STEP[s] ? s : null; },
   state(st) {
@@ -1095,163 +1150,173 @@ const Home = {
     if (done[st.id]) return 'done';
     return REVIEW || !st.needs || done[st.needs] ? 'open' : 'locked';
   },
+  list() { return [...STAGES, { id: 'end', end: true, name: 'Finish line' }]; },
   build() {
-    $('#nodes').innerHTML = STAGES.map((st, i) => {
-      const icon = st.soon ? `<span>${st.n}</span>` : st.icon === 'clip' ? CLIP : UI[st.icon];
-      return `<li class="stop${PATH_X[i] > 0 ? ' label-left' : ''}" data-stage="${st.id}" style="--x:${PATH_X[i]}px">
-        <button type="button" class="node"${st.soon ? ' disabled' : ''}>${icon}<span class="flag ok" aria-hidden="true">${UI.check}</span><span class="flag lock" aria-hidden="true">${LOCK}</span>${st.soon ? '' : SPARK('#2fae62')}</button>
-        <div class="stop-label"><span>Stage ${st.n}</span><b>${st.soon ? 'Coming soon' : st.name}</b>${st.soon ? '' : `<small>${st.time}</small>`}</div>
-        ${DECOR[st.id] ? DECOR[st.id]() : ''}
-      </li>`;
-    }).join('') + `<li class="stop end" data-stage="end" style="--x:${PATH_X[STAGES.length]}px"><span class="node" aria-hidden="true">${UI.trophy}${SPARK('#E2A53A')}</span><div class="stop-label"><b><span class="flag-tile">${MAPI.flag}</span>Finish line</b></div></li>`;
-    new ResizeObserver(() => { this.closePop(); this.drawPath(); }).observe($('#path'));
+    $('#nodes').innerHTML = this.list().map((st, i) => `<li class="dstop${st.end ? ' end' : ''}" data-stage="${st.id}" data-i="${i}" style="--i:${i}">
+        <button type="button" class="dnode"><span class="d-dot" aria-hidden="true">${st.end ? '' : `<span class="d-tick">${UI.check}</span>`}</span><span class="d-num" aria-hidden="true">${st.end ? UI.trophy : String(st.n).padStart(2, '0')}</span></button>
+      </li>`).join('');
+    new ResizeObserver(() => { this.layout(); this.setP(this.p); }).observe($('#path'));
+    // arrow keys turn the dial from stop to stop
+    $('#nodes').addEventListener('keydown', e => {
+      const d = { ArrowUp: -1, ArrowLeft: -1, ArrowDown: 1, ArrowRight: 1 }[e.key];
+      if (!d) return;
+      e.preventDefault();
+      const i = Math.max(0, Math.min(this.list().length - 1, this.sel + d));
+      $$('#nodes .dnode')[i].focus({ preventScroll: true });
+      this.pop($$('#nodes .dstop')[i]);
+    });
   },
   render() {
-    const done = stagesDone(), resume = this.resumeTo();
-    let current = null;
-    $$('#nodes .stop').forEach(li => {
-      const st = STAGES.find(x => x.id === li.dataset.stage), left = li.classList.contains('label-left');
-      $('.start-bubble', li)?.remove();
-      if (!st) { li.className = `stop end${BUILT.every(b => done[b.id]) ? ' is-done' : ''}`; return; }
-      const state = this.state(st), isCur = state === 'open' && !current;
-      if (isCur) current = st;
-      li.className = `stop is-${state}${isCur ? ' is-current' : ''}${left ? ' label-left' : ''}`;
-      const btn = $('.node', li);
-      if (!st.soon) btn.setAttribute('aria-label', `Stage ${st.n}, ${st.name}: ${{ done: 'done', open: 'open', locked: 'locked' }[state]}`);
-      else btn.setAttribute('aria-label', `Stage ${st.n}: coming soon`);
-      if (isCur) btn.insertAdjacentHTML('beforebegin', `<span class="start-bubble" aria-hidden="true">${st.id === 's4' && resume ? 'Continue' : 'Start'}</span>`);
+    const done = stagesDone(), list = this.list();
+    let current = -1;
+    $$('#nodes .dstop').forEach((li, i) => {
+      const st = list[i], b = $('.dnode', li);
+      if (st.end) {
+        li.className = `dstop end${BUILT.every(x => done[x.id]) ? ' is-done' : ''}`;
+        b.setAttribute('aria-label', 'Finish line');
+        return;
+      }
+      const state = this.state(st), isCur = state === 'open' && current < 0;
+      if (isCur) current = i;
+      li.className = `dstop is-${state}${isCur ? ' is-current' : ''}`;
+      b.setAttribute('aria-label', st.soon ? `Stage ${st.n}: coming soon` : `Stage ${st.n}, ${st.name}: ${{ done: 'done', open: 'open', locked: 'locked' }[state]}`);
+      if (isCur) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current');
     });
+    this.home = current >= 0 ? current : list.length - 1;           // in focus: the next stage, or the finish line
     const n = BUILT.filter(b => done[b.id]).length;
-    this.side(current, done, resume, n);
     $('#unit-n').textContent = `${n} of ${BUILT.length} done`;
     $('#unit-bar').setAttribute('aria-label', `${n} of ${BUILT.length} stages done`);
     $('#unit-bar i').style.width = `${(100 * n / BUILT.length).toFixed(1)}%`;
-    this.drawPath();
-  },
-  /* Up next, the words you know, and the numbers */
-  side(current, done, resume, n) {
-    const jd = this.justDone ? `<p class="un-done">${UI.check}${this.justDone.name} complete${this.justDone.id === 's4' ? ' · 6 new words' : ''}</p>` : '';
-    if (current) {
-      const step = resume && current.id === 's4' ? STEP[resume] : 0;
-      const ico = current.icon === 'clip' ? CLIP : UI[current.icon];
-      const items = step ? [['grid', `Part ${step} of 5: ${PART_NAME[resume]}`]] : current.items;
-      $('#upnext').innerHTML = `${jd}<p class="un-kicker">Up next · Stage ${current.n}</p>
-        <div class="un-row"><span class="un-ico" aria-hidden="true">${ico}</span><div class="un-text"><h2 class="un-title">${current.name}</h2><p class="un-about">${current.about}</p></div></div>
-        <ul class="un-meta">${items.map(([i, t]) => `<li>${MAPI[i] || UI[i]}<span>${t}</span></li>`).join('')}</ul>
-        <button type="button" class="btn primary wide un-go" data-act="stage-go" data-stage="${current.id}">${MAPI.play}${step ? 'Continue' : 'Start'}</button>`;
-    } else {
-      $('#upnext').innerHTML = `${jd}<span class="un-trophy">${UI.trophy}</span><h2 class="un-title">Segment 1 complete</h2><p class="un-about">You finished every stage. Tap any stage on the path to practise it again.</p>`;
-    }
     const chip = id => `<button type="button" class="wk ${WORDS[id].kind}" data-id="${id}" aria-label="Hear ${WORDS[id].text}">${WORDS[id].text}${UI.speaker}</button>`;
-    const group = (kind, ids) => `<div class="wk-group ${kind}"><p class="wk-label">${MAPI.plane}${kind === 'sun' ? 'Arriving' : 'Leaving'}</p><div class="wk-chips">${ids.map(chip).join('')}</div></div>`;
-    $('#words-known').innerHTML = `<div class="wk-head"><span class="wk-ico" aria-hidden="true">${UI.book}</span><h2>Words you know</h2><span class="wk-count">${done.s4 ? '6 words' : '0 of 6'}</span></div>`
-      + (done.s4 ? group('sun', GREETINGS) + group('sky', FAREWELLS)
-        : `<p class="wk-note">Finish Key Words to collect your first six words.</p><div class="wk-chips" aria-hidden="true">${'<span class="wk ghost"></span>'.repeat(6)}</div>`);
+    $('#words-known').innerHTML = `<span class="wf-label">Words you know</span><span class="wf-line" aria-hidden="true"></span>`
+      + (done.s4 ? `<div class="wk-chips">${[...GREETINGS, ...FAREWELLS].map(chip).join('')}</div>` : '<span class="wk-note">Finish Key Words to collect your first six words.</span>');
   },
-  /* the dotted path through every stop, and the green part up to the next stage */
-  points() {
-    const pr = $('#path').getBoundingClientRect();
-    return $$('#nodes .stop .node').map(nd => { const r = nd.getBoundingClientRect(); return [r.left - pr.left + r.width / 2, r.top - pr.top + r.height / 2]; });
+  /* size the dial to the screen: the arc's right edge sits at about a third of the width */
+  layout() {
+    const box = $('#path'), W = box.clientWidth, H = box.clientHeight;
+    if (!W || !H) return;
+    const phone = W < 600;
+    const R = Math.round(phone ? Math.min(Math.max(H * .44, 230), 330) : Math.min(Math.max(H * .62, 300), 560));
+    const cx = Math.round(W * (phone ? .28 : .3) - R), cy = Math.round(H * (phone ? .4 : .5));
+    const dial = $('#dial'), svg = $('#path-line'), c = $('circle', svg);
+    Object.assign(dial.style, { left: `${cx}px`, top: `${cy}px` });
+    dial.style.setProperty('--R', `${R}px`);
+    Object.assign(svg.style, { left: `${-R - 2}px`, top: `${-R - 2}px`, width: `${2 * R + 4}px`, height: `${2 * R + 4}px` });
+    svg.setAttribute('viewBox', `0 0 ${2 * R + 4} ${2 * R + 4}`);
+    c.setAttribute('cx', R + 2); c.setAttribute('cy', R + 2); c.setAttribute('r', R);
+    this.geo = { phone, R, step: phone ? 25 : 21, small: phone ? .42 : .34 };
+    // the details sit beside the big number (under it on phones)
+    const num = $('#nodes .dstop:not(.end) .d-num'), nw = num ? num.offsetWidth : 140, nh = num ? num.offsetHeight : 110;
+    const info = $('#upnext'), gap = parseFloat(getComputedStyle(num || document.body).left) || 30;
+    const left = cx + R + gap + (phone ? 4 : nw + 30);
+    info.style.left = `${left}px`;
+    info.style.width = `${Math.max(190, Math.min(phone ? 600 : 440, W - left - 20))}px`;
+    info.style.top = phone ? `${cy + nh / 2 + 6}px` : `${cy}px`;
+    info.classList.toggle('below', phone);
   },
-  d(pts, upTo) {
-    let d = '';
-    pts.slice(0, upTo + 1).forEach((p, i) => {
-      if (!i) { d = `M${p[0].toFixed(1)} ${p[1].toFixed(1)}`; return; }
-      const a = pts[i - 1], dy = (p[1] - a[1]) * .55;
-      d += ` C${a[0].toFixed(1)} ${(a[1] + dy).toFixed(1)} ${p[0].toFixed(1)} ${(p[1] - dy).toFixed(1)} ${p[0].toFixed(1)} ${p[1].toFixed(1)}`;
+  /* p = which stop is in focus (fractional while turning): the dial turns, the focused number grows */
+  setP(p) {
+    this.p = p;
+    const { step, small } = this.geo;
+    $('#nodes').style.transform = `rotate(${(-p * step).toFixed(3)}deg)`;
+    $$('#nodes .dstop').forEach((li, i) => {
+      const d = Math.abs(i - p), k = Math.min(1, d);
+      li.style.transform = `rotate(${i * step}deg)`;
+      const num = $('.d-num', li);
+      num.style.transform = `translateY(-50%) scale(${(1 - (1 - small) * k).toFixed(4)})`;
+      num.style.opacity = (d <= 1 ? 1 - .7 * d : Math.max(.07, .3 - (d - 1) * .08)).toFixed(3);
+      li.classList.toggle('is-sel', d < .5);
     });
-    return d;
   },
-  reach() {
-    const cur = $('#nodes .stop.is-current');
-    const stops = $$('#nodes .stop');
-    return cur ? stops.indexOf(cur) : BUILT.every(b => stagesDone()[b.id]) ? stops.length - 1 : 0;
-  },
-  drawPath() {
-    const path = $('#path');
-    if (!path || !path.offsetParent) return;
-    const pts = this.points(), svg = $('#path-line'), pr = path.getBoundingClientRect();
-    svg.setAttribute('viewBox', `0 0 ${pr.width.toFixed(0)} ${pr.height.toFixed(0)}`);
-    const all = this.d(pts, pts.length - 1), prog = this.d(pts, this.reach());
-    svg.innerHTML = `<path class="base-edge" d="${all}"/><path class="base" d="${all}"/><path class="prog-edge" d="${prog}"/><path class="prog" d="${prog}"/>`;
-  },
-  /* a stage was just finished: it pops green with confetti, the path fills to the next stage, which opens */
-  celebrate(st) {
-    const stops = $$('#nodes .stop'), li = $(`#nodes .stop[data-stage="${st.id}"]`), node = $('.node', li);
-    const from = stops.indexOf(li), cur = $('#nodes .stop.is-current'), next = cur && STAGES.find(x => x.id === cur.dataset.stage);
-    announce(`${st.name} done.${next ? ` ${next.name} is open.` : ' Segment 1 complete.'}`);
-    li.scrollIntoView({ block: 'center' });
-    this.drawPath();
-    if (RM) return;
-    const prog = $$('#path-line .prog, #path-line .prog-edge'), full = prog[0].getTotalLength();
-    const tmp = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    tmp.setAttribute('d', this.d(this.points(), from));
-    $('#path-line').append(tmp);
-    const part = tmp.getTotalLength();
-    tmp.remove();
-    gsap.fromTo(prog, { attr: { 'stroke-dasharray': `${part} ${full + 20}` } }, { attr: { 'stroke-dasharray': `${full} ${full + 20}` }, duration: 1.1, delay: .75, ease: 'power2.inOut', onComplete: () => prog.forEach(p => p.removeAttribute('stroke-dasharray')) });
-    gsap.fromTo(node, { scale: .55 }, { scale: 1, duration: .8, ease: 'elastic.out(1,.45)', delay: .2, clearProps: 'transform' });
-    setTimeout(() => window.Motion && Motion.confetti(node, 44), 320);
-    gsap.fromTo('#upnext', { y: 14, scale: .97 }, { y: 0, scale: 1, duration: .6, ease: 'back.out(2)', delay: .3, clearProps: 'transform' });
-    if (st.id === 's4') gsap.fromTo('#words-known .wk', { scale: .3, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, duration: .45, ease: 'back.out(2.6)', stagger: .08, delay: .9, clearProps: 'transform,opacity,visibility' });
-    if (cur) {
-      gsap.fromTo($('.node', cur), { scale: .4, autoAlpha: .3 }, { scale: 1, autoAlpha: 1, duration: .65, ease: 'back.out(2.4)', delay: 1.55, clearProps: 'transform,opacity,visibility' });
-      gsap.fromTo($('.start-bubble', cur), { autoAlpha: 0 }, { autoAlpha: 1, duration: .3, delay: 2 });
-      setTimeout(() => { if (cur.getBoundingClientRect().bottom > innerHeight - 40) cur.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 1500);
+  /* the details of the stop in focus */
+  info(animate) {
+    const st = this.list()[this.sel], el = $('#upnext'), done = stagesDone();
+    if (!st) return;
+    let kicker, tone = '', title, about, extra = '', act = '';
+    if (st.end) {
+      const all = BUILT.every(b => done[b.id]);
+      kicker = 'Segment 1'; tone = all ? 'done' : 'lock';
+      title = all ? 'Segment 1 complete' : 'Finish line';
+      about = all ? 'You finished every stage. Turn the dial to practise any stage again.' : 'Finish every stage to see your result.';
+      if (all) act = '<div class="di-acts"><a class="btn primary di-go" href="result.html">See your result</a></div>';
+    } else if (st.soon) {
+      kicker = `Stage ${st.n}`; tone = 'lock'; title = 'Coming soon'; about = 'This stage is on its way.';
     } else {
-      const end = $('#nodes .stop.end .node');
-      gsap.fromTo(end, { scale: .5 }, { scale: 1, duration: .7, ease: 'back.out(2.6)', delay: 1.6 });
-      setTimeout(() => window.Motion && Motion.confetti(end, 60), 1900);
+      const state = this.state(st), resume = st.id === 's4' && state !== 'locked' && this.resumeTo(), step = resume ? STEP[resume] : 0;
+      kicker = state === 'done' ? `Done · Stage ${st.n}` : state === 'locked' ? `Locked · Stage ${st.n}` : `Up next · Stage ${st.n}`;
+      tone = state === 'done' ? 'done' : state === 'locked' ? 'lock' : '';
+      title = st.name; about = st.about;
+      const items = step ? [['grid', `Part ${step} of 5: ${PART_NAME[resume]}`]] : st.items;
+      extra = `<ul class="un-meta">${items.map(([i, t]) => `<li>${MAPI[i] || UI[i]}<span>${t}</span></li>`).join('')}</ul>`;
+      if (state === 'locked') act = `<p class="pop-lock">${LOCK}Finish ${STAGES.find(x => x.id === st.needs).name} to open this stage.</p>`;
+      else act = `<div class="di-acts"><button type="button" class="btn primary di-go" data-act="stage-go" data-stage="${st.id}">${MAPI.play}${state === 'done' ? 'Practise again' : step ? 'Continue' : 'Start'}</button>`
+        + `${resume ? '<button type="button" class="link-btn" data-act="stage-restart" data-stage="s4">Start over</button>' : ''}</div>`;
     }
+    el.innerHTML = `<div class="di-in">${this.note ? `<p class="un-done">${UI.check}${this.note}</p>` : ''}<p class="un-kicker${tone ? ` ${tone}` : ''}">${kicker}</p><h2 class="un-title">${title}</h2><p class="un-about">${about}</p>${extra}${act}</div>`;
+    if (animate && !RM) gsap.fromTo($('.di-in', el), { autoAlpha: 0, x: 18 }, { autoAlpha: 1, x: 0, duration: .5, ease: 'power3.out', clearProps: 'opacity,visibility,transform' });
+  },
+  /* turn the dial to stop i; the details change halfway through the turn */
+  goTo(i, { duration = .9, delay = 0 } = {}) {
+    if (this.tw) this.tw.kill();
+    const from = this.p, dist = Math.abs(i - from);
+    this.sel = i;
+    if (RM || dist < .001) { this.setP(i); this.info(false); return; }
+    const o = { p: from };
+    let swapped = false;
+    const inner = $('#upnext .di-in');
+    if (inner) gsap.to(inner, { autoAlpha: 0, x: -14, duration: .22, delay, ease: 'power1.in' });
+    this.tw = gsap.to(o, {
+      p: i, duration: duration * Math.min(2, Math.max(1, dist * .6)), ease: 'power3.inOut', delay,
+      onUpdate: () => { this.setP(o.p); if (!swapped && Math.abs(o.p - from) >= dist * .5) { swapped = true; this.info(true); } },
+      onComplete: () => { this.tw = null; this.setP(i); if (!swapped) this.info(true); }
+    });
+  },
+  /* a stage was just finished: it is shown with a tick and confetti, then the dial turns to the next one */
+  celebrate(st) {
+    const list = this.list(), from = list.findIndex(x => x.id === st.id), next = list[this.home];
+    this.note = `${st.name} complete${st.id === 's4' ? ' · 6 new words' : ''}`;
+    announce(`${st.name} done.${next && !next.end ? ` ${next.name} is open.` : ' Segment 1 complete.'}`);
+    this.sel = from;
+    this.setP(from);
+    this.info(true);
+    if (RM) return this.goTo(this.home);
+    const li = $$('#nodes .dstop')[from];
+    gsap.fromTo($('.d-dot', li), { scale: .2 }, { scale: 1, duration: .8, ease: 'elastic.out(1,.45)', delay: .15 });
+    setTimeout(() => window.Motion && Motion.confetti($('.d-dot', li), 44), 320);
+    if (st.id === 's4') gsap.fromTo('#words-known .wk', { scale: .3, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, duration: .45, ease: 'back.out(2.6)', stagger: .07, delay: .6, clearProps: 'transform,opacity,visibility' });
+    this.goTo(this.home, { duration: 1.15, delay: 1.5 });
   },
   enter(first) {
-    this.closePop();
     const d = Store.get(), done = d.stages || {}, seen = d.celebrated || {};
     const fresh = BUILT.filter(b => done[b.id] && !seen[b.id]);
     this.justDone = fresh.length ? fresh[fresh.length - 1] : null;
+    this.note = null;
     this.render();
+    this.layout();
     if (fresh.length) {
       Store.set({ celebrated: { ...seen, ...Object.fromEntries(fresh.map(b => [b.id, true])) } });
-      setTimeout(() => this.celebrate(fresh[fresh.length - 1]), first ? 300 : 120);
+      this.setP(this.list().findIndex(x => x.id === this.justDone.id));
+      setTimeout(() => this.celebrate(this.justDone), first ? 300 : 120);
       return;
     }
-    const cur = $('#nodes .stop.is-current');
-    if (cur && cur.getBoundingClientRect().bottom > innerHeight - 40) cur.scrollIntoView({ block: 'center' });
-    if (first && !RM) gsap.fromTo('#nodes .stop', { y: 18, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .5, stagger: .07, ease: 'power3.out', delay: .1, clearProps: 'opacity,visibility', onComplete: () => this.drawPath() });
+    if (RM) { this.sel = this.home; this.setP(this.home); this.info(false); return; }
+    // arriving: the arc draws in and the dial turns into place
+    gsap.fromTo('#path-line circle', { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 1.2, ease: 'power2.out' });
+    gsap.fromTo('.dial-head > *, .dial-foot', { y: 12, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .5, ease: 'power3.out', stagger: .06, clearProps: 'transform,opacity,visibility' });
+    this.setP(this.home - 1.3);
+    $('#upnext').innerHTML = '';
+    this.goTo(this.home, { duration: .85, delay: .1 });
   },
-  /* the stage card under a stop */
+  /* tap a number: the dial turns to it */
   pop(li) {
-    const st = STAGES.find(x => x.id === li.dataset.stage);
-    if (!st || st.soon) return;
-    if (this.popFor === st.id) return this.closePop();
-    const state = this.state(st), pop = $('#node-pop'), resume = st.id === 's4' && state !== 'locked' && this.resumeTo();
-    let body;
-    if (state === 'locked') body = `<p class="pop-lock">${LOCK}Finish ${STAGES.find(x => x.id === st.needs).name} to open this stage.</p>`;
-    else {
-      const step = resume ? STEP[resume] : 0;
-      body = (resume ? `<div class="pop-parts" aria-hidden="true">${[1, 2, 3, 4, 5].map(k => `<i class="${k < step ? 'done' : k === step ? 'on' : ''}"></i>`).join('')}</div><p class="pop-resume">Part ${step} of 5: ${PART_NAME[resume]}</p>` : '')
-        + `<button type="button" class="btn primary wide" data-act="stage-go" data-stage="${st.id}">${state === 'done' ? 'Practise again' : resume ? 'Continue' : 'Start'}</button>`
-        + (resume ? '<button type="button" class="link-btn" data-act="stage-restart" data-stage="s4">Start over</button>' : '');
-    }
-    pop.innerHTML = `<p class="pop-kicker">Stage ${st.n}${state === 'done' ? ' · Done' : ''}</p><h3 class="pop-title" id="pop-title">${st.name}</h3><p class="pop-about">${st.about}</p><p class="pop-meta">${st.meta}</p>${body}`;
-    pop.hidden = false;
-    this.popFor = st.id;
-    const node = $('.node', li), pr = $('#path').getBoundingClientRect(), nr = node.getBoundingClientRect(), w = pop.offsetWidth;
-    const mid = nr.left - pr.left + nr.width / 2, left = Math.max(8, Math.min(mid - w / 2, pr.width - w - 8));
-    pop.style.left = `${left}px`;
-    pop.style.top = `${nr.bottom - pr.top + 18}px`;
-    pop.style.setProperty('--arrow', `${Math.max(22, Math.min(w - 22, mid - left))}px`);
-    if (!RM) gsap.fromTo(pop, { y: -8, scale: .96, autoAlpha: 0, transformOrigin: '50% 0%' }, { y: 0, scale: 1, autoAlpha: 1, duration: .25, ease: 'back.out(2)' });
-    setTimeout(() => {
-      const r = pop.getBoundingClientRect();
-      if (r.bottom > innerHeight - 12) ($('#path').closest('.work') || window).scrollBy({ top: r.bottom - innerHeight + 24, behavior: RM ? 'auto' : 'smooth' });
-      const b = $('.btn', pop);
-      if (b) b.focus({ preventScroll: true });
-    }, 60);
+    const i = Number(li.dataset.i);
+    if (i === this.sel && !this.tw) return;
+    this.note = null;
+    this.goTo(i, { duration: .75 });
   },
-  closePop() { const pop = $('#node-pop'); if (pop && !pop.hidden) pop.hidden = true; this.popFor = null; },
-  stop() { this.closePop(); },
-  /* Start, Continue, Practise again or Start over on a stage card */
+  closePop() {},
+  stop() { if (this.tw) { this.tw.kill(); this.tw = null; } },
+  /* Start, Continue, Practise again or Start over */
   go(btn) {
     const st = STAGES.find(x => x.id === btn.dataset.stage), restart = btn.dataset.act === 'stage-restart';
     if (!st) return;
@@ -2108,7 +2173,6 @@ function init() {
     if (cur !== homeScreen()) show(homeScreen(), -1);
   });
   // the stage card closes when you tap elsewhere
-  document.addEventListener('click', e => { if (!e.target.closest('#nodes .node, #node-pop')) Home.closePop(); }, true);
   // Escape closes the stage card on the path
   document.addEventListener('keydown', e => { if (e.key === 'Escape') Home.closePop(); });
   sprintClock = makeClock($('#sprint-timer'), Sprint.LIMIT / 1000);
@@ -2141,7 +2205,7 @@ function init() {
     if (t.classList.contains('read-btn')) return readAloud(t);
     if (t.classList.contains('say-word')) return sayWord(t);
     if (t.id === 'sprint-mic') return sayAnswer(t, '#sprint-card .opt', '#sprint-say-msg', b => Sprint.answer(b, 'voice'));
-    if (t.classList.contains('node')) return Home.pop(t.closest('.stop'));
+    if (t.classList.contains('dnode')) return Home.pop(t.closest('.dstop'));
     if (t.classList.contains('home-note')) { const w = WORDS[t.dataset.id]; bumpCard(t); WIGGLE[w.icon]($('.ico', t)); return Voice.play(t.dataset.id, w.text); }
     if (t.classList.contains('wk')) { if (!RM) gsap.fromTo(t, { scale: .92 }, { scale: 1, duration: .35, ease: 'back.out(3)', clearProps: 'transform' }); return Voice.play(t.dataset.id, WORDS[t.dataset.id].text); }
     if (t.id === 'start' || t.id === 'restart') return Intro.go(t);
@@ -2182,5 +2246,6 @@ function init() {
 init();
 })();
 </script>
+<script src="dev-menu/dev-menu.js?v=2"></script> <!-- DEV MENU: testing only. Delete this line and the dev-menu folder when done. -->
 </body>
 </html>

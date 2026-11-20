@@ -368,7 +368,7 @@ const Store = {
   KEY: 'kw-stage4-progress-v1',
   get() { try { return JSON.parse(localStorage.getItem(this.KEY)) || {}; } catch (e) { return {}; } },
   set(patch) { try { localStorage.setItem(this.KEY, JSON.stringify({ ...this.get(), ...patch, updated: Date.now() })); } catch (e) { /* storage blocked */ } },
-  clear() { const d = this.get(), keep = {}; ['mode', 'show', 'best', 'stages', 'celebrated'].forEach(k => { if (d[k] !== undefined) keep[k] = d[k]; }); try { localStorage.setItem(this.KEY, JSON.stringify(keep)); } catch (e) { /* storage blocked */ } }
+  clear() { const d = this.get(), keep = {}; ['mode', 'show', 'best', 'stages', 'celebrated', 'results'].forEach(k => { if (d[k] !== undefined) keep[k] = d[k]; }); try { localStorage.setItem(this.KEY, JSON.stringify(keep)); } catch (e) { /* storage blocked */ } }
 };
 
 function markStage(id) { const d = Store.get(); Store.set({ stages: { ...(d.stages || {}), [id]: true } }); }

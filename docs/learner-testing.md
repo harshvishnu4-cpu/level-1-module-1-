@@ -12,7 +12,6 @@ Run this before release to check timing and the one confusion the stage exists t
 
 1. Use a fresh browser profile or clear the site's data, so the learner starts from the welcome screen (the page remembers progress on the device).
 2. Set the volume, and check the microphone works.
-3. Decide the mode to test: **Test** (timed, scored, as in the spec) or **Practice** (no timer, hints).
 
 ## During the session
 
@@ -41,7 +40,7 @@ Write down:
 
 - **Total time.** The spec allows 18 minutes; the estimate is 7–12. If most learners finish well under 15, report it.
 - **Arrive/leave mix-ups** in the reports ("greeting when leaving" or "farewell when arriving"). If they persist after the story, the story or its tip needs work.
-- **Time-outs.** Frequent ones mean a limit is too tight for that group; Practice mode may suit them better.
+- **Time-outs.** Frequent ones mean a limit is too tight for that group.
 - **Speaking.** If the listener often misses a phrase, note the phrase and the learner group, so the speech model can be checked.
 
 ## When embedded in the course
