@@ -15,7 +15,7 @@
 <script src="lib/three.min.js"></script>
 <script src="js/motion.js" defer></script>
 <script src="kit/commkit.js"></script>
-<link rel="stylesheet" href="css/kw.css?v=20261126t">
+<link rel="stylesheet" href="css/kw.css?v=20261126v">
 </head>
 <body data-kind="speak" data-view="welcome">
 
@@ -1375,13 +1375,16 @@ const Seg = {
     $('#orbit-labels').addEventListener('click', e => {
       const g = e.target.closest('.rad-w');
       if (!g || this.opening) return;
+      this.autoStop();
       const n = Number(g.dataset.seg), sg = SEGMENTS.find(x => x.n === n);
       this.sel = n;
       this.render(true);
       if (sg.open) return this.open();
       if (!RM) gsap.to(this, { rot: this.rot + .35, duration: .6, ease: 'back.out(2.5)' });      // a locked planet: the orbit gives a little push
     });
-    $('#rad-hub').addEventListener('click', () => { if (SEGMENTS.find(x => x.n === this.sel).open) this.open(); });
+    $('#rad-hub').addEventListener('click', () => { this.autoStop(); if (SEGMENTS.find(x => x.n === this.sel).open) this.open(); });
+    document.addEventListener('pointerdown', e => { if (this.autoTw && !e.target.closest('#rad-hub, .rad-w.open')) this.autoStop(); });   // a tap anywhere else on the page cancels auto start
+    document.addEventListener('keydown', e => { if (this.autoTw && e.key === 'Escape') this.autoStop(); });
     this.init3();
     new ResizeObserver(() => this.resize()).observe($('#radial'));
   },
@@ -1487,6 +1490,25 @@ const Seg = {
     this.frame(dt);
     this.raf = requestAnimationFrame(t => this.loop(t));
   },
+  /* Auto start: when the page first opens, Segment 1 starts by itself after a short countdown (the Start button fills
+     with green and the line below counts down). Tapping anywhere else, or choosing another planet, cancels it. */
+  AUTO: 5, autoTw: null,
+  autoStart() {
+    this.autoStop();
+    const o = { p: 0 }, hint = $('#seg-hint'), hub = $('#rad-hub');
+    hub.classList.add('auto');
+    this.autoTw = gsap.to(o, { p: 1, duration: this.AUTO, ease: 'none',
+      onUpdate: () => {
+        if (cur !== 'segments') return this.autoStop();
+        hub.style.setProperty('--p', `${(o.p * 100).toFixed(1)}%`);
+        hint.textContent = `Segment 1 starts in ${Math.max(1, Math.ceil(this.AUTO * (1 - o.p)))} s. Tap anywhere to stay here.`;
+      },
+      onComplete: () => { this.autoTw = null; hint.textContent = ''; if (cur === 'segments') { this.sel = 1; this.open(); } } });
+  },
+  autoStop() {
+    if (this.autoTw) { this.autoTw.kill(); this.autoTw = null; $('#seg-hint').textContent = ''; }
+    const hub = $('#rad-hub'); hub.classList.remove('auto'); hub.style.removeProperty('--p');
+  },
   render(animate) {
     const sg = SEGMENTS.find(x => x.n === this.sel), done = stagesDone(), n = BUILT.filter(b => done[b.id]).length, all = n === BUILT.length;
     $$('#orbit-labels .rad-w').forEach(g => g.classList.toggle('is-sel', Number(g.dataset.seg) === this.sel));
@@ -1502,12 +1524,14 @@ const Seg = {
   enter(first) {
     this.sel = 1;
     this.opening = false;
+    this.autoStop();
     gsap.killTweensOf(this);
     this.rot = 0;
     this.render(false);
     this.resize();
     this.last = 0;
     if (!this.raf) this.raf = requestAnimationFrame(t => this.loop(t));
+    if (first) this.autoStart();          // only when the page opens here, not when coming back from the learning path
     if (RM) return;
     gsap.fromTo('.seg-head > *', { y: 12, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .5, ease: 'power3.out', stagger: .06, clearProps: 'transform,opacity,visibility' });
     gsap.fromTo('#radial', { scale: .9, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, duration: .6, ease: 'power3.out', clearProps: 'transform,opacity,visibility' });
@@ -1515,6 +1539,7 @@ const Seg = {
   },
   open() {
     if (busy || this.opening) return;
+    this.autoStop();
     const sg = SEGMENTS.find(x => x.n === this.sel), done = stagesDone(), hub = $('#rad-hub');
     const go = () => { Launch.go(hub, 'welcome', { kicker: `Segment ${sg.n}`, title: sg.name, dots: BUILT.map(b => (done[b.id] ? 'done' : '')) }); };
     if (RM) return go();

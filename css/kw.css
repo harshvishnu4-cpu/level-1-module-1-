@@ -2004,3 +2004,9 @@ body[data-view="segments"] main{padding-bottom:0}
 .seg{gap:0}
 .seg-hint{position:relative;z-index:2;margin-top:-6px}
 @media (max-width:37.49em){.radial{--W:100vw;--S:calc(var(--W) * .62);aspect-ratio:1.12}.rad-hub,.rad-hub:hover:not(:disabled){width:calc(var(--W) * .3);height:calc(var(--W) * .3);margin:calc(var(--W) * -.15) 0 0 calc(var(--W) * -.15)}}
+
+/* auto start: the Start button fills with green as the countdown runs */
+.rad-hub.auto .hub-go{background:linear-gradient(90deg,#2fae62 var(--p,0%),#16181d var(--p,0%))}
+
+/* keep the planet numbers and the glow inside the orbit's own layer, so the black opening transition covers them */
+.radial{isolation:isolate;z-index:0}
