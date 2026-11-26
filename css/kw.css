@@ -2051,3 +2051,85 @@ body[data-view="segments"] main{padding-bottom:0}
 .devm-panel{box-shadow:8px 0 24px -18px rgba(0,0,0,.35)}
 .orbit-labels .rad-w.open{box-shadow:0 0 18px 4px rgba(47,174,98,.28);animation-name:kwGlowSoft}
 @keyframes kwGlowSoft{0%,100%{box-shadow:0 0 14px 3px rgba(47,174,98,.22)}50%{box-shadow:0 0 22px 6px rgba(47,174,98,.34)}}
+
+/* ================= Design and motion polish =================
+   Small touches only: cards and answers respond to the pointer, the step bar shows progress as a green line,
+   the current step stands out, and focus rings are consistent. All motion is skipped under reduced motion. */
+/* step bar: finished connectors turn solid green; the current step sits in a soft pill */
+.steps li + li::before{transition:border-color .4s ease}
+.steps li.past + li::before{border-top:2px solid var(--path)}
+.steps li.on{padding:3px 12px 3px 3px;border-radius:99px;background:#fff;box-shadow:var(--shadow)}
+.steps li.on + li::before,.steps li + li.on::before{margin:0 2px}
+.steps .n{transition:background-color .3s ease,color .3s ease}
+@media (prefers-reduced-motion:no-preference){
+  /* picture cards lift a little and their picture eases in closer under the pointer */
+  .wword.photo,.hword.photo{transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s ease}
+  .wword.photo .hw-pic .ico,.hword.photo .hw-pic .ico{transition:transform .6s cubic-bezier(.2,.8,.2,1)}
+  @media (hover:hover){
+    .wword.photo:not(.is-blank):hover,.hword.photo:hover{transform:translateY(-4px)}
+    .wword.photo:not(.is-blank):hover .hw-pic .ico,.hword.photo:hover .hw-pic .ico{transform:scale(1.04)}
+    .wword.photo:hover .hw-sound,.hword.photo:hover .hw-sound{transform:scale(1.08)}
+    /* answers nudge towards the pointer's choice */
+    .opt:hover:not(:disabled),.choice.row:hover:not(:disabled){transform:translateX(3px)}
+    .choice.chip:hover:not(:disabled),.choice.tile:hover:not(:disabled){transform:translateY(-2px)}
+    /* face-down Word Match cards tip up slightly */
+    .mcard:not(.is-up):not(.is-matched):hover{transform:translateY(-3px) rotate(-1deg)}
+    /* the passage's Listen and the round speakers grow a touch */
+    .read-btn:hover,.listen-btn:hover{transform:translateY(-1px)}
+  }
+  .hw-sound{transition:transform .2s ease,background-color .15s ease}
+  .mcard{transition:transform .2s cubic-bezier(.2,.8,.2,1)}
+  /* blank Greetings cards breathe gently until tapped */
+  .wword.is-blank .wl-hint{animation:kwNudge 2.4s ease-in-out infinite}
+  @keyframes kwNudge{0%,100%{transform:translate(-50%,-50%)}50%{transform:translate(-50%,calc(-50% - 5px))}}
+  /* the status pill in the top bar pops when its number changes (the number is re-inserted on each change) */
+  .actionbar .grow b{display:inline-block;animation:kwPop .35s cubic-bezier(.3,1.6,.5,1)}
+  @keyframes kwPop{0%{transform:scale(1.5)}100%{transform:scale(1)}}
+}
+/* one focus ring everywhere on the light page */
+.opt:focus-visible,.choice:focus-visible,.mcard:focus-visible,.wk:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+
+/* ================= Reading Card: the passage no longer scrolls inside its card =================
+   The card is as tall as its text and the screen itself scrolls. On the questions screen the passage is full
+   height on the left and the question card stays in view on the right while the screen scrolls. */
+.screen[data-screen="read"]>.work{display:grid;overflow-y:auto;align-content:start}
+.read-home{display:block;flex:none;min-height:auto}
+.read-home>.reading{overflow:visible;flex:none}
+.read-home .reading-head{position:static}
+@media (min-width:56.25em){
+  .screen[data-screen="readq"]>.work{display:block;overflow-y:auto}
+  .rq-layout{align-items:start}
+  .rq-side{display:block}
+  .rq-side>.reading{overflow:visible;flex:none}
+  .rq-side .reading-head{position:static}
+  .rq-layout>.quiz{position:sticky;top:0;overflow:visible}
+}
+/* the source line under the passage is plain small text, not a boxed card */
+.reading .source{padding:0;border-radius:0;background:none;box-shadow:none}
+.reading .source{border:0}
+
+/* ================= Reading Card with no scrolling (laptops and desktops) =================
+   The passage is set in two columns and its text size follows the window's height, so the whole passage,
+   its title and the source line fit on one screen: on the reading screen and beside the questions. */
+@media (min-width:56.25em){
+  .screen[data-screen="read"]>.work,.screen[data-screen="readq"]>.work{display:flex;flex-direction:column;overflow:hidden}
+  .read-home,.read-instr{max-width:none}
+  .read-instr{flex:none;padding:10px 28px}
+  .read-home{flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
+  .read-home>.reading,.rq-side>.reading{flex:1 1 auto;min-height:0;overflow:hidden;display:flex;flex-direction:column;gap:0;padding:clamp(14px,2.4vh,26px) clamp(22px,2.6vw,40px)}
+  .read-home .reading-head,.rq-side .reading-head{position:static;flex:none;margin:0 0 clamp(8px,1.6vh,16px);padding:0;align-items:center}
+  .reading .reading-title{font-size:clamp(1.25rem,3.1vh,2rem)}
+  .reading .passage{flex:none;max-width:none;columns:2;column-gap:clamp(28px,3vw,52px);--pf:clamp(13.5px,1.92vh,20px)}
+  .reading .passage p{font-size:var(--pf);line-height:1.55;margin-bottom:.8em;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+  .reading .source{flex:none;margin-top:clamp(8px,1.4vh,14px);font-size:.75rem}
+  .listen-btn{min-height:40px}
+  /* beside the questions: the passage takes the wider side */
+  .rq-layout{flex:1 1 auto;min-height:0;grid-template-columns:minmax(0,1.62fr) minmax(0,1fr);align-items:stretch}
+  .rq-side{display:flex;flex-direction:column;min-height:0}
+  .rq-side .passage{--pf:clamp(12.5px,1.66vh,17px);column-gap:clamp(22px,2.2vw,36px)}
+  .rq-side .reading-title{font-size:clamp(1.125rem,2.6vh,1.5rem)}
+  .rq-layout>.quiz{position:static;overflow-y:auto;align-self:start;max-height:100%}
+  #passage p.is-hint{box-shadow:0 0 0 6px #fff4d8}
+}
+/* a little larger where there is room to spare */
+@media (min-width:56.25em){.reading .passage{--pf:clamp(14.5px,2.08vh,20px)}.rq-side .passage{--pf:clamp(12.5px,1.76vh,17px)}}
