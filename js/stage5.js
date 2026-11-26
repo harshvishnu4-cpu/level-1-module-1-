@@ -53,7 +53,11 @@ const Gloss = {
     if (!g || !pop) return;
     this.btn = btn;
     btn.setAttribute('aria-expanded', 'true');
-    pop.innerHTML = `<b>${g.w}</b> <span class="gp-pos">(${g.pos})</span><p>${escH(g.m)}</p>`;
+    // a small dialog: the word, its kind, a speaker to hear it again, a close button, then the meaning
+    pop.innerHTML = `<div class="gp-head"><div class="gp-word"><b>${g.w}</b><span class="gp-pos">${g.pos}</span></div>
+      <button type="button" class="gp-say" data-act="gloss-say" data-w="${escH(btn.dataset.w)}" aria-label="Hear ${escH(g.w)} again">${UI.speaker}</button>
+      <button type="button" class="gp-close" data-act="gloss-close" aria-label="Close">${'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>'}</button></div>
+      <p class="gp-mean">${escH(g.m)}</p>`;
     pop.hidden = false;
     // directly under the word, kept inside the card
     const br = btn.getClientRects()[0] || btn.getBoundingClientRect(), cr = card.getBoundingClientRect(), w = pop.offsetWidth;
@@ -395,6 +399,8 @@ document.addEventListener('click', e => {
   const t = e.target.closest('button');
   if (!t || t.disabled) return;
   if (t.classList.contains('gloss')) { sayWord(t); return Gloss.open(t); }
+  if (t.dataset.act === 'gloss-say') { const w = t.dataset.w; if (!RM) gsap.fromTo(t, { scale: .88 }, { scale: 1, duration: .35, ease: 'back.out(3)', clearProps: 'transform' }); return Voice.play(wordId(w), w); }
+  if (t.dataset.act === 'gloss-close') return Gloss.close();
   if (t.id === 'listen') return Reading.listen(t);
   if (t.dataset.act === 'show-text') return SidePassage.active() ? SidePassage.flash([1]) : TextDrawer.open();
   if (t.dataset.act === 'see-text') return SidePassage.active() ? SidePassage.flash(t.dataset.para.split(',')) : TextDrawer.open(t.dataset.para.split(','));

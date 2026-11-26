@@ -1693,3 +1693,314 @@ body[data-view="welcome"] .panel{background:var(--bg)}
   .dial-foot .wk{min-height:28px;padding:3px 9px;font-size:.75rem}
   .dial-foot{gap:6px 10px;bottom:12px}
 }
+/* ---------- Reading Card glossary: a small white dialog under the bold word ---------- */
+.gloss-pop{width:min(320px,calc(100% - 16px));padding:14px 14px 16px 16px;border-radius:18px;background:#fff;color:var(--text);box-shadow:0 18px 40px -16px rgba(16,24,40,.42),0 0 0 1px var(--line)}
+.gloss-pop::before{background:#fff;box-shadow:-1px -1px 0 var(--line)}
+.gp-head{display:flex;align-items:center;gap:8px}
+.gp-word{flex:1;display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 8px;min-width:0}
+.gp-word b{font-family:var(--kw-display);font-size:1.25rem;font-weight:750;letter-spacing:-.01em}
+.gloss-pop .gp-pos{padding:1px 8px;border-radius:99px;background:var(--soft);color:#3d4250;font-size:.75rem;font-weight:700}
+.gp-say,.gp-close{flex:none;display:grid;place-items:center;width:36px;height:36px;padding:0;border:0;border-radius:50%;cursor:pointer}
+.gp-say{background:var(--frame);color:#fff}
+.gp-say svg{width:18px;height:18px}
+.gp-close{background:var(--soft);color:var(--text)}
+.gp-close svg{width:16px;height:16px}
+.gp-close:hover{background:#e3e6eb}
+.gloss-pop .gp-mean{margin:10px 0 0;font-size:1rem;line-height:1.5;color:#3d4250}
+
+/* ---------- the dial, closer to the reference: monospace numbers with a slashed zero, lighter details ---------- */
+.d-num{font-family:"Roboto Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:700;letter-spacing:-.04em;font-variant-numeric:slashed-zero tabular-nums;font-feature-settings:"zero" 1}
+.dial-info .di-in{gap:8px}
+.dial-info .un-kicker,.dial-info .un-kicker.done,.dial-info .un-kicker.lock{padding:0;background:none;color:var(--muted);font-size:.875rem;font-weight:600;letter-spacing:.01em}
+.dial-info .un-kicker.done{color:var(--good)}
+.dial-info .un-title{font-family:var(--font);font-size:clamp(1.25rem,1rem + .6vw,1.5rem);font-weight:700;letter-spacing:-.005em;color:#2b2e35}
+.dial-info .un-about{font-size:clamp(1rem,.95rem + .3vw,1.1875rem);font-weight:400;line-height:1.5;color:#8a909c;max-width:34ch}
+.dial-info .un-meta{color:#6a7080;font-size:.875rem}
+.dial-info .un-done{padding:0;background:none;color:var(--good);font-size:.875rem}
+.di-go{min-height:48px;padding:0 22px;font-size:1rem}
+
+/* ---------- learning path: the dial on the left, the cards (banner, Up next, words you know) on the right ---------- */
+.dial-map{flex:1 1 auto;min-height:0;width:100%;align-self:stretch;display:grid;grid-template-columns:minmax(0,1fr) clamp(340px,30vw,430px);gap:20px}
+.dial-side{display:flex;flex-direction:column;gap:14px;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;padding:14px 6px 16px 2px}
+.dial-side>*{flex:none}
+.dial-side .pop-lock{margin:0}
+.dial-side .link-btn{justify-self:center}
+.upnext .un-kicker.done{background:var(--good-soft);color:var(--good)}
+.upnext .un-kicker.lock{background:var(--soft);color:#3d4250}
+.un-trophy.off{background:#e3e6eb;box-shadow:0 5px 0 #c9cdd5}
+/* beside the big number: just the name and one quiet line */
+.dial-info .di-in{gap:2px}
+.dd-name{margin:0;font-size:clamp(1.25rem,1rem + .6vw,1.5rem);font-weight:700;line-height:1.2;color:#2b2e35}
+.dd-sub{margin:0;font-size:clamp(1rem,.95rem + .3vw,1.1875rem);line-height:1.45;color:#8a909c}
+/* narrow screens: the dial on top, the cards under it (the screen scrolls) */
+@media (max-width:56.24em){
+  .screen[data-screen="welcome"]>.work.dial-work{overflow-y:auto}
+  .dial-map{display:flex;flex-direction:column;gap:14px}
+  .dial-stage{flex:none;height:min(440px,60vh)}
+  .dial-side{overflow:visible;padding:0 0 16px}
+}
+
+/* ================= Segments screen: a clean grid of segment cards (click one to open it) ================= */
+body[data-view="segments"] .pagehead{display:none}
+body[data-view="segments"] main{padding-bottom:0}
+.screen[data-screen="segments"]>.work.seg-work{display:flex;flex-direction:column;overflow:hidden}
+.seg{flex:1 1 auto;min-height:0;width:100%;align-self:stretch;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(12px,2.6vh,26px);padding:10px 0 14px;text-align:center}
+.seg-kicker{margin:0;font-size:.875rem;font-weight:600;color:var(--muted)}
+.seg-title{margin:2px 0 0;font-family:var(--kw-display);font-size:clamp(1.625rem,1.2rem + 1.4vw,2.375rem);font-weight:750;letter-spacing:-.025em;line-height:1.1}
+.seg-hint{margin:0;min-height:1.5em;font-size:1rem;font-weight:600;color:#5b6170}
+
+
+/* ---------- Segments: cards ---------- */
+.seg{justify-content:center;gap:clamp(18px,3.4vh,34px);padding:14px 0 18px}
+.seg-hint:empty{display:none}
+.seg-grid{list-style:none;margin:0;padding:0;width:min(1040px,100%);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;text-align:left}
+.seg-grid>li{display:flex;min-width:0}
+.seg-grid>li:first-child{grid-row:span 2}
+.seg-card{position:relative;flex:1;display:flex;flex-direction:column;gap:8px;min-width:0;padding:22px;border:0;border-radius:24px;background:#fff;color:var(--text);font:inherit;text-align:left;box-shadow:var(--shadow)}
+.sc-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.sc-num{font-family:"Roboto Mono",ui-monospace,Menlo,monospace;font-size:1.75rem;font-weight:700;line-height:1;letter-spacing:-.04em;font-variant-numeric:slashed-zero;font-feature-settings:"zero" 1}
+.sc-name{font-family:var(--kw-display);font-size:1.25rem;font-weight:750;letter-spacing:-.015em;line-height:1.15}
+.sc-about{font-size:.9375rem;line-height:1.45;color:#5b6170}
+/* the open segment: dark, taller, with progress and its action */
+.seg-card.open{cursor:pointer;gap:12px;padding:26px;background:linear-gradient(180deg,#22242b,#0e0f12);color:#fff;box-shadow:0 8px 0 #000,0 30px 46px -24px rgba(16,24,40,.6);transition:transform .12s ease,box-shadow .12s ease}
+.seg-card.open:hover{transform:translateY(-3px);box-shadow:0 11px 0 #000,0 34px 50px -24px rgba(16,24,40,.6)}
+.seg-card.open:active{transform:translateY(6px);box-shadow:0 2px 0 #000}
+.seg-card.open:focus-visible{outline:3px solid var(--accent);outline-offset:4px}
+.seg-card.open .sc-num{font-size:clamp(3rem,2rem + 3vw,4.5rem);color:#fff}
+.seg-card.open .sc-name{margin-top:auto;font-size:clamp(1.5rem,1.2rem + 1vw,2rem)}
+.seg-card.open .sc-about{color:#c9ccd3;font-size:1rem}
+.sc-state{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:99px;background:var(--mint);color:var(--mint-ink);font-size:.8125rem;font-weight:700;white-space:nowrap}
+.sc-state svg{width:13px;height:13px}
+.sc-prog{display:flex;align-items:center;gap:12px;font-size:.875rem;font-weight:600;color:#c9ccd3;white-space:nowrap}
+.sc-bar{flex:1;height:8px;border-radius:99px;background:#3a3d45;overflow:hidden}
+.sc-bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#4cc874,#3cba60)}
+.sc-go{display:flex;align-items:center;justify-content:center;gap:10px;min-height:50px;margin-top:4px;border-radius:99px;background:#fff;color:#16181d;font-size:1.0625rem;font-weight:700}
+.sc-go svg{width:16px;height:16px}
+/* not open yet: quiet */
+.seg-card.soon{background:rgba(255,255,255,.6);box-shadow:inset 0 0 0 1.5px #e1e4ea}
+.seg-card.soon .sc-num{color:#b3b8c2}
+.seg-card.soon .sc-name{font-size:1.0625rem;color:#5b6170}
+.seg-card.soon .sc-about{font-size:.875rem;color:#8a909c}
+.sc-lock{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--soft);color:#8a909c}
+.sc-lock svg{width:15px;height:15px}
+@media (max-width:56.24em){
+  .screen[data-screen="segments"]>.work.seg-work{overflow-y:auto}
+  .seg{justify-content:flex-start}
+  .seg-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  .seg-grid>li:first-child{grid-column:1/-1;grid-row:auto}
+  .seg-card{padding:16px;border-radius:20px}
+  .seg-card.open{padding:20px}
+  .seg-card.open .sc-name{margin-top:6px}
+}
+@media (min-width:56.25em) and (max-height:46em){.seg-card{padding:16px 18px}.seg-card.open{padding:20px}}
+@media (max-width:56.24em){.seg-grid>li:first-child{margin-bottom:8px}}
+
+/* ================= Segments: a round menu (wedges around a centre circle), in the course's black / white / green ================= */
+.seg{justify-content:center;gap:clamp(14px,3vh,28px)}
+.radial{--S:min(60dvh,88vw,560px);position:relative;flex:none;width:var(--S);height:var(--S);border-radius:50%;box-shadow:0 30px 60px -26px rgba(16,24,40,.55)}
+.rad-svg{display:block;width:100%;height:100%;overflow:visible}
+.rad-w{cursor:pointer;outline:none}
+.rad-fill{fill:#0e0f12;stroke:#0e0f12;stroke-width:.4;transition:fill .18s ease}
+.rad-edge{fill:none;stroke:transparent;stroke-width:3.2;transition:stroke .18s ease}
+.rad-n{font-family:"Roboto Mono",ui-monospace,Menlo,monospace;font-size:13px;font-weight:700;fill:#6e737e;font-variant-numeric:slashed-zero;font-feature-settings:"zero" 1;pointer-events:none;transition:fill .18s ease}
+.rad-w.open .rad-n{fill:#fff}
+@media (hover:hover){.rad-w:hover .rad-fill{fill:#1a1c21}}
+.rad-w:focus-visible .rad-fill{fill:#1a1c21}
+.rad-w:focus-visible .rad-edge{stroke:#ffd166}
+.rad-w.is-sel .rad-fill{fill:#25272e}
+.rad-w.is-sel .rad-edge{stroke:#8a909c}
+.rad-w.is-sel .rad-n{fill:#fff}
+.rad-w.open.is-sel .rad-edge{stroke:#3cba60}
+/* the circle in the middle names the chosen segment */
+.rad-hub{position:absolute;left:50%;top:50%;width:calc(var(--S) * .47);height:calc(var(--S) * .47);margin:calc(var(--S) * -.235) 0 0 calc(var(--S) * -.235);padding:calc(var(--S) * .035);border:0;border-radius:50%;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:calc(var(--S) * .01);background:#25272e;color:#fff;font:inherit;text-align:center;cursor:pointer;transition:background-color .18s ease,transform .12s ease}
+.rad-hub:hover:not(:disabled){background:#2d3038}
+.rad-hub:active:not(:disabled){transform:scale(.97)}
+.rad-hub:disabled{cursor:default}
+.rad-hub:focus-visible{outline:3px solid #ffd166;outline-offset:3px}
+.rad-hub .hub-k{font-size:calc(var(--S) * .026);font-weight:600;color:#a3a7b1}
+.rad-hub .hub-t{font-family:var(--kw-display);font-size:calc(var(--S) * .046);font-weight:750;letter-spacing:-.02em;line-height:1.1;color:#fff}
+.rad-hub .hub-p{display:flex;align-items:center;gap:5px;font-size:calc(var(--S) * .026);font-weight:600;color:#a3a7b1}
+.rad-hub .hub-p.done{color:#7fe0a3}
+.rad-hub .hub-p svg{width:1em;height:1em}
+.rad-hub .hub-go{display:inline-flex;align-items:center;gap:8px;height:calc(var(--S) * .078);margin-top:calc(var(--S) * .02);padding:0 calc(var(--S) * .045);border-radius:99px;background:#fff;color:#16181d;font-size:calc(var(--S) * .031);font-weight:700}
+.rad-hub .hub-go svg{width:.9em;height:.9em}
+.hub-lock{display:grid;place-items:center;width:calc(var(--S) * .07);height:calc(var(--S) * .07);margin-top:calc(var(--S) * .012);border-radius:50%;background:#34363d;color:#a3a7b1}
+.hub-lock svg{width:50%;height:50%}
+@media (max-width:56.24em){.seg{justify-content:center}.screen[data-screen="segments"]>.work.seg-work{overflow:hidden}}
+/* the line under the round menu always keeps its space, so the menu does not jump when a message appears */
+.seg-hint:empty{display:block}
+
+/* ================= Segments: thin-line circle in the centre (light, like the learning path dial) =================
+   A thin grey circle; a dot on the line for each segment with its number just outside; the chosen one is dark and
+   bigger; the name, progress and Start sit inside the circle. */
+.radial{--S:min(64dvh,90vw,600px);box-shadow:none}
+.rad-line{fill:none;stroke:#cfd3da;stroke-width:.5}
+.rad-hit{fill:transparent}
+.rad-dot{fill:#c4c9d1;transition:fill .2s ease,r .2s ease}
+.rad-ring{fill:none;stroke:transparent;stroke-width:.6;transition:stroke .2s ease}
+.rad-n{font-size:8px;fill:#b3b8c2;transition:fill .2s ease,font-size .2s ease}
+.rad-w.open .rad-n{fill:#1d1f25}
+.rad-w.open .rad-dot{fill:#1d1f25}
+@media (hover:hover){.rad-w:hover .rad-n{fill:#3d4250}.rad-w:hover .rad-dot{fill:#3d4250}}
+.rad-w:focus-visible .rad-ring{stroke:var(--accent);stroke-width:1}
+.rad-w.is-sel .rad-n{font-size:13px;fill:#1d1f25}
+.rad-w.is-sel .rad-dot{fill:#1d1f25;r:2.6px}
+.rad-w.is-sel .rad-ring{stroke:#b3b8c2}
+.rad-w.open.is-sel .rad-ring{stroke:#3cba60;stroke-width:.9}
+/* inside the circle: plain text on the page colour */
+.rad-hub{width:calc(var(--S) * .6);height:calc(var(--S) * .6);margin:calc(var(--S) * -.3) 0 0 calc(var(--S) * -.3);background:transparent;color:var(--text);gap:calc(var(--S) * .012)}
+.rad-hub:hover:not(:disabled){background:transparent}
+.rad-hub:focus-visible{outline:3px solid var(--accent)}
+.rad-hub .hub-k{font-size:calc(var(--S) * .026);color:var(--muted)}
+.rad-hub .hub-t{font-size:calc(var(--S) * .058);color:#1d1f25}
+.rad-hub .hub-p{font-size:calc(var(--S) * .028);color:#8a909c}
+.rad-hub .hub-p.done{color:var(--good)}
+.rad-hub .hub-go{height:calc(var(--S) * .082);margin-top:calc(var(--S) * .026);background:#1d1f25;color:#fff;box-shadow:0 4px 0 #000}
+.rad-hub.locked .hub-t{color:#8a909c}
+.hub-lock{background:var(--soft);color:#8a909c}
+
+/* ================= Segments: thin-line wedge ring (minimal) =================
+   Fine tick marks around a ring of eight outlined wedges with the numbers inside; the chosen wedge is white;
+   Segment 1's outer edge is a green progress arc; a white disc in the middle holds the name and Start. */
+.radial{--S:min(66dvh,90vw,620px)}
+.rad-ticks path{stroke:#c9cdd5;stroke-width:.45;stroke-linecap:round}
+.rad-fill{fill:transparent;stroke:#d3d7df;stroke-width:.5;transition:fill .2s ease}
+.rad-track,.rad-edge{fill:none;stroke:transparent;stroke-width:2.2;stroke-linecap:round;transition:stroke .2s ease}
+.rad-w.open .rad-track{stroke:#cdeed8}
+.rad-w.open .rad-edge,.rad-w.open.is-sel .rad-edge{stroke:#2fae62}
+.rad-w.is-sel:not(.open) .rad-track{stroke:#b3b8c2}
+.rad-n,.rad-w.is-sel .rad-n{font-size:9.5px}
+.rad-n{fill:#a2a8b3}
+.rad-w.open .rad-n,.rad-w.is-sel .rad-n{fill:#16181d}
+@media (hover:hover){.rad-w:hover .rad-fill{fill:rgba(255,255,255,.7)}.rad-w:hover .rad-n{fill:#3d4250}}
+.rad-w:focus-visible .rad-fill{fill:#fff;stroke:var(--accent);stroke-width:1}
+.rad-w.is-sel .rad-fill{fill:#fff}
+.rad-hub{width:calc(var(--S) * .5);height:calc(var(--S) * .5);margin:calc(var(--S) * -.25) 0 0 calc(var(--S) * -.25);background:#fff;box-shadow:0 0 0 1px #e1e4ea,0 18px 40px -22px rgba(16,24,40,.35)}
+.rad-hub:hover:not(:disabled){background:#fff;box-shadow:0 0 0 1px #c4c9d1,0 22px 44px -22px rgba(16,24,40,.42)}
+.rad-hub .hub-t{font-size:calc(var(--S) * .05)}
+.rad-hub .hub-go{box-shadow:none}
+
+/* Segments: a bigger circle; the big number shown in the middle when a segment opens */
+.seg{gap:clamp(8px,1.6vh,18px);padding:6px 0 8px}
+.radial{--S:min(74dvh,94vw,760px)}
+.seg-title{font-size:clamp(1.5rem,1.1rem + 1.2vw,2.125rem)}
+.hub-big{font-family:"Roboto Mono",ui-monospace,Menlo,monospace;font-size:calc(var(--S) * .2);font-weight:700;line-height:1;letter-spacing:-.04em;color:#16181d;font-variant-numeric:slashed-zero;font-feature-settings:"zero" 1}
+
+/* ================= Segments: one soft black shape (a centre circle with a branch for each segment) =================
+   In the course's theme: black on the light page, white text, green for progress. --W is the shape's width. */
+.radial{--W:min(54dvh,92vw,560px);--S:calc(var(--W) * 1.08);width:var(--W);height:auto;aspect-ratio:228/304;border-radius:0;box-shadow:none}
+.bl-goo circle{fill:#16181d}
+.bl-goo line{stroke:#16181d;stroke-width:16;stroke-linecap:round}
+.bl-rings circle{fill:none;stroke:rgba(255,255,255,.09);stroke-width:.6}
+.bl-arrow{transition:transform .45s cubic-bezier(.3,1.3,.5,1)}
+.bl-arrow path{fill:none;stroke:#fff;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;opacity:.85}
+.bl-sat{fill:transparent;transition:fill .2s ease}
+.bl-track{fill:none;stroke:transparent;stroke-width:1.6;transition:stroke .2s ease}
+.rad-w .rad-edge,.rad-w.open .rad-edge,.rad-w.open.is-sel .rad-edge{fill:none;stroke:transparent;stroke-width:2;stroke-linecap:round}
+.rad-w.open .rad-edge,.rad-w.open.is-sel .rad-edge{stroke:#4cc874}
+.rad-w.open .bl-track{stroke:rgba(76,200,116,.28)}
+.rad-n,.rad-w.is-sel .rad-n{font-size:12px}
+.rad-n{fill:#7d838f}
+.rad-w.open .rad-n,.rad-w.is-sel .rad-n{fill:#fff}
+@media (hover:hover){.rad-w:hover .bl-sat{fill:#25272e}.rad-w:hover .rad-n{fill:#fff}}
+.rad-w.is-sel .bl-sat{fill:#30333b}
+.rad-w.is-sel:not(.open) .bl-track{stroke:#6e737e}
+.rad-w:focus-visible .bl-track{stroke:#ffd166;stroke-width:2}
+/* the centre circle: the chosen segment, in white on the black shape */
+.rad-hub,.rad-hub:hover:not(:disabled){left:32.46%;width:calc(var(--W) * .5);height:calc(var(--W) * .5);margin:calc(var(--W) * -.25) 0 0 calc(var(--W) * -.25);background:transparent;box-shadow:none;color:#fff}
+.rad-hub:focus-visible{outline:3px solid #ffd166;outline-offset:-4px}
+.rad-hub .hub-k{color:#a3a7b1}
+.rad-hub .hub-t{color:#fff;font-size:calc(var(--S) * .046)}
+.rad-hub.locked .hub-t{color:#a3a7b1}
+.rad-hub .hub-p{color:#a3a7b1}
+.rad-hub .hub-p.done{color:#7fe0a3}
+.rad-hub .hub-go{background:#fff;color:#16181d;box-shadow:none}
+.hub-lock{background:#30333b;color:#a3a7b1}
+.hub-big{color:#fff}
+
+/* ================= Segments: a fidget spinner (ten arms all the way round) ================= */
+.radial{--W:min(72dvh,94vw,700px);--S:calc(var(--W) * .92);aspect-ratio:1}
+.rad-svg{transform-origin:50% 50%;will-change:transform}
+.bl-goo line{stroke-width:15}
+.bl-rings circle:first-child{r:59px}
+.bl-rings circle:last-child{r:52px}
+.bl-arrow path{d:path("M71 0h11M78 -4l4.5 4-4.5 4")}
+.rad-n,.rad-w.is-sel .rad-n{font-size:11px}
+.rad-hub,.rad-hub:hover:not(:disabled){left:50%;width:calc(var(--W) * .43);height:calc(var(--W) * .43);margin:calc(var(--W) * -.215) 0 0 calc(var(--W) * -.215)}
+
+/* Segments spinner, simpler: the ten small circles float around the big one, not joined to it */
+.bl-goo{filter:none}
+.bl-goo line{display:none}
+.bl-arrow path{stroke:#16181d;opacity:1}
+
+/* Segments spinner in outline: thin strokes on the light page, no solid black */
+.bl-goo circle{fill:#fff;stroke:#16181d;stroke-width:1.2}
+.bl-goo circle:not(:first-child){fill:transparent;stroke:#c4c9d1;stroke-width:1}
+.bl-rings circle{stroke:#e7e9ee}
+.rad-n{fill:#8a909c}
+.rad-w.open .rad-n,.rad-w.is-sel .rad-n{fill:#16181d}
+.bl-sat{stroke:transparent;stroke-width:1.2}
+@media (hover:hover){.rad-w:hover .bl-sat{fill:#fff}.rad-w:hover .rad-n{fill:#16181d}}
+.rad-w.is-sel .bl-sat{fill:#fff}
+.rad-w.open .bl-sat{fill:#fff}
+.rad-w.open .bl-track{stroke:#16181d;stroke-width:1.2}
+.rad-w.open .rad-edge,.rad-w.open.is-sel .rad-edge{stroke:#2fae62;stroke-width:2.4}
+.rad-w.is-sel:not(.open) .bl-track{stroke:#16181d;stroke-width:1.2}
+.rad-w:focus-visible .bl-track{stroke:var(--accent);stroke-width:2}
+.rad-hub,.rad-hub:hover:not(:disabled){color:var(--text)}
+.rad-hub:focus-visible{outline:3px solid var(--accent);outline-offset:-4px}
+.rad-hub .hub-k{color:var(--muted)}
+.rad-hub .hub-t{color:#16181d}
+.rad-hub.locked .hub-t{color:#8a909c}
+.rad-hub .hub-p{color:#5b6170}
+.rad-hub .hub-p.done{color:var(--good)}
+.rad-hub .hub-go{background:#16181d;color:#fff}
+.hub-lock{background:var(--soft);color:#8a909c}
+.hub-big{color:#16181d}
+
+/* ================= Segments as an orbit (three.js): planets on a tilted ring, the title and Start in the middle ================= */
+.radial{--W:min(82dvh,94vw,880px);--S:calc(var(--W) * .76);width:var(--W);height:auto;aspect-ratio:1.22;border-radius:0}
+.orbit-canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.orbit-labels{position:absolute;inset:0}
+.orbit-labels .rad-w{position:absolute;left:0;top:0;width:54px;height:54px;padding:0;border:0;border-radius:50%;background:none;cursor:pointer;
+  font-family:"Roboto Mono",ui-monospace,Menlo,monospace;font-size:.9375rem;font-weight:700;color:#5b6170;font-variant-numeric:slashed-zero;font-feature-settings:"zero" 1;will-change:transform}
+.orbit-labels .rad-w.open{color:#fff}
+.orbit-labels .rad-w.is-sel:not(.open){color:#fff}
+.orbit-labels .rad-w:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.rad-hub,.rad-hub:hover:not(:disabled){left:50%;top:50%;width:calc(var(--W) * .4);height:calc(var(--W) * .4);margin:calc(var(--W) * -.2) 0 0 calc(var(--W) * -.2);background:transparent;box-shadow:none}
+.rad-hub .hub-t{font-size:calc(var(--S) * .062)}
+@media (max-width:37.49em){.orbit-labels .rad-w{width:40px;height:40px;font-size:.75rem}.radial{--W:min(82dvh,98vw)}}
+
+/* Segments orbit seen from above: round concentric orbits, flat pastel planets */
+.radial{--W:min(74dvh,96vw,760px);--S:calc(var(--W) * .7);aspect-ratio:1}
+.orbit-labels .rad-w{color:#16181d}
+.orbit-labels .rad-w.open{color:#fff}
+.orbit-labels .rad-w.is-sel:not(.open){color:#16181d}
+.rad-hub,.rad-hub:hover:not(:disabled){width:calc(var(--W) * .38);height:calc(var(--W) * .38);margin:calc(var(--W) * -.19) 0 0 calc(var(--W) * -.19)}
+.rad-hub .hub-t{font-size:calc(var(--S) * .058)}
+@media (max-width:37.49em){.radial{--W:min(74dvh,100vw)}.orbit-labels .rad-w{font-size:.6875rem}}
+
+/* bigger, plain planets: grey for segments not open yet, black for Segment 1 */
+.orbit-labels .rad-w{color:#5b6170}
+.orbit-labels .rad-w.open{color:#fff}
+.orbit-labels .rad-w.is-sel:not(.open){color:#16181d}
+.rad-hub,.rad-hub:hover:not(:disabled){width:calc(var(--W) * .34);height:calc(var(--W) * .34);margin:calc(var(--W) * -.17) 0 0 calc(var(--W) * -.17)}
+.radial{--W:min(76dvh,96vw,780px);--S:calc(var(--W) * .64)}
+
+/* locked planets: pale colours with quiet numbers */
+.orbit-labels .rad-w{color:#8a909c}
+.orbit-labels .rad-w.open{color:#fff}
+.orbit-labels .rad-w.is-sel:not(.open){color:#16181d}
+
+/* the active segment glows: a soft green halo that breathes slowly */
+.orbit-labels .rad-w.open{box-shadow:0 0 26px 8px rgba(47,174,98,.42),0 0 60px 22px rgba(76,200,116,.2);animation:kwGlow 2.6s ease-in-out infinite}
+@keyframes kwGlow{0%,100%{box-shadow:0 0 22px 6px rgba(47,174,98,.34),0 0 52px 18px rgba(76,200,116,.14)}50%{box-shadow:0 0 32px 12px rgba(47,174,98,.5),0 0 72px 28px rgba(76,200,116,.26)}}
+@media (prefers-reduced-motion:reduce){.orbit-labels .rad-w.open{animation:none}}
+
+/* a bigger orbit: the scene is wider than tall and uses the full height under the title */
+.radial{--W:min(100dvh,96vw,1060px);--S:calc(var(--W) * .5);aspect-ratio:1.3}
+.rad-hub,.rad-hub:hover:not(:disabled){width:calc(var(--W) * .27);height:calc(var(--W) * .27);margin:calc(var(--W) * -.135) 0 0 calc(var(--W) * -.135)}
+.seg{gap:0}
+.seg-hint{position:relative;z-index:2;margin-top:-6px}
+@media (max-width:37.49em){.radial{--W:100vw;--S:calc(var(--W) * .62);aspect-ratio:1.12}.rad-hub,.rad-hub:hover:not(:disabled){width:calc(var(--W) * .3);height:calc(var(--W) * .3);margin:calc(var(--W) * -.15) 0 0 calc(var(--W) * -.15)}}

@@ -20,7 +20,7 @@
 
   const PAGE = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
   const GROUPS = [
-    { page: 'index.html', title: 'Learning path', items: [['welcome', 'Learning path']] },
+    { page: 'index.html', title: 'Segments and path', items: [['segments', 'Segments'], ['welcome', 'Learning path']] },
     { page: 'index.html', title: 'Stage 4 · Key Words', items: [['intro', 'Start screen'], ['greetings', '1 · Greetings'], ['farewells', '2 · Farewells'], ['compare', '3 · Arrive or leave'], ['match', '4 · Word Match'], ['sprint', '5 · Scenario Sprint'], ['end', 'Your result']] },
     { page: 'reading.html', title: 'Stage 5 · Reading Card', items: [['read', 'Reading'], ['readq', 'Questions'], ['readdone', 'Reading done']] },
     { page: 'quick-check.html', title: 'Stage 8 · Quick Check', items: [['check', 'Questions'], ['checkdone', 'Done']] },

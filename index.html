@@ -12,9 +12,10 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@700&display=swap" rel="stylesheet">
 <script src="lib/gsap.min.js"></script>
+<script src="lib/three.min.js"></script>
 <script src="js/motion.js" defer></script>
 <script src="kit/commkit.js"></script>
-<link rel="stylesheet" href="css/kw.css?v=20261120x">
+<link rel="stylesheet" href="css/kw.css?v=20261126t">
 </head>
 <body data-kind="speak" data-view="welcome">
 
@@ -67,8 +68,26 @@
       <li data-step="sprint"><span class="n">5</span><span class="lb">Scenario Sprint</span></li>
     </ol>
 
+    <!-- Segments: a round menu of wedges, one per segment; click Segment 1 to open it (its stages are the learning path) -->
+    <section class="screen" data-screen="segments" hidden>
+      <div class="work seg-work">
+        <div class="seg">
+          <header class="seg-head">
+            <p class="seg-kicker">Communication Skills</p>
+            <h1 class="seg-title">Choose your segment</h1>
+          </header>
+          <div class="radial" id="radial">
+            <canvas class="orbit-canvas" id="orbit-canvas" aria-hidden="true"></canvas>
+            <div class="orbit-labels" id="orbit-labels" role="group" aria-label="Segments"></div>
+            <button type="button" class="rad-hub" id="rad-hub"></button>
+          </div>
+          <p class="seg-hint" id="seg-hint" aria-live="polite"></p>
+        </div>
+      </div>
+    </section>
+
     <!-- Welcome -->
-    <section class="screen" data-screen="welcome">
+    <section class="screen" data-screen="welcome" hidden>
       <div class="work dial-work">
         <div class="dial-stage" id="path">
           <header class="dial-head">
@@ -85,7 +104,7 @@
         </div>
       </div>
       <div class="actionbar"><div class="actionbar-in">
-        <button type="button" class="btn secondary back-btn map-back" data-go="intro" aria-label="Back to Key Words"><i data-ui="back"></i></button>
+        <button type="button" class="btn secondary back-btn map-back" data-go="segments" aria-label="Back to the segments"><i data-ui="back"></i></button>
       </div></div>
     </section>
 
@@ -994,9 +1013,9 @@ function readAloud(btn) {
 const ORDER = ['intro', 'greetings', 'farewells', 'compare', 'match', 'sprint', 'end'];
 const STEP = { intro: 0, welcome: 0, greetings: 1, farewells: 2, compare: 3, match: 4, sprint: 5, end: 5 };
 const screenEl = n => $(`[data-screen="${n}"]`);
-let cur = 'welcome', busy = false;
+let cur = 'segments', busy = false;
 
-const TITLES = { read: 'Reading', readq: 'Reading', readdone: 'Reading', check: 'Quick Check', checkdone: 'Quick Check', welcome: 'Key Words', greetings: 'Greetings', farewells: 'Farewells', compare: 'Arriving or leaving?', match: 'Word Match', sprint: 'Scenario Sprint', end: 'Your result' };
+const TITLES = { read: 'Reading', readq: 'Reading', readdone: 'Reading', check: 'Quick Check', checkdone: 'Quick Check', segments: 'Segments', welcome: 'Key Words', greetings: 'Greetings', farewells: 'Farewells', compare: 'Arriving or leaving?', match: 'Word Match', sprint: 'Scenario Sprint', end: 'Your result' };
 function setTop(name) {
   const step = STEP[name];
   document.body.dataset.view = name;
@@ -1004,8 +1023,8 @@ function setTop(name) {
   const stage = STAGE_OF(name);
   $('#crumb').textContent = stage === 's5' ? 'Communication Skills · Stage 5' : stage === 's8' ? 'Communication Skills · Stage 8'
     : name === 'welcome' ? 'Communication Skills · Stage 4' : 'Communication Skills · Key Words';
-  $('#steps').hidden = name === 'welcome' || name === 'intro' || stage !== 's4';
-  $('#nav-lbl').textContent = { map: 'Learning path', s4: 'Key Words', s5: 'Reading Card', s8: 'Quick Check' }[stage];
+  $('#steps').hidden = name === 'welcome' || name === 'intro' || name === 'segments' || stage !== 's4';
+  $('#nav-lbl').textContent = { seg: 'Segments', map: 'Learning path', s4: 'Key Words', s5: 'Reading Card', s8: 'Quick Check' }[stage];
   $$('#steps li').forEach((li, i) => {
     const n = i + 1, on = n === step && name !== 'end';
     li.classList.toggle('past', n < step || name === 'end');
@@ -1083,6 +1102,7 @@ const goBack = () => { const i = ORDER.indexOf(cur); if (i > 0) show(ORDER[i - 1
 function enter(name) {
   Log.enter(name);
   if (name !== 'end' && name !== 'welcome' && STEP[name]) Store.set({ screen: name });
+  if (name === 'segments') Seg.enter(false);
   if (name === 'welcome') Home.enter(false);
   if (name === 'intro') Intro.enter(false);
   if (name === 'greetings' || name === 'farewells') {
@@ -1332,6 +1352,183 @@ const Home = {
     Launch.go(btn, st.go, { kicker: `Stage ${st.n}`, title: st.name, dots: BUILT.map(b => (b.id === st.id ? 'on' : done[b.id] ? 'done' : '')) });
   }
 };
+/* Segments: a round menu in the centre of the screen. The circle is cut into equal wedges, one per segment, each
+   with its number; the chosen wedge is lighter with a green edge, and the circle in the middle names it.
+   Click Segment 1 (its wedge or the middle): the black grows from the middle into the segment's learning path.
+   The other segments are not open yet: clicking one shows "Coming soon" in the middle. */
+const SEGMENTS = [{ n: 1, name: 'Meeting Someone New', open: true }, ...[2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => ({ n, name: `Segment ${n}`, open: false }))];
+/* The Segments screen is a small solar system drawn with three.js (lib/three.min.js): the ten segments are planets on
+   one tilted orbit, slowly going round; the title and Start sit in the middle. Each planet has a number button over it
+   (placed every frame from the planet's position), so segments work with the mouse, touch and the keyboard.
+   Opening Segment 1: the orbit makes one quick turn while a big "01" appears in the middle, then the black grows. */
+const Seg = {
+  sel: 1, rot: 0, t3: null, raf: 0, last: 0, opening: false,
+  PALE: [0xfcf1d2, 0xe2f2fb, 0xf7e4f9, 0xdcf5e5], TINT: [0xfde8b0, 0xd3eefa, 0xf3d3f6, 0xc6f1d5],   // butter, sky, lilac, mint
+  /* seen from above: five round orbits, two planets on each; every planet has its own ring, size, start and colour */
+  RINGS: [3.9, 4.85, 5.8, 6.75, 7.7],
+  ORB: [[2, .92], [0, .64], [3, .8], [1, .58], [4, .82], [0, .56], [3, .64], [1, .72], [4, .6], [2, .66]],   // [ring, size] for each segment
+  angle(i) { return i * 2.4 + .6 + this.rot * (1.25 - this.ORB[i][0] * .14); },
+  place(i) { const a = this.angle(i), r = this.RINGS[this.ORB[i][0]]; return [Math.sin(a) * r, Math.cos(a) * r]; },
+  time: 0, hover: 0, sc: [], mx: 0, my: 0,
+  build() {
+    $('#orbit-labels').innerHTML = SEGMENTS.map(sg => `<button type="button" class="rad-w${sg.open ? ' open' : ''}" data-seg="${sg.n}" aria-label="Segment ${sg.n}${sg.open ? `, ${sg.name}` : ': coming soon'}">${String(sg.n).padStart(2, '0')}</button>`).join('');
+    $('#orbit-labels').addEventListener('click', e => {
+      const g = e.target.closest('.rad-w');
+      if (!g || this.opening) return;
+      const n = Number(g.dataset.seg), sg = SEGMENTS.find(x => x.n === n);
+      this.sel = n;
+      this.render(true);
+      if (sg.open) return this.open();
+      if (!RM) gsap.to(this, { rot: this.rot + .35, duration: .6, ease: 'back.out(2.5)' });      // a locked planet: the orbit gives a little push
+    });
+    $('#rad-hub').addEventListener('click', () => { if (SEGMENTS.find(x => x.n === this.sel).open) this.open(); });
+    this.init3();
+    new ResizeObserver(() => this.resize()).observe($('#radial'));
+  },
+  init3() {
+    if (!window.THREE) return;
+    const T = THREE, scene = new T.Scene(), camera = new T.PerspectiveCamera(35, 1.22, .1, 100);
+    camera.fov = 37;
+    camera.position.set(0, 20.6, 12.3);          // looking down at an angle, so the orbits read as tilted discs
+    camera.up.set(0, 0, -1);
+    camera.lookAt(0, 0, 0);
+    scene.add(new T.AmbientLight(0xffffff, .93));                // nearly flat: only a hint of shading
+    const sun = new T.DirectionalLight(0xffffff, .12); sun.position.set(-5, 10, -5); scene.add(sun);
+    const ring = (r, color, opacity) => {
+      const pts = Array.from({ length: 129 }, (_, k) => new T.Vector3(Math.cos(k / 128 * Math.PI * 2) * r, 0, Math.sin(k / 128 * Math.PI * 2) * r));
+      return new T.Line(new T.BufferGeometry().setFromPoints(pts), new T.LineBasicMaterial({ color, transparent: true, opacity }));
+    };
+    this.RINGS.forEach((r, k) => scene.add(ring(r, k === this.ORB[0][0] ? 0x9aa0ab : 0xcfd3da, 1)));       // Segment 1's orbit is a little darker
+    // faint stars far below the orbits: they shift against the planets as the view moves
+    const sp = new Float32Array(240 * 3);
+    for (let k = 0; k < 240; k++) { sp[k * 3] = (Math.random() - .5) * 34; sp[k * 3 + 1] = -3 - Math.random() * 7; sp[k * 3 + 2] = (Math.random() - .5) * 34; }
+    const sg0 = new T.BufferGeometry(); sg0.setAttribute('position', new T.BufferAttribute(sp, 3));
+    const stars = new T.Points(sg0, new T.PointsMaterial({ color: 0xb3b8c2, size: .1, transparent: true, opacity: .75 }));
+    scene.add(stars);
+    // a trail behind each planet, fading into the page colour
+    const TR = 22, bg = new T.Color(0xf3f4f6);
+    const trails = SEGMENTS.map(sg => {
+      const g = new T.BufferGeometry(), col = new Float32Array(TR * 3), c0 = new T.Color(sg.open ? 0x2fae62 : 0x9aa0ab), c = new T.Color();
+      for (let k = 0; k < TR; k++) { c.copy(c0).lerp(bg, k / (TR - 1)); col[k * 3] = c.r; col[k * 3 + 1] = c.g; col[k * 3 + 2] = c.b; }
+      g.setAttribute('position', new T.BufferAttribute(new Float32Array(TR * 3), 3));
+      g.setAttribute('color', new T.BufferAttribute(col, 3));
+      const line = new T.Line(g, new T.LineBasicMaterial({ vertexColors: true }));
+      scene.add(line);
+      return line;
+    });
+    const geo = new T.SphereGeometry(1, 40, 28);
+    const planets = SEGMENTS.map(sg => {
+      const m = new T.Mesh(geo, new T.MeshLambertMaterial({ color: 0xffffff }));
+      if (sg.open) {                                             // Segment 1 wears a green ring
+        const halo = new T.Mesh(new T.TorusGeometry(1.42, .05, 10, 72), new T.MeshBasicMaterial({ color: 0x2fae62 }));
+        halo.rotation.x = Math.PI / 2;
+        m.add(halo);
+        const moon = new T.Mesh(new T.SphereGeometry(.15, 20, 14), new T.MeshBasicMaterial({ color: 0x2fae62 }));   // a small moon rides the ring
+        m.add(moon);
+        m.userData.moon = moon;
+      }
+      scene.add(m);
+      return m;
+    });
+    let renderer = null;
+    try { renderer = new T.WebGLRenderer({ canvas: $('#orbit-canvas'), antialias: true, alpha: true }); renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2)); } catch (e) { /* no WebGL: the numbers still go round */ }
+    this.t3 = { T, scene, camera, renderer, planets, trails, stars, TR, v: new T.Vector3() };
+    // the view leans a little towards the pointer
+    $('#radial').addEventListener('pointermove', e => { const r = e.currentTarget.getBoundingClientRect(); this.mx = (e.clientX - r.left) / r.width * 2 - 1; this.my = (e.clientY - r.top) / r.height * 2 - 1; });
+    $('#radial').addEventListener('pointerleave', () => { this.mx = 0; this.my = 0; });
+    $('#orbit-labels').addEventListener('pointerover', e => { const g = e.target.closest('.rad-w'); this.hover = g ? Number(g.dataset.seg) : 0; });
+    $('#orbit-labels').addEventListener('pointerout', () => { this.hover = 0; });
+  },
+  resize() {
+    const box = $('#radial'), w = box.clientWidth, h = box.clientHeight;
+    if (!this.t3 || !w || !h) return;
+    this.t3.camera.aspect = w / h;
+    this.t3.camera.updateProjectionMatrix();
+    if (this.t3.renderer) this.t3.renderer.setSize(w, h, false);
+    this.frame(0);
+  },
+  /* place the planets and their number buttons, and draw */
+  frame(dt) {
+    if (!RM && !this.opening) this.rot += dt * .05;              // a slow drift
+    this.time += dt;
+    if (this.t3) {
+      const cam = this.t3.camera, ease = RM ? 1 : Math.min(1, dt * 3 + (dt ? 0 : 1));
+      cam.position.x += ((RM ? 0 : this.mx * 1.5) - cam.position.x) * ease;
+      cam.position.z += ((RM ? 12.3 : 12.3 + this.my * 1.5) - cam.position.z) * ease;
+      cam.lookAt(0, 0, .5);
+      this.t3.stars.rotation.y = this.time * .012;
+    }
+    const box = $('#radial'), w = box.clientWidth, h = box.clientHeight, labels = $$('#orbit-labels .rad-w'), N = SEGMENTS.length, t3 = this.t3;
+    SEGMENTS.forEach((sg, i) => {
+      const [x, z] = this.place(i), size = this.ORB[i][1], want = sg.n === this.sel && !sg.open ? 1.22 : sg.n === this.hover ? 1.1 : 1;
+      const big = this.sc[i] = (this.sc[i] || 1) + (want - (this.sc[i] || 1)) * (dt ? Math.min(1, dt * 10) : 1);      // sizes change smoothly
+      let sx, sy, k = 1;
+      if (t3) {
+        const m = t3.planets[i];
+        m.position.set(x, 0, z);
+        m.scale.setScalar(size * big);
+        m.material.color.setHex(sg.open ? 0x1d1f25 : (sg.n === this.sel ? this.TINT : this.PALE)[i % 4]);   // Segment 1: black; the rest pale colours (not open yet), fuller when chosen
+        if (m.userData.moon) m.userData.moon.position.set(Math.cos(this.time * 1.1) * 1.42, 0, Math.sin(this.time * 1.1) * 1.42);
+        const pos = t3.trails[i].geometry.attributes.position, a0 = this.angle(i), r = this.RINGS[this.ORB[i][0]];
+        for (let k = 0; k < t3.TR; k++) { const a = a0 - k * (.62 / (t3.TR - 1)); pos.setXYZ(k, Math.sin(a) * r, .02, Math.cos(a) * r); }
+        pos.needsUpdate = true;
+        t3.v.set(x, 0, z).project(t3.camera);
+        sx = (t3.v.x + 1) / 2 * w; sy = (1 - t3.v.y) / 2 * h; k = .55 + size * .85;
+      } else { sx = w / 2 + x / 8.57 * w / 2; sy = h / 2 + z / 8.57 * h / 2; }
+      labels[i].style.transform = `translate(${sx.toFixed(1)}px,${sy.toFixed(1)}px) translate(-50%,-50%) scale(${(k * big).toFixed(3)})`;
+      labels[i].style.zIndex = Math.round(z * 10) + 100;
+    });
+    if (t3 && t3.renderer) t3.renderer.render(t3.scene, t3.camera);
+  },
+  loop(now) {
+    if (cur !== 'segments') { this.raf = 0; return; }
+    const dt = Math.min(.05, (now - (this.last || now)) / 1000);
+    this.last = now;
+    this.frame(dt);
+    this.raf = requestAnimationFrame(t => this.loop(t));
+  },
+  render(animate) {
+    const sg = SEGMENTS.find(x => x.n === this.sel), done = stagesDone(), n = BUILT.filter(b => done[b.id]).length, all = n === BUILT.length;
+    $$('#orbit-labels .rad-w').forEach(g => g.classList.toggle('is-sel', Number(g.dataset.seg) === this.sel));
+    const hub = $('#rad-hub');
+    hub.classList.toggle('locked', !sg.open);
+    hub.disabled = !sg.open;
+    hub.innerHTML = sg.open
+      ? `<span class="hub-k">Segment ${sg.n}</span><span class="hub-t">${sg.name}</span><span class="hub-p${all ? ' done' : ''}">${all ? UI.check : ''}${n} of ${BUILT.length} stages done</span><span class="hub-go">${all ? 'Open' : n ? 'Continue' : 'Start'}${MAPI.play}</span>`
+      : `<span class="hub-k">Segment ${sg.n}</span><span class="hub-t">Coming soon</span><span class="hub-lock">${LOCK}</span>`;
+    $('#seg-hint').textContent = sg.open ? '' : `Segment ${sg.n} is not open yet. Choose Segment 1.`;
+    if (animate && !RM) gsap.fromTo(hub.children, { y: 8, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .3, stagger: .04, ease: 'power2.out', clearProps: 'transform,opacity,visibility' });
+  },
+  enter(first) {
+    this.sel = 1;
+    this.opening = false;
+    gsap.killTweensOf(this);
+    this.rot = 0;
+    this.render(false);
+    this.resize();
+    this.last = 0;
+    if (!this.raf) this.raf = requestAnimationFrame(t => this.loop(t));
+    if (RM) return;
+    gsap.fromTo('.seg-head > *', { y: 12, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .5, ease: 'power3.out', stagger: .06, clearProps: 'transform,opacity,visibility' });
+    gsap.fromTo('#radial', { scale: .9, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, duration: .6, ease: 'power3.out', clearProps: 'transform,opacity,visibility' });
+    gsap.from(this, { rot: -2.4, duration: 1.8, ease: 'power3.out' });      // the planets swing into place
+  },
+  open() {
+    if (busy || this.opening) return;
+    const sg = SEGMENTS.find(x => x.n === this.sel), done = stagesDone(), hub = $('#rad-hub');
+    const go = () => { Launch.go(hub, 'welcome', { kicker: `Segment ${sg.n}`, title: sg.name, dots: BUILT.map(b => (done[b.id] ? 'done' : '')) }); };
+    if (RM) return go();
+    this.opening = true;
+    gsap.timeline()
+      .to(hub.children, { autoAlpha: 0, y: -8, duration: .18, stagger: .02, ease: 'power1.in' })
+      .add(() => { hub.innerHTML = `<span class="hub-big">${String(sg.n).padStart(2, '0')}</span>`; })
+      .fromTo(hub, { scale: 1 }, { scale: 1.06, duration: .45, ease: 'back.out(2.4)' }, '>')
+      .to(this, { rot: this.rot + 4.2, duration: .9, ease: 'power2.inOut' }, '<')
+      .fromTo('#rad-hub .hub-big', { scale: .4, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, duration: .45, ease: 'back.out(2.2)' }, '<')
+      .add(go, '>+.4')
+      .set(hub, { clearProps: 'transform' }, '>+.9');
+  }
+};
 /* Start / Continue: press, the black grows from the button to fill the screen, the part or stage is named,
    the screen changes underneath, then the black lifts into the top bar. Reduced motion: a plain change. */
 const Launch = {
@@ -1435,7 +1632,7 @@ const Intro = {
     Launch.go(btn, to, { kicker: `Part ${step} of 5`, title: PART_NAME[to], dots: [1, 2, 3, 4, 5].map(k => (k < step ? 'done' : k === step ? 'on' : '')) });
   }
 };
-function playWelcome() { if (cur === 'intro') Intro.enter(true); else Home.enter(true); }
+function playWelcome() { if (cur === 'segments') Seg.enter(true); else if (cur === 'intro') Intro.enter(true); else Home.enter(true); }
 
 /* =========================================================
    4a / 4b: tap-to-hear cards
@@ -2156,7 +2353,7 @@ const READ_ART = `<svg viewBox="0 0 200 84" width="200" height="84" fill="none" 
   <path d="M195 14c2.4 3.2 3.2 7 2.4 10.6"/><path d="M189 7c1.8 1.5 3 3.4 3.7 5.6"/><path d="M150 16c-2.2 3.2-2.8 6.8-2.1 10.2"/>
 </svg>`;
 
-const STAGE_OF = n => (n === 'welcome' ? 'map' : 's4');
+const STAGE_OF = n => (n === 'segments' ? 'seg' : n === 'welcome' ? 'map' : 's4');
 let lastLeft = 'welcome';
 
 /* =========================================================
@@ -2170,7 +2367,8 @@ function init() {
   $('.nav').addEventListener('click', e => {
     if (!e.target.closest('a')) return;
     e.preventDefault();
-    if (cur !== homeScreen()) show(homeScreen(), -1);
+    if (cur === 'segments') return;
+    show(cur === 'welcome' ? 'segments' : 'welcome', -1);
   });
   // the stage card closes when you tap elsewhere
   // Escape closes the stage card on the path
@@ -2189,9 +2387,12 @@ function init() {
   if (saved.storyDone) Story.done = true;
   Home.build();
   Intro.build();
+  Seg.build();
   // first screen: the Key Words start screen until Stage 4 is done, then the learning path
   // (index.html#path, used by the stage pages' Back to your path, always opens the path)
-  if (homeScreen() === 'intro' && location.hash !== '#path') { screenEl('welcome').hidden = true; screenEl('intro').hidden = false; cur = 'intro'; }
+  // first screen: the segments dial (index.html#path, used by the stage pages, opens the learning path)
+  if (location.hash === '#path') { screenEl('segments').hidden = true; screenEl('welcome').hidden = false; cur = 'welcome'; }
+  else { screenEl('segments').hidden = false; }
   setTop(cur);
   // every screen opens at the top (no scroll kept from a reload or nudged by the swap above)
   try { history.scrollRestoration = 'manual'; } catch (e) { /* older browsers */ }
@@ -2246,6 +2447,6 @@ function init() {
 init();
 })();
 </script>
-<script src="dev-menu/dev-menu.js?v=2"></script> <!-- DEV MENU: testing only. Delete this line and the dev-menu folder when done. -->
+<script src="dev-menu/dev-menu.js?v=4"></script> <!-- DEV MENU: testing only. Delete this line and the dev-menu folder when done. -->
 </body>
 </html>
