@@ -2010,3 +2010,44 @@ body[data-view="segments"] main{padding-bottom:0}
 
 /* keep the planet numbers and the glow inside the orbit's own layer, so the black opening transition covers them */
 .radial{isolation:isolate;z-index:0}
+
+/* ================= Card spacing and alignment pass (every screen) ================= */
+/* Greetings / Farewells: the three cards span the same width as the instruction bar above them */
+@media (min-width:56.25em){.word-cards{max-width:none;gap:16px}}
+/* Start screen: both picture cards keep their titles on the same line (the description always takes two lines) */
+.hword.photo .hw-desc{min-height:2.9em}
+/* Reading Card: the text fills its card (no blank strip on the right), with even margins either side */
+@media (min-width:75em){
+  .read-home .passage{max-width:none}
+  .read-home>.reading{padding-left:56px;padding-right:56px}
+  .read-home .reading-head{margin-left:-56px;margin-right:-56px;padding-left:56px;padding-right:56px}
+}
+/* Reading Card questions: the question card starts level with the passage (the dots repeated "Question 1 of 3") */
+@media (min-width:56.25em){.rq-layout .qtop{display:none}}
+/* closing line with its speaker button: one line where it fits, the button level with the text */
+.done-line{max-width:60ch}
+.done-line .read-btn{vertical-align:middle;margin:-4px 0 -4px 8px}
+/* a score of 0 shows an empty ring, not a stray dot */
+.ring .fg[stroke-dasharray^="0 "]{stroke:transparent}
+/* Segment result on short laptop screens: slightly tighter so all three cards fit */
+@media (min-width:56.25em) and (max-height:50em){.res-grid{gap:12px}.sk-list{gap:6px}.sk-row{margin-bottom:3px;font-size:.875rem}.sk-bar{height:8px}.res-sub{display:none}.res-head{margin-bottom:8px}}
+@media (min-width:75em){.read-instr{padding-left:56px;padding-right:56px}}
+
+/* ================= Lighter shadows everywhere =================
+   Cards sit on a faint, close shadow; the big soft drop shadows are gone. Button edges (the solid 3D lip) stay. */
+:root{--shadow:0 1px 2px rgba(16,24,40,.05),0 4px 10px -6px rgba(16,24,40,.08)}
+.wword.photo,.hword.photo{box-shadow:0 1px 2px rgba(16,24,40,.06),0 8px 16px -12px rgba(16,24,40,.18)}
+.wword.photo.is-active{box-shadow:0 0 0 4px #fff,0 0 0 7px var(--wt-strong),0 8px 16px -12px rgba(16,24,40,.18)}
+.hword{box-shadow:var(--shadow)}
+.start-btn{box-shadow:0 6px 0 #000}
+.hw-sound{box-shadow:0 2px 6px -3px rgba(0,0,0,.25)}
+.sprint-art,.stage-art,.scene-art{box-shadow:var(--shadow)}
+.gloss-pop{box-shadow:0 6px 16px -10px rgba(16,24,40,.25),0 0 0 1px var(--line)}
+.rad-hub,.rad-hub:hover:not(:disabled){box-shadow:none}
+.dial-info .di-go,.un-go{box-shadow:0 4px 0 #000}
+.ico.scene{box-shadow:0 3px 8px -6px rgba(16,24,40,.25)}
+.modal-card{box-shadow:0 12px 30px -18px rgba(16,24,40,.35)}
+.fb-sheet,.qsheet .fb-sheet{box-shadow:0 -6px 18px -14px rgba(16,24,40,.25)}
+.devm-panel{box-shadow:8px 0 24px -18px rgba(0,0,0,.35)}
+.orbit-labels .rad-w.open{box-shadow:0 0 18px 4px rgba(47,174,98,.28);animation-name:kwGlowSoft}
+@keyframes kwGlowSoft{0%,100%{box-shadow:0 0 14px 3px rgba(47,174,98,.22)}50%{box-shadow:0 0 22px 6px rgba(47,174,98,.34)}}
